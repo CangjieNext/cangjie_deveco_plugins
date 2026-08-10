@@ -159,7 +159,9 @@ public class CangjieFindUsagesHandler extends FindUsagesHandler {
             }
 
             Collection<PsiReference> result = new ArrayList<>(getReferencesByLsp(element));
-            result.addAll(getArkTsReferencesByLsp(element, element.getProject()));
+            Collection<PsiReference> arkTsRefResult = ReadAction.computeBlocking(() ->
+                getArkTsReferencesByLsp(element, element.getProject));
+            result.addAll(arkTsRefResult);
             return result;
         });
     }
