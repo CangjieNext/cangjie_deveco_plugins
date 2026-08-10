@@ -62,8 +62,18 @@ public class CangjieExternalAnnotator extends ExternalAnnotator<Editor, Editor> 
         if (CangjieSemanticHighlight.getAllRangHighlighter(uri) == null) {
             return;
         }
-        List<RangeHighlighter> highlighterList = List.copyOf(CangjieSemanticHighlight.getAllRangHighlighter(uri));
-        if (highlighterList == null || highlighterList.isEmpty()) {
+        List<RangeHighlighter> highlighters = CangjieSemanticHighlight.getAllRangHighlighter(uri);
+        if (highlighters == null || highlighters.isEmpty()) {
+            return;
+        }
+        List<RangeHighlighter> highlighterList = null;
+        try {
+            highlighterList = List.copyOf(highlighters);
+        } catch (NullPointerException e) {
+            LOG.warn("Failed to copy RangeHighlighter due to a NullPointerException: " + e.getMessage());
+        }
+
+        if (highlighterList == null) {
             return;
         }
         for (RangeHighlighter rangeHighlighter : highlighterList) {
