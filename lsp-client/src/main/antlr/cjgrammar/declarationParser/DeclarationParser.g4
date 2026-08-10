@@ -15,7 +15,7 @@ options { tokenVocab = DeclarationLexer; }
 // Translation Unit
 
 translationUnit
-    : preamble NL* ((mainDefinition|topLevelObject) end*)* EOF
+    : preamble NL* (((EditorfoldStart | EditorfoldEnd) NL*)* NL* (mainDefinition|topLevelObject) end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* NL* EOF
     ;
 
 end: NL | SEMI;
@@ -23,7 +23,7 @@ end: NL | SEMI;
 // Package Definition and Package Import
 
 preamble
-    : NL* packageHeader? importList*
+    : NL* packageHeader? (((EditorfoldStart | EditorfoldEnd) NL*)* NL* importList ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
     ;
 
 packageHeader
@@ -123,7 +123,7 @@ superClass
     ;
 
 classType
-    : (identifier NL* DOT  NL*)*  identifier (NL* typeParameters)?
+    : (identifier QUEST? NL* DOT NL*)*  identifier (NL* typeParameters)?
     ;
 
 typeArguments
@@ -156,8 +156,8 @@ upperBounds
 
 // for lsp
 classBody
-    : LCURL NL*
-         classMemberDeclaration*
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end*
+         (classMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
       RCURL
     ;
 
@@ -230,7 +230,7 @@ interfaceDefinition
     ;
 
 interfaceBody
-    : LCURL NL* interfaceMemberDeclaration* RCURL
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (interfaceMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
     ;
 
 interfaceMemberDeclaration
@@ -328,9 +328,9 @@ enumDefinition
     ;
 
 enumBody
-    : LCURL NL* (BITOR NL*)? caseBody (NL* BITOR NL* caseBody)* (NL* BITOR NL* ELLIPSIS)?
-    (NL* (functionDefinition | operatorFunctionDefinition | associatedTypeDefinition | propertyDefinition | expression))*
-    NL* RCURL
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (BITOR NL*)? (caseBody end*)? (NL* end* BITOR NL* caseBody end*)* (NL* BITOR NL* ELLIPSIS)?
+    (NL* (functionDefinition | operatorFunctionDefinition | associatedTypeDefinition | propertyDefinition | expression) end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
+    NL* end* RCURL
     ;
 
 caseBody
@@ -357,8 +357,8 @@ structDefinition
     ;
 
 structBody
-    : LCURL NL*
-        structMemberDeclaration*
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end*
+        (structMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
       RCURL
     ;
 
@@ -425,7 +425,7 @@ extendDefinition
     ;
 
 extendType
-    :  (identifier NL* DOT  NL*)*  identifier (NL* typeParameters)?
+    :  (identifier QUEST? NL* DOT  NL*)*  identifier (NL* typeParameters)?
     | LPAREN NL* (identifier NL* COLON NL* identifier (NL* COMMA NL* identifier NL* COLON NL* identifier)* NL*)? RPAREN NL* ARROW NL* identifier
     | LPAREN NL* (identifier (NL* COMMA NL* identifier)* NL*)? RPAREN NL* ARROW NL* identifier
     | LPAREN NL* identifier NL* COLON NL* identifier (NL* COMMA NL* identifier NL* COLON NL* identifier)+ NL* RPAREN
@@ -450,7 +450,7 @@ extendType
     ;
 
 extendBody
-    : LCURL NL* extendMemberDeclaration* RCURL
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (extendMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
     ;
 
 extendMemberDeclaration
@@ -469,7 +469,7 @@ foreignDeclaration
     ;
 
 foreignBody
-    : LCURL NL* foreignMemberDeclaration* RCURL
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (foreignMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
     ;
 
 foreignMemberDeclaration
@@ -520,7 +520,7 @@ propertyDefinition
     ;
 
 propertyBody
-    : LCURL NL* propertyMemberDeclaration+ NL* RCURL
+    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (propertyMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)+ end* RCURL
     ;
 
 propertyMemberDeclaration
@@ -594,7 +594,7 @@ charLangTypes
     ;
 
 userType
-    : (identifier NL* DOT NL*)* identifier (typeArguments)?
+    : (identifier QUEST? NL* DOT NL*)* identifier (typeArguments)?
     ;
 
 parenthesizedType
@@ -626,9 +626,9 @@ expression
     ;
 
 lamdaDefinition
-    : identifier callSuffix NL* lambdaExpression (NL*  DOT NL* lamdaParam)*
-    | identifier callSuffix  (NL*  DOT NL* lamdaParam)*
-    | identifier  NL* lambdaExpression (NL*  DOT NL* lamdaParam)*;
+    : identifier callSuffix NL* lambdaExpression (QUEST? NL* DOT NL* lamdaParam)*
+    | identifier callSuffix (QUEST? NL* DOT NL* lamdaParam)*
+    | identifier  NL* lambdaExpression (QUEST? NL* DOT NL* lamdaParam)*;
 
 lamdaParam
     : identifier callSuffix NL* lambdaExpression
@@ -704,11 +704,11 @@ adCallSuffix
 valueArgument
     : identifier NL* COLON NL* ( expression | type )?
     | expression
+    | dumbArgument
     ;
 
 dumbArgument
-    : (DOT | COMMA)+
-    ;
+    : (DOT | COMMA)+;
 
 diffFunc
     : identifier;
@@ -830,6 +830,7 @@ elements
 element
     : spreadElement
     | expression
+    | dumbArgument
     ;
 
 spreadElement
@@ -858,8 +859,8 @@ deconstructPattern
     ;
 
 matchExpression
-    : MATCH NL* LPAREN NL* expression NL* RPAREN NL* LCURL NL* matchCase* RCURL
-    | MATCH NL* LCURL NL* (CASE NL* (expression | WILDCARD) NL* DOUBLE_ARROW NL* (expressionOrDeclaration end+)* expressionOrDeclaration?)+ RCURL
+    : MATCH NL* LPAREN NL* expression NL* RPAREN NL* LCURL end* matchCase* RCURL
+    | MATCH NL* LCURL end* (CASE NL* (expression | WILDCARD) NL* DOUBLE_ARROW NL* (expressionOrDeclaration end+)* expressionOrDeclaration?)+ RCURL
     ;
 
 matchCase
@@ -905,8 +906,8 @@ typePattern
    ;
 
 enumPattern
-   : NL* (userType NL* DOT NL*) identifier  callSuffix
-   | NL* (userType NL* DOT NL*) identifier
+   : NL* (userType QUEST? NL* DOT NL*) identifier  callSuffix
+   | NL* (userType QUEST? NL* DOT NL*) identifier
    | NL* identifier  callSuffix
    ;
 
@@ -981,7 +982,7 @@ thisSuperExpression
     ;
 
 lambdaExpression
-    : LCURL NL* (lambdaParameters? NL* DOUBLE_ARROW NL*)? expressionOrDeclarations (LPAREN RPAREN)? RCURL
+        : LCURL end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (lambdaParameters? NL* DOUBLE_ARROW NL*)? expressionOrDeclarations (LPAREN RPAREN)? ((EditorfoldStart | EditorfoldEnd) NL*)* NL* RCURL
     ;
 
 lambdaParameters
@@ -1009,12 +1010,12 @@ parenthesizedExpression
     ;
 
 block
-    : LCURL NL* RCURL
-    | LCURL NL* expressionOrDeclarations RCURL
+    : LCURL end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* RCURL
+    | LCURL end* expressionOrDeclarations RCURL
     ;
 
 expressionOrDeclarations
-    :  (expressionOrDeclaration end+)* expressionOrDeclaration?
+    :  (((EditorfoldStart | EditorfoldEnd) NL*)* NL* expressionOrDeclaration end+ ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* expressionOrDeclaration?
     ;
 
 expressionOrDeclaration
@@ -1055,7 +1056,6 @@ modifier
 	| CONST
 	| MUT
 	| UNSAFE
-	| CONST
     ;
 
 keywords
@@ -1067,7 +1067,7 @@ identifier
     ;
 
 quoteToken
-    : DOT | COMMA | LSQUARE | LCURL | RCURL | EXP | MUL | MOD | DIV | ADD | SUB
+    : DOT | COMMA | LCURL | RCURL | EXP | MUL | MOD | DIV | ADD | SUB
     | PIPELINE | COMPOSITION
     | INC | DEC | AND | OR | BITXOR | NOT | BITAND | BITOR | LSHIFT | rShift | COLON | SEMI | NL
     | ASSIGN | ADD_ASSIGN | SUB_ASSIGN | MUL_ASSIGN | EXP_ASSIGN | DIV_ASSIGN | MOD_ASSIGN
@@ -1084,6 +1084,7 @@ quoteToken
     | OVERRIDE | ABSTRACT | OPEN | OPERATOR | FOREIGN
     | Identifier | DollarIdentifier
     | LPAREN NL* quoteToken* NL* RPAREN
+    | LSQUARE NL* quoteToken* NL* RSQUARE
     | literalConstant
     ;
 
@@ -1094,7 +1095,7 @@ quoteInterpolate
 annotationList: annotation+;
 
 annotation
-    : AT NOT? (identifier NL* DOT)* identifier (LSQUARE NL* annotationArgumentList NL* RSQUARE)?
+    : AT NOT? (identifier QUEST? NL* DOT)* identifier (LSQUARE NL* annotationArgumentList NL* RSQUARE)?
     ;
 
 annotationArgumentList
@@ -1151,7 +1152,7 @@ macroInputExprWithParens
     ;
 
 macroTokens
-    : (quoteToken | macroExpression)*
+    : (lambdaExpression | quoteToken | macroExpression)*
     ;
 
 assignmentOperator
@@ -1164,9 +1165,9 @@ assignmentOperator
     | MOD_ASSIGN
     | AND_ASSIGN
     | OR_ASSIGN
+    | BITXOR_ASSIGN
     | BITAND_ASSIGN
     | BITOR_ASSIGN
-    | BITXOR_ASSIGN
     | LSHIFT_ASSIGN
     | rSHIFT_ASSIGN
     ;

@@ -21,6 +21,16 @@ DelimitedComment
       -> channel(HIDDEN)
     ;
 
+EditorfoldStart
+    : '//''<''e''d''i''t''o''r''-''f''o''l''d' ~[\u000A\u000D]*
+    | '//''r''e''g''i''o''n' ~[\u000A\u000D]*
+    ;
+
+EditorfoldEnd
+    : '//''<''/''e''d''i''t''o''r''-''f''o''l''d' ~[\u000A\u000D]*
+    | '//''e''n''d''r''e''g''i''o''n' ~[\u000A\u000D]*
+    ;
+
 LineComment
     : '//' ~[\u000A\u000D]*
       -> channel(HIDDEN)
@@ -56,14 +66,6 @@ TILDE: '~' ;
 PIPELINE: '|>' ;
 COMPOSITION: '~>' ;
 
-// new Compound Assignment Operators
-AND_ASSIGN: '&&=';
-OR_ASSIGN: '||=';
-BITAND_ASSIGN: '&=';
-BITOR_ASSIGN: '|=';
-BITXOR_ASSIGN: '^=';
-LSHIFT_ASSIGN: '<<=';
-
 INC: '++' ;
 DEC: '--' ;
 AND: '&&' ;
@@ -83,6 +85,15 @@ MUL_ASSIGN: '*=' ;
 EXP_ASSIGN: '**=' ;
 DIV_ASSIGN: '/=' ;
 MOD_ASSIGN: '%=' ;
+
+//// new Compound Assignment Operators
+AND_ASSIGN: '&&=' ;
+OR_ASSIGN: '||=' ;
+BITAND_ASSIGN: '&=' ;
+BITOR_ASSIGN: '|=' ;
+BITXOR_ASSIGN: '^=' ;
+LSHIFT_ASSIGN: '<<=' ;
+//RSHIFT_ASSIGN: '>>='
 
 ARROW: '->' ;
 DOUBLE_ARROW: '=>' ;
