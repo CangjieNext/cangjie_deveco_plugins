@@ -53,6 +53,9 @@ public class ClassUtil {
      * @param allIo Closeable...
      */
     public static void closeAllIo(Closeable... allIo) {
+        if (allIo == null) {
+            return;
+        }
         for (var io : allIo) {
             if (io != null) {
                 try {

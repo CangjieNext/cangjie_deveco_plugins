@@ -63,7 +63,7 @@ public class CjCommonImpl implements CangjieExtension {
      */
     public boolean isNotifyCjFileNumExceedLimit(TypeRule typeRule) {
         LOGGER.info("isNotifyCjFileNumExceedLimit start");
-        if (typeRule.getType().equals(Constants.CJPROF_FILE_TYPE)) {
+        if (Constants.CJPROF_FILE_TYPE.equals(typeRule.getType())) {
             BalloonNotification.show(CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR.getContent(),
                     NotificationType.ERROR);
             return true;
