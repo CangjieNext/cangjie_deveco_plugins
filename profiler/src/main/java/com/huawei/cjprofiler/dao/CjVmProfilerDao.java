@@ -150,8 +150,13 @@ public class CjVmProfilerDao extends AbstractDao {
         try (SqlSession sqlSession = obtainSqlSession(sessionId)) {
             CjVmProfilerMapper cjVmProfilerMapper = sqlSession.getMapper(CjVmProfilerMapper.class);
             List<HeapStats> heapStatList = new ArrayList<>(heapStatMap.values());
-            boolean isInsert = cjVmProfilerMapper.insertCjHeapStats(tid, heapStatList);
-            sqlSession.commit();
+            List<List<HeapStats>> batchList = ListUtil.splitList(heapStatList, MAX_BATCH_SIZE);
+            boolean isInsert = true;
+            for (List<HeapStats> list : batchList) {
+                isInsert &= cjVmProfilerMapper.insertCjHeapStats(tid, list);
+                sqlSession.commit();
+                sqlSession.clearCache();
+            }
             return isInsert;
         } finally {
             readWriteLock.readLock().unlock();
