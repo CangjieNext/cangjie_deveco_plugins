@@ -8,6 +8,7 @@
 
 package com.huawei.idea.lsp.extend.params;
 
+import org.eclipse.lsp4j.jsonrpc.util.Preconditions;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
 
 /**
@@ -30,10 +31,10 @@ public class OverridableMethodInfo {
 
     public OverridableMethodInfo(@NonNull final boolean deprecated, @NonNull final boolean isProp,
                                  @NonNull final String signature, @NonNull final String insertText) {
-        this.deprecated = deprecated;
-        this.isProp = isProp;
-        this.signatureWithRet = signature;
-        this.insertText = insertText;
+        this.deprecated = Preconditions.checkNotNull(deprecated, "deprecated");
+        this.isProp = Preconditions.checkNotNull(isProp, "isProp");
+        this.signatureWithRet = Preconditions.checkNotNull(signature, "signatureWithRet");
+        this.insertText = Preconditions.checkNotNull(insertText, "insertText");
     }
 
     @NonNull

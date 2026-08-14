@@ -15,7 +15,7 @@ options { tokenVocab = DeclarationLexer; }
 // Translation Unit
 
 translationUnit
-    : preamble NL* (((EditorfoldStart | EditorfoldEnd) NL*)* NL* (mainDefinition|topLevelObject) end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* NL* EOF
+    : preamble NL* (((EditorfoldStart | EditorfoldEnd) NL*)* NL* (mainDefinition|topLevelObject) end* NL* ((EditorfoldStart | EditorfoldEnd) NL*)*)* NL* EOF
     ;
 
 end: NL | SEMI;
@@ -23,7 +23,7 @@ end: NL | SEMI;
 // Package Definition and Package Import
 
 preamble
-    : NL* packageHeader? (((EditorfoldStart | EditorfoldEnd) NL*)* NL* importList ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
+    : NL* packageHeader? NL* (((EditorfoldStart | EditorfoldEnd) NL*)* NL* importList (EditorfoldEnd NL*)*)*
     ;
 
 packageHeader
@@ -156,8 +156,8 @@ upperBounds
 
 // for lsp
 classBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end*
-         (classMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
+    : LCURL NL* (end | (EditorfoldStart | EditorfoldEnd) NL*)* NL*
+         (classMemberDeclaration NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
       RCURL
     ;
 
@@ -230,7 +230,7 @@ interfaceDefinition
     ;
 
 interfaceBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (interfaceMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
+    : LCURL NL* (end | (EditorfoldStart | EditorfoldEnd) NL*)* NL* (interfaceMemberDeclaration NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
     ;
 
 interfaceMemberDeclaration
@@ -328,8 +328,8 @@ enumDefinition
     ;
 
 enumBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (BITOR NL*)? (caseBody end*)? (NL* end* BITOR NL* caseBody end*)* (NL* BITOR NL* ELLIPSIS)?
-    (NL* (functionDefinition | operatorFunctionDefinition | associatedTypeDefinition | propertyDefinition | expression) end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
+    : LCURL NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (BITOR NL*)? (caseBody end*)? (NL* end* BITOR NL* caseBody end*)* (NL* BITOR NL* ELLIPSIS)?
+    (NL* (functionDefinition | operatorFunctionDefinition | associatedTypeDefinition | propertyDefinition | expression) NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end*)*
     NL* end* RCURL
     ;
 
@@ -357,8 +357,8 @@ structDefinition
     ;
 
 structBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end*
-        (structMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
+    : LCURL NL* (end | (EditorfoldStart | EditorfoldEnd) NL*)* NL*
+        (structMemberDeclaration NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)*
       RCURL
     ;
 
@@ -450,7 +450,7 @@ extendType
     ;
 
 extendBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (extendMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
+    : LCURL NL* (end | (EditorfoldStart | EditorfoldEnd) NL*)* NL* (extendMemberDeclaration NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
     ;
 
 extendMemberDeclaration
@@ -469,7 +469,7 @@ foreignDeclaration
     ;
 
 foreignBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (foreignMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
+    : LCURL (end | NL* (EditorfoldStart | EditorfoldEnd) NL*)* NL* (foreignMemberDeclaration NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
     ;
 
 foreignMemberDeclaration
@@ -520,7 +520,7 @@ propertyDefinition
     ;
 
 propertyBody
-    : LCURL ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (propertyMemberDeclaration ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)+ end* RCURL
+    : LCURL NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* end* (propertyMemberDeclaration NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)+ end* RCURL
     ;
 
 propertyMemberDeclaration
@@ -606,21 +606,7 @@ parenthesizedType
 
 //for lsp
 expression
-    :  postfixExpression (INC | DEC)?  // 支持 a++++ 而且左结合
-    | prefixUnaryOperator expression // 右结合
-    | expression ( NL* exponentOperator NL* expression )+ // 右结合
-    | expression NL* (AS | IS) NL* type // 可以写 a as b as c ; a is b is c 而且是左结合
-    | expression NL* ( multiplicativeOperator
-    | additiveOperator
-    | shiftingOperator
-    | comparisonOperator  // 可以写 a > b > c 而且是左结合
-    | equalityOperator  // 可以写 a == b == c 而且是左结合
-    | conditionOperator
-    | flowOperator
-    | assignmentOperator ) NL* expression // 左结合
-    | expression NL* (CLOSEDRANGEOP | RANGEOP) NL* expression (NL* COLON NL* expression)? //可以写 1..2..3 而且是右结合
-    | expression (NL* QUEST QUEST NL* expression)+ // 右结合
-    | leftValueExpression NL* assignmentOperator NL* expression // 可以写 a = b = c 而且是右结合
+    : leftValueExpression NL* assignmentOperator NL* expression // 可以写 a = b = c 而且是右结合
     | tupleLeftValueExpression NL* ASSIGN NL* expression
     | LET NL* deconstructPattern NL* LT SUB NL* expression
     | operatorOperand expressionSuffix*
@@ -656,7 +642,7 @@ multiplicativeOperand
     ;
 
 multiplicativeExpression
-    : exponentOperand (NL* multiplicativeExpression NL* exponentOperand)+
+    : exponentOperand (NL* multiplicativeOperator NL* exponentOperand)+
     ;
 
 exponentOperand
@@ -716,11 +702,11 @@ postfixExpression
     | ADJOINTOF (LPAREN NL* diffFunc NL* RPAREN)?
     | (identifier QUEST? NL* DOT NL*)* identifier NL* (LT NL* type NL*)+ rShift+ NL* GT*
     | atomicExpression lambdaExpression?
-    | postfixExpression QUEST? NL* DOT NL* identifier callSuffix? lambdaExpression
-    | postfixExpression QUEST? NL* DOT NL* identifier typeArguments
+    | postfixExpression QUEST? NL* DOT NL* identifier (typeArguments | (callSuffix? lambdaExpression))
     | postfixExpression QUEST? NL* DOT NL* identifier?
     | postfixExpression NOT
-    | postfixExpression callSuffix lambdaExpression? (QUEST? NL* DOT NL* lamdaParam)*
+    | postfixExpression callSuffix lambdaExpression?
+    | postfixExpression callSuffix lambdaExpression? (QUEST? NL* DOT NL* lamdaParam)+
     | postfixExpression indexAccess
     | postfixExpression (QUEST questSeperatedItems)+ // optional chaining expression
     ;
@@ -906,8 +892,8 @@ deconstructPattern
     ;
 
 matchExpression
-    : MATCH NL* LPAREN NL* expression NL* RPAREN NL* LCURL end* matchCase* RCURL
-    | MATCH NL* LCURL end* (CASE NL* (expression | WILDCARD) NL* DOUBLE_ARROW NL* (expressionOrDeclaration end+)* expressionOrDeclaration?)+ RCURL
+    : MATCH NL* LPAREN NL* expression NL* RPAREN NL* LCURL end* NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (matchCase NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* RCURL
+    | MATCH NL* LCURL end* NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (CASE NL* (expression | WILDCARD) NL* DOUBLE_ARROW NL* (expressionOrDeclaration end+)* expressionOrDeclaration? NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* )+ RCURL
     ;
 
 matchCase
@@ -953,9 +939,9 @@ typePattern
    ;
 
 enumPattern
-   : NL* (userType QUEST? NL* DOT NL*) identifier  callSuffix
-   | NL* (userType QUEST? NL* DOT NL*) identifier
-   | NL* identifier  callSuffix
+   : NL* enumPatternConstructor patternCallSuffix
+   | NL* enumPatternConstructor callSuffix
+   | NL* enumPatternConstructor
    ;
 
 enumPatternConstructor
@@ -1042,7 +1028,7 @@ thisSuperExpression
     ;
 
 lambdaExpression
-        : LCURL end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (lambdaParameters? NL* DOUBLE_ARROW NL*)? expressionOrDeclarations (LPAREN RPAREN)? ((EditorfoldStart | EditorfoldEnd) NL*)* NL* RCURL
+        : LCURL end* NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* (lambdaParameters? NL* DOUBLE_ARROW NL*)? expressionOrDeclarations (LPAREN RPAREN)? NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* RCURL
     ;
 
 lambdaParameters
@@ -1070,12 +1056,12 @@ parenthesizedExpression
     ;
 
 block
-    : LCURL end* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* RCURL
+    : LCURL end* NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL* RCURL
     | LCURL end* expressionOrDeclarations RCURL
     ;
 
 expressionOrDeclarations
-    :  (((EditorfoldStart | EditorfoldEnd) NL*)* NL* expressionOrDeclaration end+ ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* expressionOrDeclaration?
+    :  NL* (((EditorfoldStart | EditorfoldEnd) NL*)* NL* expressionOrDeclaration end+ NL* ((EditorfoldStart | EditorfoldEnd) NL*)* NL*)* expressionOrDeclaration?
     ;
 
 expressionOrDeclaration
@@ -1112,10 +1098,10 @@ modifier
     | OVERRIDE
     | ABSTRACT
     | REDEF
-	| SEALED
-	| CONST
-	| MUT
-	| UNSAFE
+    | SEALED
+    | CONST
+    | MUT
+    | UNSAFE
     ;
 
 keywords
@@ -1134,11 +1120,11 @@ quoteToken
     | AND_ASSIGN | OR_ASSIGN | BITXOR_ASSIGN | BITAND_ASSIGN | BITOR_ASSIGN | LSHIFT_ASSIGN
     | ARROW | DOUBLE_ARROW | ELLIPSIS | CLOSEDRANGEOP | RANGEOP | HASH | AT | QUEST | UPPERBOUND | LT | GT | LE | ge
     | NOTEQUAL | EQUAL | WILDCARD | BACKSLASH | QUOTESYMBOL | DOLLAR
-    | INT8 | INT16 | INT32 | INT64 | UINT8 | UINT16 | UINT32 | UINT64 | FLOAT16
+    | INT8 | INT16 | INT32 | INT64 | UINT8 | UINT16 | UINT32 | UINT64 | FLOAT16 | INTNATIVE | UINTNATIVE
     | FLOAT32 | FLOAT64 | RUNE | BOOLEAN | UNIT | NOTHING | STRUCT | ENUM | THIS
     | PACKAGE | IMPORT | CLASS | INTERFACE | FUNC | LET | VAR | CONST | TYPE_ALIAS
     | INIT | THIS | SUPER | IF | ELSE | CASE | TRY | CATCH | FINALLY
-    | FOR | DO | WHILE | THROW | RETURN | CONTINUE | BREAK | AS | IN
+    | FOR | DO | WHILE | THROW | RETURN | CONTINUE | BREAK | AS | IN | IS
     | MATCH  | WHERE | EXTEND | SPAWN | SYNCHRONIZED | MACRO | QUOTE | TRUE | FALSE
     | SEALED | STATIC | PUBLIC | PRIVATE | PROTECTED | PUBLIC
     | OVERRIDE | ABSTRACT | OPEN | OPERATOR | FOREIGN

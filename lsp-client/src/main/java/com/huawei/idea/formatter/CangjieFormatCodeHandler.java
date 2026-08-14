@@ -10,13 +10,17 @@ package com.huawei.idea.formatter;
 
 import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
 
-import com.huawei.deveco.sdkmanager.core.util.StringUtil;
 import com.huawei.idea.lsp.utils.CangjieBundle;
 import com.huawei.idea.lsp.utils.LspConfigUtils;
 import com.huawei.idea.notification.NotificationUtil;
 
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.command.undo.UndoUtil;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.SystemInfo;
@@ -30,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -103,7 +108,12 @@ public class CangjieFormatCodeHandler {
         if (sdkPath.isEmpty()) {
             return;
         }
-        Optional<ExecuteResult> executeResult = formatSelectedCode(file.getVirtualFile(), project, editor, lineRanges);
+
+        Document document = editor.getDocument();
+        String originalContent = document.getText();
+
+        Optional<ExecuteResult> executeResult = formatSelectedCode(file.getVirtualFile(), project, editor,
+            document, lineRanges);
         if (executeResult.isEmpty()) {
             LOG.warn("Reformat Selected Code error when lsp invoke cjformat.");
             NotificationUtil.notifyInfo(CangjieBundle.message("lsp.format.fail"),
@@ -115,34 +125,89 @@ public class CangjieFormatCodeHandler {
             NotificationUtil.notifyInfo(executeResult.get().executeOut(), project, NotificationType.INFORMATION);
             return;
         }
-        VirtualFile virtualFile = file.getVirtualFile();
-        virtualFile.refresh(false, false);
-        PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+
+        String formattedContent = executeResult.get().executeOut();
+        if (!originalContent.equals(formattedContent)) {
+            if (CommandProcessor.getInstance().getCurrentCommand() != null) {
+                ApplicationManager.getApplication().runWriteAction(() -> {
+                    document.setText(formattedContent);
+                    UndoUtil.markPsiFileForUndo(file);
+                });
+            } else {
+                WriteCommandAction.runWriteCommandAction(project, () -> {
+                    document.setText(formattedContent);
+                    UndoUtil.markPsiFileForUndo(file);
+                });
+            }
+        }
+    }
+
+    private static String readFileContent(VirtualFile file) {
+        try {
+            return new String(Files.readAllBytes(file.toNioPath()), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOG.warn("Failed to read formatted file content", e);
+            return "";
+        }
+    }
+
+    private static String readFileContent(File file) {
+        try {
+            return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOG.warn("Failed to read formatted file content", e);
+            return "";
+        }
     }
 
     private static Optional<ExecuteResult> formatSelectedCode(VirtualFile file, Project project, Editor editor,
-                                                              Collection<LineRange> lineRanges) {
+                                                              Document document, Collection<LineRange> lineRanges) {
         Optional<String> exePathOptional = getExePath();
         if (exePathOptional.isEmpty()) {
             LOG.warn("Reformat Selected Code error, get sdk path is fail.");
             return Optional.of(new ExecuteResult(1, "Please check Cangjie SDK path."));
         }
-        List<LineRange> sLineRanges = lineRanges.stream()
-                .sorted(Comparator.comparingInt(LineRange::startLine).reversed())
-                .toList();
-        sLineRanges.forEach(lineRange -> {
-            List<String> processArgs = getFormatToolPath(exePathOptional.get());
-            processArgs.add(REFORMAT_FILE);
-            processArgs.add(toSystemIndependentName(file.getPath()));
-            processArgs.add(REFORMAT_LINE);
-            processArgs.add(lineRange.startLine() + COLON + lineRange.endLine());
-            addCjfmtConfigParam(processArgs, project);
-            Optional<ExecuteResult> executeResult = executeCommand(processArgs, exePathOptional.get());
-            if (executeResult.isEmpty()) {
-                LOG.warn("Reformat Selected Code error, execute result is empty.");
+
+        Path tempFile = null;
+        try {
+            String fileContent = document.getText();
+            if (fileContent.isEmpty()) {
+                return Optional.of(new ExecuteResult(1, "Failed to read file content"));
             }
-        });
-        return Optional.of(new ExecuteResult(0, StringUtil.EMPTY));
+
+            tempFile = Files.createTempFile("cjfmt_", ".cj");
+            Files.writeString(tempFile, fileContent, StandardCharsets.UTF_8);
+            List<LineRange> sLineRanges = lineRanges.stream()
+                    .sorted(Comparator.comparingInt(LineRange::startLine).reversed())
+                    .toList();
+            String currentContent = fileContent;
+            for (LineRange lineRange: sLineRanges) {
+                List<String> processArgs = getFormatToolPath(exePathOptional.get());
+                processArgs.add(REFORMAT_FILE);
+                processArgs.add(toSystemIndependentName(tempFile.toString()));
+                processArgs.add(REFORMAT_LINE);
+                processArgs.add(lineRange.startLine() + COLON + lineRange.endLine());
+                addCjfmtConfigParam(processArgs, project);
+                Optional<ExecuteResult> executeResult = executeCommand(processArgs, exePathOptional.get());
+                if (executeResult.isEmpty() || executeResult.get().exitCode() != 0) {
+                    LOG.warn("cjfmt format failed, skipping format");
+                    return Optional.empty();
+                }
+                currentContent = readFileContent(tempFile.toFile());
+            }
+            return Optional.of(new ExecuteResult(0, currentContent));
+        } catch (IOException e) {
+            LOG.warn("Failed to create temp file for formatting", e);
+            return Optional.empty();
+        } finally {
+            if (tempFile != null) {
+                try {
+                    Files.deleteIfExists(tempFile);
+                } catch (IOException e) {
+                    LOG.warn("Failed to delete temp file", e);
+                }
+            }
+        }
     }
 
     /**

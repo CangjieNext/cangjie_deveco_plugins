@@ -10,6 +10,7 @@ package com.huawei.idea.lsp.utils;
 
 import static com.huawei.deveco.projectmgmt.ohos.utils.CommonProjectUtil.getSelectFileOhosModuleModel;
 import static com.huawei.deveco.projectmodel.ohos.model.constants.RuntimeOS.HARMONY_OS;
+import static com.huawei.idea.lsp.utils.CangjieCommandExecutor.quoteForZsh;
 import static com.huawei.idea.lsp.utils.Constants.BUILD_OPTION;
 import static com.huawei.idea.lsp.utils.Constants.BUILD_PROFILE_JSON5;
 import static com.huawei.idea.lsp.utils.Constants.CANGJIE_OPTIONS;
@@ -249,7 +250,8 @@ public class LspConfigUtils {
         try {
             if (LspConfigUtils.isMac()) {
                 String batPath = Paths.get(sdkPath, "build-tools", "envsetup.sh").toString();
-                String command = "source \"" + batPath + "\" > /dev/null 2>&1 "
+                String quotedPath = quoteForZsh(project, batPath);
+                String command = "source " + quotedPath + " > /dev/null 2>&1 "
                     + "&& echo \"DYLD_LIBRARY_PATH_START==\"$DYLD_LIBRARY_PATH\"==DYLD_LIBRARY_PATH_END\" "
                     + "&& echo \"DYLD_FALLBACK_LIBRARY_PATH_START==\"$DYLD_FALLBACK_LIBRARY_PATH"
                     + "\"==DYLD_FALLBACK_LIBRARY_PATH_END\"";

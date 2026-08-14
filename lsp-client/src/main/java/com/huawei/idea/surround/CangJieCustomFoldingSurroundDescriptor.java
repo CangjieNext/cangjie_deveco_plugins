@@ -94,19 +94,46 @@ public class CangJieCustomFoldingSurroundDescriptor implements SurroundDescripto
         if (endElement instanceof PsiWhiteSpace) {
             endElement = endElement.getPrevSibling();
         }
-        if (startElement != null && endElement != null) {
-            startElement = findClosestParentAfterLineBreak(startElement, document);
-            if (startElement != null) {
-                endElement = findClosestParentBeforeLineBreak(endElement, document);
-                if (endElement != null) {
-                    return adjustRange(startElement, endElement);
-                }
-            }
+        if (startElement == null || endElement == null) {
+            return PsiElement.EMPTY_ARRAY;
         }
-        return PsiElement.EMPTY_ARRAY;
+        int firstLineStart = document.getLineStartOffset(document.getLineNumber(startOffset));
+        int lastLine = document.getLineNumber(endOffset - 1);
+        int lastLineEnd = lastLine < document.getLineCount() - 1
+                ? document.getLineStartOffset(lastLine + 1)
+                : document.getTextLength();
+        startElement = findClosestParentAfterLineBreak(startElement, document);
+        if (startElement == null) {
+            return PsiElement.EMPTY_ARRAY;
+        }
+        endElement = findClosestParentBeforeLineBreak(endElement, document);
+        if (endElement == null) {
+            return PsiElement.EMPTY_ARRAY;
+        }
+        PsiElement[] normalized = normalizeToSameLevel(startElement, endElement);
+        if (normalized != null) {
+            startElement = normalized[0];
+            endElement = normalized[1];
+        }
+        return adjustRange(startElement, endElement, firstLineStart, lastLineEnd);
     }
 
-    private static PsiElement @NotNull [] adjustRange(@NotNull PsiElement start, @NotNull PsiElement end) {
+    @Nullable
+    private static PsiElement[] normalizeToSameLevel(PsiElement start, PsiElement end) {
+        PsiElement commonAncestor = PsiTreeUtil.findCommonParent(start, end);
+        if (commonAncestor == null) {
+            return null;
+        }
+        PsiElement normalizedStart = findDirectChildOf(commonAncestor, start);
+        PsiElement normalizedEnd = findDirectChildOf(commonAncestor, end);
+        if (normalizedStart != null && normalizedEnd != null) {
+            return new PsiElement[] {normalizedStart, normalizedEnd};
+        }
+        return null;
+    }
+
+    private static PsiElement @NotNull [] adjustRange(@NotNull PsiElement start, @NotNull PsiElement end,
+        int firstLineStart, int lastLineEnd) {
         PsiElement lowerStart = lowerStartElementIfNeeded(start, end);
         PsiElement lowerEnd = lowerEndElementIfNeeded(start, end);
         if (lowerStart == null || lowerEnd == null) {
@@ -117,29 +144,64 @@ public class CangJieCustomFoldingSurroundDescriptor implements SurroundDescripto
             if (commonParent instanceof CjMacroInputExprWithoutParens || commonParent instanceof CjPackageHeader) {
                 return PsiElement.EMPTY_ARRAY;
             }
-            return new PsiElement[] {lowerStart, lowerEnd};
+            return checkResultRange(lowerStart, lowerEnd, firstLineStart, lastLineEnd);
         }
         PsiElement newStartParent = getParent(lowerStart);
-        if (newStartParent != null && newStartParent.getFirstChild() == lowerStart
-                && newStartParent.getChildren().length <= 2) {
-            lowerStart = newStartParent;
-        }
         PsiElement newEndParent = getParent(lowerEnd);
-        if (newEndParent != null && newEndParent.getLastChild().getPrevSibling() == lowerEnd
-                && newEndParent.getLastChild() instanceof CjEnd && newEndParent.getChildren().length <= 2) {
+        boolean canExpandTogether = newStartParent != null
+            && newStartParent == newEndParent
+            && newStartParent.getFirstChild() == lowerStart
+            && newEndParent.getLastChild().getPrevSibling() == lowerEnd
+            && newEndParent.getLastChild() instanceof CjEnd;
+        if (canExpandTogether) {
+            lowerStart = newStartParent;
             lowerEnd = newEndParent;
         }
         if (newStartParent.getNode().getElementType().getDebugName().equals("ifExpression")
                 && newEndParent.getNode().getElementType().getDebugName().equals("ifExpression")) {
-            return new PsiElement[] {newStartParent, newEndParent};
+            return checkResultRange(newStartParent, newEndParent, firstLineStart, lastLineEnd);
         }
         if (getParent(lowerStart) == getParent(lowerEnd)) {
             if (lowerEnd.getLastChild() instanceof CjEnd) {
                 lowerEnd = lowerEnd.getLastChild().getPrevSibling();
             }
-            return new PsiElement[] {lowerStart, lowerEnd};
+            return checkResultRange(lowerStart, lowerEnd, firstLineStart, lastLineEnd);
         }
         return PsiElement.EMPTY_ARRAY;
+    }
+
+    @Nullable
+    private static PsiElement findIfExpression(PsiElement start) {
+        PsiElement current = start;
+        while (current != null) {
+            if (current.getChildren().length > 1) {
+                if ("ifExpression".equals(current.getNode().getElementType().getDebugName())) {
+                    return current;
+                }
+                break;
+            }
+            PsiElement firstChild = current.getFirstChild();
+            if (firstChild == null) {
+                break;
+            }
+            current = firstChild;
+        }
+        return null;
+    }
+
+    private static PsiElement @NotNull [] checkResultRange(@NotNull PsiElement resultStart,
+                                                           @NotNull PsiElement resultEnd,
+        int firstLineStart, int lastLineEnd) {
+        PsiElement ifExpression = findIfExpression(resultStart.getFirstChild());
+        if (ifExpression != null) {
+            return new PsiElement[] {resultStart, resultEnd};
+        }
+        int resultStartOffset = resultStart.getTextRange().getStartOffset();
+        int resultEndOffset = resultEnd.getTextRange().getEndOffset();
+        if (resultStartOffset < firstLineStart || resultEndOffset > lastLineEnd) {
+            return PsiElement.EMPTY_ARRAY;
+        }
+        return new PsiElement[] {resultStart, resultEnd};
     }
 
     @Nullable
@@ -202,6 +264,25 @@ public class CangJieCustomFoldingSurroundDescriptor implements SurroundDescripto
             return parent;
         }
         return null;
+    }
+
+    @Nullable
+    private static PsiElement findDirectChildOf(PsiElement ancestor, PsiElement descendant) {
+        if (descendant == ancestor) {
+            return descendant;
+        }
+        PsiElement current = descendant;
+        while (current != null) {
+            PsiElement parent = current.getParent();
+            if (parent == ancestor) {
+                return current;
+            }
+            if (parent == null || parent instanceof PsiFileSystemItem) {
+                break;
+            }
+            current = parent;
+        }
+        return descendant;
     }
 
     @Nullable

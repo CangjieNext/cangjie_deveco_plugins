@@ -69,7 +69,7 @@ public class CangjieLspUtils {
                     IntellijLanguageClient.initProjectConnections(project);
                     finalRequestManager.setRestarting(false);
                 });
-                CommonUtils.tryDeleteDiretory(lspBuildTempPath);
+                CommonUtils.tryDeleteDirectory(lspBuildTempPath);
             }
         }
     }

@@ -9,6 +9,8 @@
 package com.huawei.idea.refactor;
 
 import com.huawei.idea.edit.CangjieEditorEventManager;
+import com.huawei.idea.language.psi.operatornode.CJAdditiveOperator;
+import com.huawei.idea.language.psi.operatornode.CJMultiplicativeOperator;
 import com.huawei.idea.lsp.utils.CangJieLanguage;
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
@@ -19,9 +21,12 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiCompiledElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.actions.BasePlatformRefactoringAction;
 
@@ -32,7 +37,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.wso2.lsp4intellij.editor.EditorEventManager;
 import org.wso2.lsp4intellij.editor.EditorEventManagerBase;
-import org.wso2.lsp4intellij.utils.FileUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,39 +129,66 @@ public abstract class RefactorBaseAction extends BasePlatformRefactoringAction {
     }
 
     /**
-     * enableForSingleElement
-     *
-     * return true if only selects one element and has command to run.
+     * 判断选中元素是否是同一层级，是否符合优先级
+     * 3 * 9 + base, 比如选中 9 + base 是不符合要求的
      *
      * @param event event
-     * @return is enable
+     * @return isSameLevelPsi
      */
-    protected boolean enableForSingleElement(@NotNull AnActionEvent event) {
+    protected boolean isSameLevelPsi(@NotNull AnActionEvent event) {
         Editor editor = event.getData(CommonDataKeys.EDITOR);
-        if (editor == null) {
+        PsiFile file = event.getData(CommonDataKeys.PSI_FILE);
+        if (editor == null || file == null) {
             return false;
         }
         SelectionModel selectionModel = editor.getSelectionModel();
-        int selectionStart = selectionModel.getSelectionStart();
-        int selectionEnd = selectionModel.hasSelection() ? selectionModel.getSelectionEnd() - 1 : selectionStart;
-
-        String uri = FileUtils.documentToUriInLocation(editor.getDocument());
-        PsiFile psiFile = FileUtils.psiFileFromUri(editor.getProject(), uri);
-        if (psiFile == null || !psiFile.isValid()) {
-            return false;
-        }
-        PsiElement eleStart = psiFile.findElementAt(selectionStart);
-        PsiElement eleEnd = psiFile.findElementAt(selectionEnd);
-        if (eleStart != eleEnd) {
+        if (!selectionModel.hasSelection()) {
             return false;
         }
 
-        Command fromTweaks = getCommandFromTweaks(editor, selectionStart, selectionEnd);
-        if (fromTweaks == null) {
+        int startOffset = selectionModel.getSelectionStart();
+        int endOffset = selectionModel.getSelectionEnd();
+        if (startOffset >= endOffset) {
             return false;
         }
-        command = fromTweaks;
-        return command.getCommand() != null;
+        PsiElement startElement = file.findElementAt(startOffset);
+        PsiElement endElement = file.findElementAt(endOffset - 1);
+        if (startElement == null || endElement == null) {
+            return false;
+        }
+        if (startElement == endElement) {
+            return true;
+        }
+
+        PsiElement commonParent = PsiTreeUtil.findCommonParent(startElement, endElement);
+        if (commonParent == null) {
+            return false;
+        }
+        return isSameLevelSelection(commonParent, startOffset, endOffset);
+    }
+
+    private static boolean isSameLevelSelection(@NotNull PsiElement parent, int startOffset, int endOffset) {
+        int selectedItemCount = 0;
+        for (PsiElement child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (isIgnoredSelectionElement(child)) {
+                continue;
+            }
+            TextRange range = child.getTextRange();
+            if (range == null || !range.intersectsStrict(startOffset, endOffset)) {
+                continue;
+            }
+            if (startOffset > range.getStartOffset() || endOffset < range.getEndOffset()) {
+                return false;
+            }
+            selectedItemCount++;
+        }
+        return selectedItemCount > 0;
+    }
+
+    private static boolean isIgnoredSelectionElement(@NotNull PsiElement element) {
+        return element instanceof PsiWhiteSpace
+                || element instanceof CJAdditiveOperator
+                || element instanceof CJMultiplicativeOperator;
     }
 
     /**
@@ -183,20 +214,6 @@ public abstract class RefactorBaseAction extends BasePlatformRefactoringAction {
             }
         }
         return new Command();
-    }
-
-    protected ArrayList<Command> getValidCommands(Editor editor, int startOffset, int endOffset) {
-        ArrayList<Command> commands = new ArrayList<>();
-        EditorEventManager manager = EditorEventManagerBase.forEditor(editor);
-        if (!(manager instanceof CangjieEditorEventManager extendManager)) {
-            return commands;
-        }
-        List<Either<Command, CodeAction>> res = extendManager.codeAction4Refactor(startOffset, endOffset);
-        for (Either<Command, CodeAction> either : res) {
-            Command cmd = either.isLeft() ? either.getLeft() : either.getRight().getCommand();
-            commands.add(cmd);
-        }
-        return commands;
     }
 
     @Override

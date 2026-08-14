@@ -9,6 +9,10 @@
 package com.huawei.idea.refactor;
 
 import com.huawei.idea.edit.CangjieEditorEventManager;
+import com.huawei.idea.language.psi.toplevel.macronode.CjMacroAttrDecl;
+import com.huawei.idea.language.psi.toplevel.macronode.CjMacroAttrExpr;
+import com.huawei.idea.language.psi.toplevel.macronode.CjMacroDefinition;
+import com.huawei.idea.language.psi.toplevel.macronode.CjMacroExpression;
 import com.huawei.idea.refactor.extract.CangjieCodeBlock;
 
 import com.intellij.execution.ExecutionException;
@@ -204,5 +208,42 @@ public abstract class RefactorBaseHandler implements RefactoringActionHandler {
         CommonRefactoringUtil.showErrorHint(block.getProject(), block.getEditor(), message,
                 this.tweak + " failed", null);
         LOG.debug(message);
+    }
+
+    /**
+     * Check if the type definition contains any macro defintions or macro expressions.
+     * Traverse up from the current node to check if the element or its parents are macros.
+     *
+     * @param element the type definition element to check
+     * @return true if the element or its parents contain macros, false otherwise
+     */
+    public boolean hasMacroInType(@Nullable PsiElement element) {
+        if (element == null) {
+            return false;
+        }
+        PsiElement current = element;
+        while (current != null) {
+            if (isMacroElement(current)) {
+                return true;
+            }
+            current = current.getParent();
+        }
+        return false;
+    }
+
+    /**
+     * Check if an element is a macro-related PSI element
+     *
+     * @param element the element to check
+     * @return true if the element is a macro definition or expression
+     */
+    public boolean isMacroElement(@Nullable PsiElement element) {
+        if (element == null) {
+            return false;
+        }
+        return element instanceof CjMacroDefinition
+                || element instanceof CjMacroExpression
+                || element instanceof CjMacroAttrDecl
+                || element instanceof CjMacroAttrExpr;
     }
 }

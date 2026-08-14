@@ -70,7 +70,7 @@ public class CangjieExternalAnnotator extends ExternalAnnotator<Editor, Editor> 
         try {
             highlighterList = List.copyOf(highlighters);
         } catch (NullPointerException e) {
-            LOG.warn("Failed to copy RangeHighlighter due to a NullPointerException: " + e.getMessage());
+            LOG.warn("Failed to copy RangeHighlighters due to a NullPointerException: " + e.getMessage());
         }
 
         if (highlighterList == null) {

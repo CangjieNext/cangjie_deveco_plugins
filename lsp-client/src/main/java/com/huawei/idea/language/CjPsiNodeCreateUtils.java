@@ -26,6 +26,7 @@ import com.huawei.idea.language.psi.operatornode.CJConditionOperator;
 import com.huawei.idea.language.psi.operatornode.CJEqualityOperator;
 import com.huawei.idea.language.psi.operatornode.CJFlowOperator;
 import com.huawei.idea.language.psi.operatornode.CJShiftingOperator;
+import com.huawei.idea.language.psi.operatornode.CJMultiplicativeOperator;
 import com.huawei.idea.language.psi.othersnode.CjAdCallSuffix;
 import com.huawei.idea.language.psi.othersnode.CjArrowParameters;
 import com.huawei.idea.language.psi.othersnode.CjAtomicExpression;
@@ -39,6 +40,7 @@ import com.huawei.idea.language.psi.othersnode.CjEnumPattern;
 import com.huawei.idea.language.psi.othersnode.CjExceptionTypePattern;
 import com.huawei.idea.language.psi.othersnode.CjFieldAccess;
 import com.huawei.idea.language.psi.othersnode.CjIdentifier;
+import com.huawei.idea.language.psi.othersnode.CjIndexAccess;
 import com.huawei.idea.language.psi.othersnode.CjItemAfterQuest;
 import com.huawei.idea.language.psi.othersnode.CjLambdaExpression;
 import com.huawei.idea.language.psi.othersnode.CjLambdaParameter;
@@ -232,6 +234,7 @@ public class CjPsiNodeCreateUtils {
         nodeMap.put(CharParser.RULE_equalityOperator, CJEqualityOperator::new);
         nodeMap.put(CharParser.RULE_flowOperator, CJFlowOperator::new);
         nodeMap.put(CharParser.RULE_shiftingOperator, CJShiftingOperator::new);
+        nodeMap.put(CharParser.RULE_multiplicativeOperator, CJMultiplicativeOperator::new);
     }
 
     private void initOtherNode() {
@@ -258,6 +261,7 @@ public class CjPsiNodeCreateUtils {
         nodeMap.put(CharParser.RULE_userType, CjUserType::new);
         nodeMap.put(CharParser.RULE_leftAuxExpression, CjLeftAuxExpression::new);
         nodeMap.put(CharParser.RULE_fieldAccess, CjFieldAccess::new);
+        nodeMap.put(CharParser.RULE_indexAccess, CjIndexAccess::new);
         nodeMap.put(CharParser.RULE_itemAfterQuest, CjItemAfterQuest::new);
         nodeMap.put(CharParser.RULE_lambdaExpression, CjLambdaExpression::new);
         nodeMap.put(CharParser.RULE_varBindingPattern, CjVarBindingPattern::new);

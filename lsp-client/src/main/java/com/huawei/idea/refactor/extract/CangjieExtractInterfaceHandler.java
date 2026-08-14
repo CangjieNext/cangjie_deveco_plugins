@@ -9,6 +9,21 @@
 package com.huawei.idea.refactor.extract;
 
 import com.huawei.idea.edit.CangjieEditorEventManager;
+import com.huawei.idea.language.psi.CangjieBaseNode;
+import com.huawei.idea.language.psi.importnode.CjImportList;
+import com.huawei.idea.language.psi.othersnode.CjIdentifier;
+import com.huawei.idea.language.psi.toplevel.functionnode.CjFunctionDefinition;
+import com.huawei.idea.lsp.utils.CangjiePsiUtils;
+import com.huawei.idea.language.psi.toplevel.classnode.CjClassBody;
+import com.huawei.idea.language.psi.toplevel.classnode.CjClassDefinition;
+import com.huawei.idea.language.psi.toplevel.enumnode.CjEnumBody;
+import com.huawei.idea.language.psi.toplevel.enumnode.CjEnumDefinition;
+import com.huawei.idea.language.psi.toplevel.extendnode.CjExtendBody;
+import com.huawei.idea.language.psi.toplevel.extendnode.CjExtendDefinition;
+import com.huawei.idea.language.psi.toplevel.interfacenode.CjInterfaceBody;
+import com.huawei.idea.language.psi.toplevel.interfacenode.CjInterfaceDefinition;
+import com.huawei.idea.language.psi.toplevel.structnode.CjStructBody;
+import com.huawei.idea.language.psi.toplevel.structnode.CjStructDefinition;
 import com.huawei.idea.refactor.RefactorBaseHandler;
 import com.huawei.idea.refactor.extract.dialog.CangjieExtractInterfaceDialog;
 
@@ -32,6 +47,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.light.LightElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.usageView.UsageInfo;
 
 import org.eclipse.lsp4j.CodeAction;
@@ -44,11 +60,10 @@ import org.wso2.lsp4intellij.editor.EditorEventManagerBase;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.Objects;
 
 /**
  * ExtractInterfaceHandler handles the action triggering mechanisms and pipeline lifecycle
@@ -70,14 +85,12 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
             "Extract interface is only supported for classes, structs, interfaces, enums, and extends.";
     private static final String MSG_EMPTY_MEMBERS =
             "Cannot extract an interface because the selected type has no extractable members.";
-
-    private static final Set<String> SUPPORTED_TYPE_BODY_NAMES = new HashSet<>(Arrays.asList(
-            "CjClassBody", "CjStructBody", "CjInterfaceBody", "CjEnumBody", "CjExtendBody"
-    ));
-    private static final Set<String> SUPPORTED_TYPE_DEFINITION_NAMES = new HashSet<>(Arrays.asList(
-            "CjClassDefinition", "CjStructDefinition", "CjInterfaceDefinition", "CjEnumDefinition",
-            "CjExtendDefinition", "CjExtend"
-    ));
+    private static final String MSG_TARGET_NAME_CONFLICT =
+            "Directory %s already contains %s named %s";
+    private static final String MSG_CIRCULAR_DEPENDENCY =
+            "Cannot extract interface due to circular dependency.";
+    private static final String MSG_MACRO_NOT_SUPPORTED =
+            "Cannot extract interface because the selected type contains macro.";
 
     /**
      * Error mapping constants to localized notification strings.
@@ -112,6 +125,9 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file,
                        @Nullable com.intellij.openapi.actionSystem.DataContext dataContext) {
+        if (file == null || editor == null) {
+            return;
+        }
         CangjieCodeBlock codeBlock = new CangjieCodeBlock(project, editor);
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
@@ -123,6 +139,22 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
             }
             start = fullTypeRange[0];
             end = fullTypeRange[1];
+        }
+
+        PsiElement psiElement = file.findElementAt(editor.getCaretModel().getOffset());
+        CangjieBaseNode parent = PsiTreeUtil.getParentOfType(psiElement, CjClassDefinition.class,
+            CjStructDefinition.class, CjEnumDefinition.class,
+            CjExtendDefinition.class, CjInterfaceDefinition.class);
+        for (CjFunctionDefinition cjFunctionDefinition
+                : Objects.requireNonNull(PsiTreeUtil.findChildrenOfType(parent, CjFunctionDefinition.class))) {
+            if (hasMacroInType(cjFunctionDefinition)) {
+                reportError(codeBlock, MSG_MACRO_NOT_SUPPORTED);
+                return;
+            }
+        }
+        if (hasMacroInType(psiElement)) {
+            reportError(codeBlock, MSG_MACRO_NOT_SUPPORTED);
+            return;
         }
 
         try {
@@ -185,6 +217,11 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
             return;
         }
 
+        if (checkCircularDependency(dialog, sourceType, psiFile, memberInfos)) {
+            reportError(codeBlock, MSG_CIRCULAR_DEPENDENCY);
+            return;
+        }
+
         JsonObject extraOptions = new JsonObject();
         boolean renameOriginalClass = dialog.isRenameOriginalClassAndUseInterfaceWherePossible();
         if (renameOriginalClass) {
@@ -196,6 +233,20 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
         String dotPackageName = dialog.getTargetPackageName();
         String absolutePath = calculateAbsolutePath(project, editor, dotPackageName);
         extraOptions.addProperty("targetPath", absolutePath);
+
+        Optional<PsiElement> sourceTypeDefinition = findEnclosingTypeDefinition(sourceType);
+        Optional<CangjiePsiUtils.TypeNameConflict> conflict = CangjiePsiUtils.findTargetNameConflict(
+            project, absolutePath, dialog.getInterfaceName(),
+            renameOriginalClass ? sourceTypeDefinition.orElse(null) : null);
+        if (conflict.isEmpty() && renameOriginalClass) {
+            conflict = CangjiePsiUtils.findTargetNameConflict(project, absolutePath,
+                dialog.getImplementationClassName(), null);
+        }
+        if (conflict.isPresent()) {
+            reportError(codeBlock, String.format(MSG_TARGET_NAME_CONFLICT,
+                    absolutePath, conflict.get().typeName(), conflict.get().targetName()));
+            return;
+        }
 
         JsonArray members = new JsonArray();
         dialog.getSelectedMemberInfos().forEach(member -> members.add(member.getSignature()));
@@ -210,7 +261,7 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
             return;
         }
 
-        Optional<PsiElement> previewSourceElement = findEnclosingTypeDefinition(sourceType);
+        Optional<PsiElement> previewSourceElement = sourceTypeDefinition;
         if (previewSourceElement.isEmpty()) {
             previewSourceElement = Optional.of(psiFile);
         }
@@ -238,6 +289,73 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
             return;
         }
         previewProcessor.run();
+    }
+
+    private boolean checkCircularDependency(CangjieExtractInterfaceDialog dialog, PsiElement sourceType,
+                                          PsiFile psiFile, List<CangjieMemberInfo> memberInfos) {
+        String dotPackageName = dialog.getTargetPackageName();
+        boolean isDefaultPackage = dotPackageName != null
+            && dotPackageName.trim().isEmpty();
+        if (isDefaultPackage) {
+            return false;
+        }
+        Optional<PsiElement> sourceTypeDefinition = findEnclosingTypeDefinition(sourceType);
+        if (sourceTypeDefinition.isEmpty()) {
+            return false;
+        }
+        final String finalHostName = getFinalHostName(sourceTypeDefinition.get());
+
+        return dialog.getSelectedMemberInfos().stream()
+            .anyMatch(member -> {
+                String sig = member.getSignature();
+                if (sig == null) {
+                    return false;
+                }
+                String trimmedSig = sig.trim();
+
+                // 1: 如果子类和当前类在同一个包，而且会新建一个子包的接口，就会产生循环依赖
+                if (trimmedSig.startsWith("<:") && isSamePackage(psiFile, trimmedSig)) {
+                    return true;
+                }
+
+                // 2: 方法的参数或返回值强类型依赖了当前宿主自身类型(例如 distance(other: Point))
+                if (!finalHostName.isEmpty()) {
+                    String regex = ".*\\b" + Pattern.quote(finalHostName) + "\\b.*";
+                    return trimmedSig.matches(regex);
+                }
+                return false;
+            });
+    }
+
+    private static boolean isSamePackage(PsiFile psiFile, String trimmedSig) {
+        CjImportList[] cjImportLists = PsiTreeUtil.getChildrenOfType(psiFile, CjImportList.class);
+        if (cjImportLists == null) {
+            return true;
+        }
+
+        for (CjImportList cjImport : cjImportLists) {
+            CjIdentifier type = PsiTreeUtil.getChildOfAnyType(cjImport, CjIdentifier.class);
+            if (type == null) {
+                continue;
+            }
+            if (trimmedSig.replace("<:", "").equals(type.getText())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static String getFinalHostName(PsiElement sourceTypeDefinition) {
+        String hostTypeName;
+        switch (sourceTypeDefinition) {
+            case CjClassDefinition cjClassDefinition -> hostTypeName = cjClassDefinition.getName();
+            case CjStructDefinition cjStructDefinition -> hostTypeName = cjStructDefinition.getName();
+            case CjInterfaceDefinition cjInterfaceDefinition -> hostTypeName = cjInterfaceDefinition.getName();
+            case CjEnumDefinition cjEnumDefinition -> hostTypeName = cjEnumDefinition.getName();
+            case CjExtendDefinition cjExtendDefinition -> hostTypeName = cjExtendDefinition.getName();
+            default -> hostTypeName = "";
+        }
+        return (hostTypeName != null) ? hostTypeName.trim() : "";
     }
 
     private void executeRefactorCommandDirectly(CangjieEditorEventManager manager, Command command) {
@@ -329,11 +447,25 @@ public class CangjieExtractInterfaceHandler extends RefactorBaseHandler {
     }
 
     private boolean isSupportedTypeBody(PsiElement element) {
-        return element != null && SUPPORTED_TYPE_BODY_NAMES.contains(element.getClass().getSimpleName());
+        if (element == null) {
+            return false;
+        }
+        return element instanceof CjClassBody
+                || element instanceof CjStructBody
+                || element instanceof CjInterfaceBody
+                || element instanceof CjEnumBody
+                || element instanceof CjExtendBody;
     }
 
     private boolean isSupportedTypeDefinition(PsiElement element) {
-        return element != null && SUPPORTED_TYPE_DEFINITION_NAMES.contains(element.getClass().getSimpleName());
+        if (element == null) {
+            return false;
+        }
+        return element instanceof CjClassDefinition
+                || element instanceof CjStructDefinition
+                || element instanceof CjInterfaceDefinition
+                || element instanceof CjEnumDefinition
+                || element instanceof CjExtendDefinition;
     }
 
     /**

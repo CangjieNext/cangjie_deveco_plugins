@@ -192,22 +192,7 @@ public class ExtendLanguageClient extends DefaultLanguageClient {
     @Override
     public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(@NotNull ApplyWorkspaceEditParams params) {
         CompletableFuture<Boolean> response = ExtendWorkspaceEditHandler.applyEdit(params.getEdit());
-        return response.thenApply(result -> {
-            ApplyWorkspaceEditResponse editResponse = new ApplyWorkspaceEditResponse(result);
-
-            // 在applyEdit成功后触发格式化
-            if (result) {
-                ApplicationManager.getApplication().invokeAndWait(() -> {
-                    if (params.getEdit() == null || params.getEdit().getChanges() == null
-                            || params.getEdit().getChanges().isEmpty()) {
-                        return;
-                    }
-                    refactorFormatCode(params.getEdit());
-                });
-            }
-
-            return editResponse;
-        });
+        return response.thenApply(result -> new ApplyWorkspaceEditResponse(result));
     }
 
     /**

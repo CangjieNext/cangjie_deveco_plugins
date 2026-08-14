@@ -15,6 +15,7 @@ import com.huawei.idea.trace.TraceUtils;
 
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -72,17 +73,23 @@ public class CangjieGotoDeclaration extends GotoDeclarationHandlerBase {
     @Nullable
     private PsiElement turnLocation2PsiElement(Location location, Editor editor) {
         String uri = location.getUri();
+        String filePath;
         try {
-            String filePath = (new URI(uri)).getPath();
-            if (filePath == null) {
-                return null;
-            }
+            filePath = (new URI(uri)).getPath();
+        } catch (URISyntaxException e) {
+            LOG.warn("URI syntax exception");
+            return null;
+        }
+        if (filePath == null) {
+            return null;
+        }
+        Project project = editor.getProject();
+        if (project == null) {
+            return null;
+        }
+        return ReadAction.compute(() -> {
             VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByPath(filePath);
             if (virtualFile == null) {
-                return null;
-            }
-            Project project = editor.getProject();
-            if (project == null) {
                 return null;
             }
             PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
@@ -93,10 +100,7 @@ public class CangjieGotoDeclaration extends GotoDeclarationHandlerBase {
             Position start = location.getRange().getStart();
             int elementOffset = document.getLineStartOffset(start.getLine()) + start.getCharacter();
             return psiFile.findElementAt(elementOffset);
-        } catch (URISyntaxException e) {
-            LOG.warn("URI syntax exception");
-            return null;
-        }
+        });
     }
 
     /**

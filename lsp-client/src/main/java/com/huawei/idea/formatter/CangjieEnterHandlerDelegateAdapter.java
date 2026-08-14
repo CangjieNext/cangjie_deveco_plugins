@@ -20,6 +20,7 @@ import com.huawei.idea.language.psi.operatornode.CJConditionOperator;
 import com.huawei.idea.language.psi.operatornode.CJEqualityOperator;
 import com.huawei.idea.language.psi.operatornode.CJFlowOperator;
 import com.huawei.idea.language.psi.operatornode.CJShiftingOperator;
+import com.huawei.idea.language.psi.operatornode.CJMultiplicativeOperator;
 import com.huawei.idea.language.psi.othersnode.CjEnd;
 import com.huawei.idea.language.psi.othersnode.CjPostfixExpression;
 import com.huawei.idea.language.psi.toplevel.classnode.CjClassMemberDeclaration;
@@ -88,7 +89,7 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
             CjPropertyMemberDeclaration.class, CjForeignMemberDeclaration.class);
     private static final Set<Class<?>> OPERATOR_PSI_NODES = Set.of(CJAdditiveOperator.class,
             CJAssignmentOperator.class, CJComparisonOperator.class, CJConditionOperator.class,
-            CJEqualityOperator.class, CJFlowOperator.class, CJShiftingOperator.class);
+            CJEqualityOperator.class, CJFlowOperator.class, CJShiftingOperator.class, CJMultiplicativeOperator.class);
 
     @Override
     public Result postProcessEnter(@NotNull PsiFile file, @NotNull Editor editor, @NotNull DataContext dataContext) {

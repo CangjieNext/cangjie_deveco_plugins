@@ -135,6 +135,26 @@ public class CjPsiUtils {
     }
 
     /**
+     * 从残缺的PsiElement中得到最原始的PsiElement
+     *
+     * @param element 残缺信息的element
+     * @return 原始的PsiElement
+     */
+    public static PsiElement getOriginalPsiElement(PsiElement element) {
+        if (element.getTextRange() != null) {
+            PsiFile containingFile = element.getContainingFile();
+            if (containingFile != null) {
+                int offset = element.getTextRange().getStartOffset();
+                PsiElement found = containingFile.findElementAt(offset);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return element;
+    }
+
+    /**
      * get valid next token
      *
      * @param element target element

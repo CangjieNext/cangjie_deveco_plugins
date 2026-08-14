@@ -46,6 +46,7 @@ import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.codeInsight.template.impl.TemplateImpl;
 import com.intellij.codeInsight.template.impl.TextExpression;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -120,6 +121,7 @@ import org.eclipse.lsp4j.jsonrpc.ResponseErrorException;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.messages.Either3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.wso2.lsp4intellij.client.languageserver.ServerOptions;
 import org.wso2.lsp4intellij.client.languageserver.requestmanager.RequestManager;
 import org.wso2.lsp4intellij.client.languageserver.wrapper.LanguageServerWrapper;
@@ -159,7 +161,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 /**
@@ -312,12 +313,18 @@ public class CangjieEditorEventManager extends EditorEventManager {
             TextAttributes textAttributes = editor.getColorsScheme().getAttributes(SELECTION);
             int currentOffset = editor.getCaretModel().getOffset();
             LSPThreadPoolManager.pool(() -> {
-                PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-                if (psiFile != null) {
-                    PsiElement preEle = psiFile.findElementAt(currentOffset - 1);
-                    if (preEle != null && INVALID_TOKENS.contains(preEle.getText())) {
-                        return;
+                boolean shouldReturn = ReadAction.computeBlocking(() -> {
+                    PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
+                    if (psiFile != null) {
+                        PsiElement preEle = psiFile.findElementAt(currentOffset - 1);
+                        if (preEle != null && INVALID_TOKENS.contains(preEle.getText())) {
+                            return true;
+                        }
                     }
+                    return false;
+                });
+                if (shouldReturn) {
+                    return;
                 }
                 Position position = DocumentUtils.offsetToLSPPos(editor, currentOffset);
                 DocumentHighlightParams params = new DocumentHighlightParams(getIdentifier(), position);
@@ -443,31 +450,31 @@ public class CangjieEditorEventManager extends EditorEventManager {
      * @return completion result
      */
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completionAsync(Position pos) {
-        CompletableFuture<Either<List<CompletionItem>, CompletionList>> request =
-                this.requestManager.completion(new CompletionParams(super.getIdentifier(), pos));
-        if (request == null) {
-            return new CompletableFuture<>();
-        }
-        this.completionDataHandler.reset();
-        try {
-            CompletableFuture<Either<List<CompletionItem>, CompletionList>> promise = new CompletableFuture<>();
-            LSPThreadPoolManager.pool(() -> promise.complete(request.get(TIME_COMPLETION, TimeUnit.MILLISECONDS)));
-            promise.completeAsync(() -> {
+        CompletableFuture<Either<List<CompletionItem>, CompletionList>> promise = new CompletableFuture<>();
+        LSPThreadPoolManager.pool(() -> {
+            try {
+                CompletableFuture<Either<List<CompletionItem>, CompletionList>> request =
+                        this.requestManager.completion(new CompletionParams(super.getIdentifier(), pos));
+                if (request == null) {
+                    promise.complete(null);
+                    return;
+                }
+                this.completionDataHandler.reset();
                 try {
-                    return request.get(TIME_COMPLETION, TimeUnit.MILLISECONDS);
+                    promise.complete(request.get(TIME_COMPLETION, TimeUnit.MILLISECONDS));
                 } catch (InterruptedException | ExecutionException | TimeoutException e) {
                     timeoutCrashCheck(requestManager);
-                    return null;
+                    promise.complete(null);
                 }
-            });
-            return promise;
-        } catch (JsonRpcException var8) {
-            LOG.warn("Completion error");
-            this.wrapper.crashed(var8);
-            TraceUtils.trace(TraceUtils.Action.LSP_CRASH);
-            CrashLogPackager.packageLogFiles();
-            return new CompletableFuture<>();
-        }
+            } catch (JsonRpcException var8) {
+                LOG.warn("Completion error");
+                this.wrapper.crashed(var8);
+                TraceUtils.trace(TraceUtils.Action.LSP_CRASH);
+                CrashLogPackager.packageLogFiles();
+                promise.complete(null);
+            }
+        });
+        return promise;
     }
 
     /**

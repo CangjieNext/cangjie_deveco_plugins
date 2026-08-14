@@ -13,16 +13,12 @@ import com.huawei.idea.refactor.extract.CangjieMemberInfo;
 import com.huawei.idea.refactor.extract.CangjieMemberSelectionPanel;
 
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileChooser.FileChooser;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
@@ -30,6 +26,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.refactoring.BaseRefactoringProcessor;
 import com.intellij.refactoring.extractSuperclass.ExtractSuperBaseDialog;
 import com.intellij.ui.EditorComboBox;
+import com.intellij.ui.RecentsManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -111,6 +108,12 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
     protected ComponentWithBrowseButton<EditorComboBox> createPackageNameField() {
         EditorComboBox comboBox = new EditorComboBox("");
 
+        List<String> recentEntries = RecentsManager.getInstance(myProject)
+            .getRecentEntries(getDestinationPackageRecentKey());
+        if (recentEntries != null && !recentEntries.isEmpty()) {
+            comboBox.setHistory(recentEntries.toArray(new String[0]));
+        }
+
         return new ComponentWithBrowseButton<>(comboBox, e -> {
             VirtualFile currentFile = FileDocumentManager.getInstance().getFile(myEditor.getDocument());
             Module module = (currentFile != null) ? ModuleUtil.findModuleForFile(currentFile, myProject) : null;
@@ -118,23 +121,19 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
 
             VirtualFile rootDir = (moduleRoot != null) ? moduleRoot.findFileByRelativePath("src/main/cangjie") : null;
             if (rootDir == null) {
-                rootDir = (moduleRoot != null) ? moduleRoot : myProject.getBaseDir();
+                return;
             }
 
-            FileChooserDescriptor descriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
-            descriptor.setRoots(rootDir);
-            descriptor.setShowFileSystemRoots(false);
-            descriptor.withTreeRootVisible(true);
-            descriptor.setTitle("Select Target Package");
+            String currentPackage = comboBox.getText().trim();
+            String initialPath = currentPackage.isEmpty() ? null : currentPackage.replace('.', '/');
 
-            VirtualFile selectedFile = FileChooser.chooseFile(descriptor, myProject, rootDir);
-            if (selectedFile != null) {
-                String displayText;
-                String relativePath = VfsUtil.getRelativePath(selectedFile, rootDir, '/');
-                displayText = (relativePath != null) ? relativePath.replace('/', '.') : selectedFile.getName();
-
-                comboBox.setText(displayText);
-                updateSourceClassText(displayText);
+            CangjiePackageChooserDialog chooserDialog =
+                new CangjiePackageChooserDialog(myProject, rootDir, initialPath);
+            if (chooserDialog.showAndGet()) {
+                String relativePath = chooserDialog.getSelectedRelativePath();
+                String packageName = relativePath.replace('/', '.');
+                comboBox.setText(packageName);
+                updateSourceClassText(packageName);
             }
         });
     }
@@ -183,22 +182,6 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
         }
         if (trimmedName.equals(mySourceClassName)) {
             return CangjieBundle.message("lsp.refactor.extract.interface.name.conflict");
-        }
-
-        String targetInterfaceName = isRenameOriginalClassAndUseInterfaceWherePossible()
-                ? mySourceClassName : trimmedName;
-        PsiDirectory targetDir = getTargetDirectory();
-        if (targetDir != null) {
-            String fileName = targetInterfaceName + ".cj";
-            PsiElement conflictFile = targetDir.findFile(fileName);
-
-            if (conflictFile != null) {
-                return CangjieBundle.message(
-                        "lsp.refactor.extract.interface.file.exists",
-                        fileName,
-                        targetDir.getVirtualFile().getPath()
-                );
-            }
         }
 
         return null;
@@ -296,11 +279,8 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
             return;
         }
         String currentName = myInterfaceNameField.getText().trim();
-        if (myRenameOriginalMode) {
-            myImplementationClassName = currentName;
-        } else {
-            myInterfaceName = currentName;
-        }
+        myInterfaceName = currentName;
+        myImplementationClassName = currentName;
     }
 
     private void syncNameFieldForCurrentMode() {

@@ -52,6 +52,11 @@ public class CangjieIntroduceFieldHandler extends RefactorBaseHandler {
     private static final int ERROR_INVALID_CODE_SEGMENT = 4;
     private static final int ERROR_INVALID_SCOPE = 5;
     private static final int ERROR_INVALID_TYPE = 6;
+    private static final int ERROR_INVALID_CONST_INITIALIZER = 7;
+    private static final int ERROR_INVALID_LET_PATTERN_DESTRUCTOR = 8;
+    private static final int ERROR_IMMUTABLE_STRUCT_MEMBER_FIELD_ASSIGNMENT = 9;
+    private static final int ERROR_INVALID_COMPOUND_ASSIGNMENT = 10;
+    private static final int ERROR_MEMBER_ASSIGN_IN_CONSTRUCTOR = 11;
 
     private static final Map<Integer, String> ERROR_CODE_MAP = new HashMap<>() {
         {
@@ -60,6 +65,15 @@ public class CangjieIntroduceFieldHandler extends RefactorBaseHandler {
             put(ERROR_INVALID_CODE_SEGMENT, "The selected expression cannot be refactored.");
             put(ERROR_INVALID_SCOPE, "Introduce field is only supported inside class or struct member functions.");
             put(ERROR_INVALID_TYPE, "Cannot infer the selected expression type.");
+            put(ERROR_INVALID_CONST_INITIALIZER,
+                    "Cannot introduce field from a const initializer because it must remain a compile-time "
+                    + "constant expression.");
+            put(ERROR_INVALID_LET_PATTERN_DESTRUCTOR,
+                    "Cannot introduce field from a let pattern condition because it is not a standalone expression.");
+            put(ERROR_IMMUTABLE_STRUCT_MEMBER_FIELD_ASSIGNMENT, "Cannot introduce field in immutable struct function.");
+            put(ERROR_INVALID_COMPOUND_ASSIGNMENT, "Cannot introduce field from a compound assignment expression.");
+            put(ERROR_MEMBER_ASSIGN_IN_CONSTRUCTOR,
+                    "Cannot introduce field because selected is a member-assign expression in constructor.");
         }
     };
 
@@ -81,9 +95,18 @@ public class CangjieIntroduceFieldHandler extends RefactorBaseHandler {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file, @Nullable DataContext dataContext) {
+        if (file == null || editor == null) {
+            return;
+        }
         CangjieCodeBlock codeBlock = new CangjieCodeBlock(project, editor);
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
+        PsiElement psiElement = file.findElementAt(editor.getCaretModel().getOffset());
+        if (hasMacroInType(psiElement)) {
+            reportError(codeBlock,
+                "Cannot introduce field because the selected type contains macro.");
+            return;
+        }
         executeCodeAction(editor, codeBlock, start, end);
     }
 
@@ -166,7 +189,7 @@ public class CangjieIntroduceFieldHandler extends RefactorBaseHandler {
         while (true) {
             String value = Messages.showInputDialog(project, message, title, null, defaultValue, null);
             if (value == null) {
-                return "";
+                return null;
             }
             String trimmed = value.trim();
             if (CANGJIE_IDENTIFIER_PATTERN.matcher(trimmed).matches()) {

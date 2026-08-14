@@ -29,6 +29,7 @@ import com.huawei.idea.language.psi.toplevel.structnode.CjStructDefinition;
 import com.huawei.idea.language.psi.toplevel.variabledeclaration.CjVariableDeclaration;
 import com.huawei.idea.lsp.utils.CangJieLanguage;
 import com.huawei.idea.syntaxhighlighter.CangjieSyntaxHighlighter;
+import com.huawei.ace.utils.MarkdownProcessor;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.application.ReadAction;
@@ -48,14 +49,12 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.data.MutableDataSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.util.Arrays;
@@ -98,7 +97,7 @@ public class CangjieHoverHandler {
         String markdown = normalizeLineSeparator(content.getValue());
         Matcher matcher = CODE_FENCE_PATTERN.matcher(markdown);
         if (!matcher.find()) {
-            return "<html>" + renderMarkdown(markdown) + "</html>";
+            return "<html>" + renderMarkdown(project, markdown) + "</html>";
         }
 
         String declareInfo = markdown.substring(0, matcher.start()).trim();
@@ -107,11 +106,11 @@ public class CangjieHoverHandler {
 
         StringBuilder result = new StringBuilder("<html>");
         if (!declareInfo.isEmpty()) {
-            result.append(renderMarkdown(declareInfo));
+            result.append(renderMarkdown(project, declareInfo));
         }
         result.append(renderCodeContent(codeContent, project));
         if (!comments.isEmpty()) {
-            result.append(renderMarkdown(comments));
+            result.append(renderMarkdown(project, comments));
         }
         result.append("</html>");
         return result.toString();
@@ -153,11 +152,8 @@ public class CangjieHoverHandler {
                 + renderedApiLevelInfo;
     }
 
-    private static String renderMarkdown(String markdown) {
-        MutableDataSet options = new MutableDataSet();
-        Parser parser = Parser.builder(options).build();
-        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
-        return renderer.render(parser.parse(markdown));
+    private static String renderMarkdown(@NotNull Project project, String markdown) {
+        return MarkdownProcessor.toHtml(project, markdown);
     }
 
     private static String normalizeLineSeparator(String text) {

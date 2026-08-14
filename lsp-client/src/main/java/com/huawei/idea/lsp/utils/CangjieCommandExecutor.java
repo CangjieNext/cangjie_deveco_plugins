@@ -18,7 +18,9 @@ import static com.huawei.idea.lsp.utils.LspConfigUtils.WIN_BAT_OPTION;
 import com.huawei.cangjie.projectmgmt.utils.CangjieEnvUtils;
 import com.huawei.deveco.projectmgmt.ohos.utils.CommonProjectUtil;
 import com.huawei.deveco.projectmodel.ohos.model.ProjectModel;
+import com.huawei.idea.notification.NotificationUtil;
 
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -91,16 +93,55 @@ public class CangjieCommandExecutor {
             return commands;
         }
         boolean isMac = LspConfigUtils.isMac();
-        commands.add(isMac ? MAC_BASH : WIN_BAT);
-        commands.add(isMac ? MAC_BASH_OPTION : WIN_BAT_OPTION);
-        String batPath = isMac ? Paths.get(sdkPath, "build-tools", "envsetup.sh").toString()
-                : Paths.get(sdkPath, "build-tools", "envsetup.bat").toString();
+        String envSetupPath = Paths.get(
+            sdkPath,
+            "build-tools",
+            isMac ? "envsetup.sh" : "envsetup.bat"
+        ).toString();
         if (isMac) {
-            commands.add("source " + "\"" + batPath + "\"" + "&&" + command);
+            commands.add(MAC_BASH);
+            commands.add(MAC_BASH_OPTION);
+            commands.add("source " + quoteForZsh(project, envSetupPath) + " && " + command);
         } else {
-            commands.add("\"" + "\"" + batPath + "\"" + "&&" + command + "\"");
+            commands.add(WIN_BAT);
+            commands.add(WIN_BAT_OPTION);
+            commands.add("\"" + quoteForCmdPath(project, envSetupPath) + " && " + command + "\"");
         }
         return commands;
+    }
+
+    /**
+     * Quote a string for safe use in zsh/bash single-quoted context
+     *
+     * @param project Project
+     * @param value the string to quote
+     * @return the quoted string
+     */
+    public static String quoteForZsh(@Nullable Project project, @NotNull String value) {
+        checkNoNul(project, value);
+        return "'" + value.replace("'", "'\\''") + "'";
+    }
+
+    private static String quoteForCmdPath(@Nullable Project project, @NotNull String value) {
+        checkNoNul(project, value);
+
+        if (value.indexOf('"') >= 0
+                || value.indexOf('%') >= 0
+                || value.indexOf('\r') >= 0
+                || value.indexOf('\n') >= 0) {
+            String exception = "Unsafe SDK path: " + value;
+            NotificationUtil.notifyInfo(exception, project, NotificationType.WARNING);
+            throw new IllegalArgumentException(exception);
+        }
+        return "\"" + value + "\"";
+    }
+
+    private static void checkNoNul(@Nullable Project project, @NotNull String value) {
+        if (value.indexOf('\0') >= 0) {
+            String exception = "Unsafe SDK path contains NUL";
+            NotificationUtil.notifyInfo(exception, project, NotificationType.WARNING);
+            throw new IllegalArgumentException(exception);
+        }
     }
 
     /**

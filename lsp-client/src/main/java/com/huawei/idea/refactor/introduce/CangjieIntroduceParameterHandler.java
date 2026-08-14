@@ -29,10 +29,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.wso2.lsp4intellij.editor.EditorEventManagerBase;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -50,6 +50,10 @@ public class CangjieIntroduceParameterHandler extends RefactorBaseHandler {
     private static final int ERROR_INVALID_CODE_SEGMENT = 4;
     private static final int ERROR_INVALID_SCOPE = 5;
     private static final int ERROR_INVALID_TYPE = 6;
+    private static final int ERROR_PUBLIC_DECL_USES_NON_PUBLIC_TYPE = 7;
+    private static final int ERROR_MEMBER_ASSIGN_IN_CONSTRUCTOR = 8;
+    private static final int ERROR_INVALID_CONST_INITIALIZER = 9;
+    private static final int ERROR_INVALID_LET_PATTERN_DESTRUCTOR = 10;
 
     /**
      * Error mapping constants to localized notification strings.
@@ -59,7 +63,16 @@ public class CangjieIntroduceParameterHandler extends RefactorBaseHandler {
             ERROR_INVALID_EXPR, "The selected range is not a valid expression.",
             ERROR_INVALID_CODE_SEGMENT, "The selected expression cannot be refactored.",
             ERROR_INVALID_SCOPE, "Introduce parameter is only supported inside function bodies.",
-            ERROR_INVALID_TYPE, "Cannot infer the selected expression type."
+            ERROR_INVALID_TYPE, "Cannot infer the selected expression type.",
+            ERROR_PUBLIC_DECL_USES_NON_PUBLIC_TYPE,
+                "Cannot introduce parameter because a public declaration cannot use a non-public type.",
+            ERROR_MEMBER_ASSIGN_IN_CONSTRUCTOR,
+                "Cannot introduce parameter because selected is a member-assign expression in constructor.",
+            ERROR_INVALID_CONST_INITIALIZER,
+                "Cannot introduce parameter from a const initializer because it must remain a compile-time "
+                    + "constant expression",
+            ERROR_INVALID_LET_PATTERN_DESTRUCTOR,
+                "Cannot introduce parameter from a let pattern condition because it is not a standalone expression."
     );
 
     /**
@@ -85,9 +98,17 @@ public class CangjieIntroduceParameterHandler extends RefactorBaseHandler {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file,
                        @Nullable com.intellij.openapi.actionSystem.DataContext dataContext) {
+        if (file == null || editor == null) {
+            return;
+        }
         CangjieCodeBlock codeBlock = new CangjieCodeBlock(project, editor);
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
+        PsiElement psiElement = file.findElementAt(editor.getCaretModel().getOffset());
+        if (hasMacroInType(psiElement)) {
+            reportError(codeBlock, "Cannot introduce parameter because the selected type contains macro.");
+            return;
+        }
         executeCodeAction(editor, codeBlock, start, end);
     }
 
@@ -123,7 +144,7 @@ public class CangjieIntroduceParameterHandler extends RefactorBaseHandler {
         extraOptions.addProperty("suggestName", parameterName);
 
         if (command.getArguments() != null && !command.getArguments().isEmpty()) {
-            JsonObject newProperty = com.google.gson.JsonParser
+            JsonObject newProperty = JsonParser
                     .parseString(command.getArguments().get(0).toString())
                     .getAsJsonObject();
 
@@ -192,7 +213,7 @@ public class CangjieIntroduceParameterHandler extends RefactorBaseHandler {
         while (true) {
             String value = Messages.showInputDialog(project, message, title, null, defaultValue, null);
             if (value == null) {
-                return "";
+                return null;
             }
             String trimmed = value.trim();
             if (CANGJIE_IDENTIFIER_PATTERN.matcher(trimmed).matches()) {

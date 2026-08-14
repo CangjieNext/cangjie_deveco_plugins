@@ -30,6 +30,7 @@ import com.huawei.idea.lsp.utils.LanguageManager;
 
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesOptions;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.ReadActionProcessor;
 import com.intellij.openapi.diagnostic.Logger;
@@ -38,6 +39,7 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -57,24 +59,23 @@ import org.wso2.lsp4intellij.client.languageserver.wrapper.LanguageServerWrapper
 import org.wso2.lsp4intellij.contributors.navigation.GotoDeclaration;
 import org.wso2.lsp4intellij.editor.EditorEventManager;
 import org.wso2.lsp4intellij.editor.EditorEventManagerBase;
-import org.wso2.lsp4intellij.utils.ApplicationUtils;
 import org.wso2.lsp4intellij.utils.DocumentUtils;
 import org.wso2.lsp4intellij.utils.FileUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * CangjieFindUsagesHandler
@@ -153,24 +154,41 @@ public class CangjieFindUsagesHandler extends FindUsagesHandler {
      * @return PsiReference collection for references of element found
      */
     public Collection<PsiReference> getReferences(PsiElement element) {
-        return ApplicationUtils.computableReadAction(() -> {
-            if ("(".equals(element.getText())) {
-                return new ArrayList<>();
-            }
+        boolean isParen = ApplicationManager.getApplication().runReadAction(
+            (Computable<Boolean>) () -> "(".equals(element.getText())
+        );
+        if (isParen) {
+            return new ArrayList<>();
+        }
 
-            Collection<PsiReference> result = new ArrayList<>(getReferencesByLsp(element));
-            Collection<PsiReference> arkTsRefResult = ReadAction.computeBlocking(() ->
-                getArkTsReferencesByLsp(element, element.getProject));
-            result.addAll(arkTsRefResult);
-            return result;
-        });
+        Collection<PsiReference> result = new ArrayList<>(getReferencesByLsp(element));
+        Collection<PsiReference> results = ReadAction.computeBlocking(() ->
+            getArkTsReferencesByLsp(element, element.getProject()));
+        result.addAll(results);
+        return result;
+    }
+
+    public Collection<PsiReference> getRefactorInterfaceReferences(PsiElement element) {
+        boolean isParen = ApplicationManager.getApplication().runReadAction(
+            (Computable<Boolean>) () -> "(".equals(element.getText())
+        );
+        if (isParen) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(getRefactorInterfaceReferencesByLsp(element));
     }
 
     private Collection<PsiReference> getArkTsReferencesByLsp(@NotNull PsiElement element, Project project) {
         Collection<PsiReference> result = Collections.emptyList();
         Editor editor = getEditor(element);
         Optional<String> libPath = getLibPath(element, project);
-        PsiElement definition = new GotoDeclaration().getGotoDeclarationTarget(element, editor);
+        PsiElement definition;
+        try {
+            definition = new GotoDeclaration().getGotoDeclarationTarget(element, editor);
+        } catch (NullPointerException e) {
+            definition = new CangjieGotoDeclaration().getGotoDeclarationTarget(element, editor);
+            LOG.warn("NullPointerException occurred while getting GotoDeclarationTarget", e);
+        }
         if (!(definition instanceof CjFunctionDefinition) && !(definition instanceof CjInterfaceDefinition)
                 && !(definition instanceof CjVariableDeclaration) || libPath.isEmpty()) {
             return result;
@@ -231,6 +249,20 @@ public class CangjieFindUsagesHandler extends FindUsagesHandler {
     }
 
     private Optional<String> getLibPath(@NotNull PsiElement element, Project project) {
+        String elementFilePath = ReadAction.compute(() -> {
+            if (!element.isValid()) {
+                return null;
+            }
+            PsiFile containingFile = element.getContainingFile();
+            if (containingFile == null) {
+                return null;
+            }
+            VirtualFile virtualFile = containingFile.getVirtualFile();
+            return virtualFile != null ? virtualFile.getPath() : null;
+        });
+        if (elementFilePath == null) {
+            return Optional.empty();
+        }
         ProjectModel projectModel = ProjectModelManager.getInstance().getTargetProjectModel(project);
         if (projectModel == null) {
             return Optional.empty();
@@ -238,12 +270,13 @@ public class CangjieFindUsagesHandler extends FindUsagesHandler {
         List<ModuleModel> moduleModels = projectModel.getModuleModelList();
         for (ModuleModel moduleModel : moduleModels) {
             String modulePath = moduleModel.getModulePath().replace("\\", "/");
-            if (element.getContainingFile().getVirtualFile().getPath().contains(modulePath)
-                    && moduleModel instanceof OhosModuleModel ohosModuleModel) {
+            if (elementFilePath.contains(modulePath) && moduleModel instanceof OhosModuleModel ohosModuleModel) {
+                packageName = ReadAction.computeBlocking(() ->
+                    extractPackageNameFromElement(element, moduleModel).orElse("")
+                );
                 List<OhosDependency> dependencies = ohosModuleModel.getFinalDependencies();
                 dependencies.addAll(ohosModuleModel.getFinalDevDependencies());
                 dependencies.addAll(ohosModuleModel.getFinalDynamicDependencies());
-                packageName = extractPackageNameFromElement(element, moduleModel).orElse("");
                 String soName = String.format("lib%s.so", packageName);
                 Optional<OhosDependency> targetDependency = dependencies.stream()
                         .filter(custom -> soName.equals(custom.getName()))
@@ -256,26 +289,32 @@ public class CangjieFindUsagesHandler extends FindUsagesHandler {
 
     @Nullable
     private Editor getEditor(@NotNull PsiElement element) {
-        PsiFile psiFile;
-        try {
-            psiFile = element.getContainingFile();
-        } catch (PsiInvalidElementAccessException e) {
-            LOG.warn("Get psiElement's containingFile error: {}", e);
-            return null;
-        }
-        VirtualFile virtualFile = Optional.ofNullable(psiFile).map(PsiFile::getVirtualFile)
-                .orElse(null);
-        if (virtualFile == null) {
-            return null;
-        }
-        FileEditor selectedEditor = FileEditorManager.getInstance(element.getProject()).getSelectedEditor(virtualFile);
-        if (selectedEditor != null) {
-            return selectedEditor instanceof TextEditor textEditor ? textEditor.getEditor() : null;
-        }
-        return Arrays.stream(FileEditorManager.getInstance(element.getProject()).getAllEditors())
-                .filter(fileEditor -> virtualFile.equals(fileEditor.getFile())).findFirst()
-                .filter(fileEditor -> fileEditor instanceof TextEditor).map(fileEditor -> (TextEditor) fileEditor)
-                .map(TextEditor::getEditor).orElse(null);
+        return ReadAction.computeBlocking(() -> {
+            if (!element.isValid()) {
+                return null;
+            }
+            PsiFile psiFile;
+            try {
+                psiFile = element.getContainingFile();
+            } catch (PsiInvalidElementAccessException e) {
+                LOG.warn("Get psiElement's containingFile error: {}", e);
+                return null;
+            }
+            VirtualFile virtualFile = Optional.ofNullable(psiFile).map(PsiFile::getVirtualFile)
+                    .orElse(null);
+            if (virtualFile == null) {
+                return null;
+            }
+            FileEditor selectedEditor =
+                FileEditorManager.getInstance(element.getProject()).getSelectedEditor(virtualFile);
+            if (selectedEditor != null) {
+                return selectedEditor instanceof TextEditor textEditor ? textEditor.getEditor() : null;
+            }
+            return Arrays.stream(FileEditorManager.getInstance(element.getProject()).getAllEditors())
+                    .filter(fileEditor -> virtualFile.equals(fileEditor.getFile())).findFirst()
+                    .filter(fileEditor -> fileEditor instanceof TextEditor).map(fileEditor -> (TextEditor) fileEditor)
+                    .map(TextEditor::getEditor).orElse(null);
+        });
     }
 
     private Collection<PsiReference> getReferencesByLsp(PsiElement element) {
@@ -284,17 +323,57 @@ public class CangjieFindUsagesHandler extends FindUsagesHandler {
             return Collections.emptyList();
         }
         EditorEventManager manager = EditorEventManagerBase.forEditor(editor);
-        if (!(manager instanceof CangjieEditorEventManager)) {
+        if (!(manager instanceof CangjieEditorEventManager cangjieManager)) {
             return Collections.emptyList();
         }
-        CangjieEditorEventManager cangjieManager = (CangjieEditorEventManager) manager;
+        Integer offset = ReadAction.computeBlocking(() -> {
+            if (editor.isDisposed()) {
+                return null;
+            }
+            return editor.getCaretModel().getCurrentCaret().getOffset();
+        });
+        if (offset == null) {
+            return Collections.emptyList();
+        }
         Pair<List<PsiElement>, List<VirtualFile>> references = cangjieManager
-                .referencesForFindUsages(editor.getCaretModel().getCurrentCaret().getOffset(), false);
+            .referencesForFindUsages(offset, false);
         List<PsiElement> elements = new ArrayList<>();
-        if (references.first != null && references.second != null) {
+        if (references != null && references.first != null && references.second != null) {
             elements.addAll(references.first);
         }
-        return elements.stream().map(PsiElement::getReference).collect(Collectors.toList());
+        return ReadAction.computeBlocking(() -> elements.stream()
+            .filter(Objects::nonNull)
+            .map(PsiElement::getReference)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList()));
+    }
+
+    private Collection<PsiReference> getRefactorInterfaceReferencesByLsp(PsiElement element) {
+        Editor editor = getEditor(element);
+        if (editor == null || editor.isDisposed()) {
+            return Collections.emptyList();
+        }
+        EditorEventManager manager = EditorEventManagerBase.forEditor(editor);
+        if (!(manager instanceof CangjieEditorEventManager cangjieManager)) {
+            return Collections.emptyList();
+        }
+        int textOffset = ReadAction.computeBlocking(() -> element.isValid() ? element.getTextOffset() : -1);
+        if (textOffset == -1) {
+            return Collections.emptyList();
+        }
+
+        Pair<List<PsiElement>, List<VirtualFile>> references = cangjieManager
+            .referencesForFindUsages(textOffset, true);
+
+        List<PsiElement> elements = new ArrayList<>();
+        if (references != null && references.first != null && references.second != null) {
+            elements.addAll(references.first);
+        }
+        return ReadAction.computeBlocking(() -> elements.stream()
+            .filter(Objects::nonNull)
+            .map(PsiElement::getReference)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList()));
     }
 
     /**

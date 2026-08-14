@@ -216,7 +216,7 @@ public class CangjieCompileBuildListener implements CompileBuildListener {
             IntellijLanguageClient.initProjectConnections(project);
             finalRequestManager.setRestarting(false);
         });
-        CommonUtils.tryDeleteDiretory(lspBuildTempPath);
+        CommonUtils.tryDeleteDirectory(lspBuildTempPath);
     }
 
     private static void initEnv(@NotNull Project project) {

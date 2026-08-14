@@ -20,6 +20,7 @@ import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.problems.WolfTheProblemSolver;
 import com.intellij.psi.PsiDocumentManager;
@@ -86,14 +87,12 @@ public class CangjieLanguageServiceHighlightingPass extends TextEditorHighlighti
         if (allHighlighters.length == 0) {
             return Collections.emptySet();
         }
-        Set<HighlightInfo> highlightInfoSet = Arrays.stream(allHighlighters)
+        return Arrays.stream(allHighlighters)
+            .filter(highlighter -> !myDocument.getText(
+                new TextRange(highlighter.getStartOffset(), highlighter.getEndOffset())).isEmpty())
             .map(HighlightInfo::fromRangeHighlighter)
             .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-
-        return highlightInfoSet.stream()
             .filter(info -> HighlightSeverity.ERROR.getName().equals(info.getSeverity().getName()))
-            .filter(highlightInfo -> !highlightInfo.getText().isEmpty())
             .filter(highlightInfo -> !highlightInfo.toString().contains(ACTUAL_TEXT))
             .collect(Collectors.toSet());
     }

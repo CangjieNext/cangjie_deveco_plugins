@@ -41,6 +41,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.Strings;
 
+import org.jetbrains.annotations.Nullable;
 import org.wso2.lsp4intellij.utils.FileUtils;
 
 import java.net.URI;
@@ -51,8 +52,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 /**
  * client parse cjpm.toml

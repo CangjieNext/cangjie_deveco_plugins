@@ -37,6 +37,6 @@ public class ExtractVariableAction extends RefactorBaseAction {
 
     @Override
     protected boolean enable(@NotNull AnActionEvent event) {
-        return true;
+        return isSameLevelPsi(event);
     }
 }

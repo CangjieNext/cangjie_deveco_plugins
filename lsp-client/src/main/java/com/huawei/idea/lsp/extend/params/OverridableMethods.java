@@ -8,8 +8,8 @@
 
 package com.huawei.idea.lsp.extend.params;
 
+import org.eclipse.lsp4j.jsonrpc.util.Preconditions;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
-import org.eclipse.lsp4j.util.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;

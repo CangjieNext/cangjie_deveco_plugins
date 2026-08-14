@@ -29,6 +29,9 @@ public class SymtabUtils {
      */
     public static Optional<ScopeNode> getContextFor(PsiElement element) {
         PsiElement parent = element.getParent();
+        if (parent == null) {
+            return Optional.empty();
+        }
         if (parent instanceof ScopeNode) {
             return Optional.of((ScopeNode) parent);
         }

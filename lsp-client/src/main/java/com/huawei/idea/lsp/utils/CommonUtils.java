@@ -20,7 +20,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 
 import org.jetbrains.annotations.NotNull;
-import org.wso2.lsp4intellij.client.languageserver.requestmanager.DefaultRequestManager;
 import org.wso2.lsp4intellij.client.languageserver.requestmanager.RequestManager;
 
 import java.io.IOException;
@@ -55,14 +54,14 @@ public class CommonUtils {
      *
      * @param path Path
      */
-    public static void tryDeleteDiretory(Path path) {
-        if (!Path path.toFile().exists()) {
+    public static void tryDeleteDirectory(Path path) {
+        if (!path.toFile().exists()) {
             return;
         }
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             int retryCount = 20;
             while (retryCount > 0) {
-                deleteDirectory(Path path);
+                deleteDirectory(path);
                 if (!path.toFile().exists()) {
                     return;
                 }

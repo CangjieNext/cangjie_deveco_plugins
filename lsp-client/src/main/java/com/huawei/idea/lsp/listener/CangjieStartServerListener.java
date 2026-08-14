@@ -88,14 +88,14 @@ public class CangjieStartServerListener implements StartServerListener {
             });
         });
     }
-}
 
-private void deleteLspCaches() {
-    Path astCacheDir = Paths.get(Objects.requireNonNull(project.getBasePath()),
-        ".idea", ".deveco", "cangjie", ".cache", "astdata");
-    CommonUtils.tryDeleteDiretory(astCacheDir);
+    private void deleteLspCaches() {
+        Path astCacheDir = Paths.get(Objects.requireNonNull(project.getBasePath()),
+            ".idea", ".deveco", "cangjie", ".cache", "astdata");
+        CommonUtils.tryDeleteDirectory(astCacheDir);
 
-    Path indexCacheDir = Paths.get(Objects.requireNonNull(project.getBasePath()),
-        ".idea", ".deveco", "cangjie", ".cache", "index");
-    CommonUtils.tryDeleteDiretory(indexCacheDir);
+        Path indexCacheDir = Paths.get(Objects.requireNonNull(project.getBasePath()),
+            ".idea", ".deveco", "cangjie", ".cache", "index");
+        CommonUtils.tryDeleteDirectory(indexCacheDir);
+    }
 }

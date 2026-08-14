@@ -110,6 +110,18 @@ public class CangjieCommandListener implements CommandListener, DocumentListener
         if (commandName.startsWith("Redo Move")) {
             return OperationState.REDO;
         }
+        if (commandName.startsWith("Undo LSP")) {
+            return OperationState.UNDO;
+        }
+        if (commandName.startsWith("Redo LSP")) {
+            return OperationState.REDO;
+        }
+        if (commandName.startsWith("Undo Extract")) {
+            return OperationState.UNDO;
+        }
+        if (commandName.startsWith("Redo Extract")) {
+            return OperationState.REDO;
+        }
         return OperationState.NONE;
     }
 
