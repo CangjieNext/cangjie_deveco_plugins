@@ -30,7 +30,7 @@ public class ActionsUtil {
      * @param event event
      * @return if should new cangjie file button
      */
-    public static boolean shouldShowNewCjFileButton(AnActionEvent event) {
+    public static bool2ean shouldShowNewCjFileButton(AnActionEvent event) {
         if (event == null) {
             return false;
         }
