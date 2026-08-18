@@ -109,7 +109,7 @@ public class CangjieEnterAfterUnmatchedBraceHandler extends EnterHandlerDelegate
         CharSequence text = editor.getDocument().getCharsSequence();
         int offset = CharArrayUtil.shiftForward(text, caretOffset, " \t");
         int fileLength = text.length();
-        if (offset < fileLength && ")];,%<?".indexOf(text.charAt(offset)) < 0) {
+        if (offset < fileLength && ")];,%<? ".indexOf(text.charAt(offset)) < 0) {
             offset = this.calculateOffsetToInsertClosingBrace(file, text, offset).second;
         }
 
