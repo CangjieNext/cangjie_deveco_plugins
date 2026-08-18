@@ -77,15 +77,14 @@ project(':support') {
 
 def gradleJavaHome = file(System.getProperty('java.home'))
 def devEcoCandidates = new LinkedHashSet<File>()
+def configuredDevEcoHome = providers.gradleProperty('devEcoHome').orNull
+if (configuredDevEcoHome) {
+    // CI provides the unpacked DevEco dependency bundle explicitly.
+    devEcoCandidates.add(file(configuredDevEcoHome))
+}
 devEcoCandidates.add(gradleJavaHome)
 if (gradleJavaHome.parentFile != null) {
     devEcoCandidates.add(gradleJavaHome.parentFile)
-}
-['ProgramFiles', 'ProgramW6432', 'LOCALAPPDATA'].each { variable ->
-    def baseDir = System.getenv(variable)
-    if (baseDir) {
-        devEcoCandidates.add(new File(baseDir, 'Huawei/DevEco Studio'))
-    }
 }
 
 def isDevEcoInstallation = { File candidate ->
