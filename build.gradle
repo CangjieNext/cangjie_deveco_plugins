@@ -1,8 +1,36 @@
-import groovy.json.JsonSlurper
-
 plugins {
     id 'base'
     id 'org.jetbrains.intellij.platform' version '2.16.0' apply false
+}
+
+abstract class VerifyDevEcoDependencies extends DefaultTask {
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract DirectoryProperty getDevEcoDirectory()
+
+    @Input
+    abstract ListProperty<String> getJarPatterns()
+
+    @Input
+    abstract Property<String> getModulePath()
+
+    @TaskAction
+    void verifyDependencies() {
+        def baseDir = devEcoDirectory.get().asFile
+        jarPatterns.get().each { pattern ->
+            def scanner = new org.apache.tools.ant.DirectoryScanner()
+            scanner.basedir = baseDir
+            scanner.includes = [pattern] as String[]
+            scanner.scan()
+            def matches = scanner.includedFiles.sort()
+            if (matches.size() != 1) {
+                throw new GradleException(
+                        "${modulePath.get()}: expected exactly one DevEco JAR for '${pattern}', " +
+                                "but found ${matches.size()} under ${baseDir.absolutePath}: " +
+                                matches.collect { new File(baseDir, it).name }.join(', '))
+            }
+        }
+    }
 }
 
 def targetIdeaVersion = providers.gradleProperty('ideaVersion').orElse('2026.1.1').get()
@@ -10,19 +38,66 @@ def targetIdeaVersion = providers.gradleProperty('ideaVersion').orElse('2026.1.1
 def npmCommand = providers.systemProperty('os.name').get().toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'
 
 def buildSupportDir = layout.projectDirectory.dir('build-support')
+def buildSupportPackage = new groovy.json.JsonSlurper().parse(buildSupportDir.file('package.json').asFile)
+def buildSupportArchiveName = "ohos-cangjie-build-support-${buildSupportPackage.version}.tgz"
 def ohosNpmRegistry = providers.gradleProperty('ohosNpmRegistry')
         .orElse('https://repo.harmonyos.com/npm/')
+def npmDevEcoRoot = layout.buildDirectory.dir(
+        providers.gradleProperty('devecoDependencyVersion')
+                .orElse('26.0.0.621')
+                .map { "deveco/${it}" })
+        .get().asFile
 
 tasks.register('npmInstallBuildSupport', Exec) {
     group = 'build support'
     description = 'Installs the build-support TypeScript dependencies.'
+    dependsOn 'prepareDevEcoDependencies'
     workingDir buildSupportDir
-    commandLine npmCommand, 'ci', '--prefer-offline', '--no-audit', '--no-fund',
+    commandLine npmCommand, 'install', '--package-lock=false', '--no-save',
+            '--prefer-offline', '--no-audit', '--no-fund',
             '--registry', 'https://registry.npmjs.org/',
-            "--@ohos:registry=${ohosNpmRegistry.get()}"
-    inputs.files(buildSupportDir.file('package.json'), buildSupportDir.file('package-lock.json'),
-            buildSupportDir.file('tsconfig.json'))
+            "--@ohos:registry=${ohosNpmRegistry.get()}",
+            '@ohos/hvigor@6.23.5', '@ohos/hvigor-ohos-plugin@6.23.5'
+    inputs.files(buildSupportDir.file('package.json'), buildSupportDir.file('tsconfig.json'))
+    inputs.property('devEcoNpmRoot', npmDevEcoRoot.absolutePath)
     outputs.dir(buildSupportDir.dir('node_modules'))
+    doLast {
+        def devEcoRoot = npmDevEcoRoot
+        def packageRoots = [
+                new File(devEcoRoot, 'tools/hvigor'),
+                new File(devEcoRoot, 'plugins/hvigor-support/lib')
+        ]
+        def hvigorRoot = packageRoots.find { root ->
+            new File(root, 'hvigor/package.json').isFile() &&
+                    new File(root, 'hvigor-ohos-plugin/package.json').isFile()
+        }
+        if (hvigorRoot == null) {
+            logger.lifecycle("DevEco npm packages were not found under ${devEcoRoot.absolutePath}; using the configured npm packages")
+            return
+        }
+        def localPackages = [
+                new File(hvigorRoot, 'hvigor'),
+                new File(hvigorRoot, 'hvigor-ohos-plugin')
+        ]
+        localPackages.each { packageDir ->
+            def destinationDir = new File(buildSupportDir.asFile,
+                    "node_modules/@ohos/${packageDir.name}")
+            java.nio.file.Files.walk(packageDir.toPath()).withCloseable { paths ->
+                paths.forEach { sourcePath ->
+                    def relativePath = packageDir.toPath().relativize(sourcePath)
+                    def destinationPath = destinationDir.toPath().resolve(relativePath)
+                    if (java.nio.file.Files.isDirectory(sourcePath)) {
+                        java.nio.file.Files.createDirectories(destinationPath)
+                    } else {
+                        java.nio.file.Files.createDirectories(destinationPath.parent)
+                        java.nio.file.Files.copy(sourcePath, destinationPath,
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+                    }
+                }
+            }
+        }
+        logger.lifecycle("Using DevEco npm packages from ${hvigorRoot.absolutePath}")
+    }
 }
 
 tasks.register('compileBuildSupport', Exec) {
@@ -55,11 +130,13 @@ tasks.register('packBuildSupport', Exec) {
     description = 'Creates the build-support npm package.'
     dependsOn 'compileBuildSupport'
     workingDir buildSupportDir
-    commandLine npmCommand, 'pack'
+    commandLine npmCommand, 'pack', '--pack-destination',
+            buildSupportDir.asFile.absolutePath
+    outputs.file(buildSupportDir.file(buildSupportArchiveName))
 }
 
 tasks.named('build') {
-    dependsOn 'compileBuildSupport'
+    dependsOn 'packBuildSupport'
     dependsOn subprojects.collect { it.tasks.named('build') }
 }
 
@@ -75,62 +152,76 @@ project(':support') {
     }
 }
 
-def gradleJavaHome = file(System.getProperty('java.home'))
-def devEcoCandidates = new LinkedHashSet<File>()
-devEcoCandidates.add(gradleJavaHome)
-if (gradleJavaHome.parentFile != null) {
-    devEcoCandidates.add(gradleJavaHome.parentFile)
-}
-['ProgramFiles', 'ProgramW6432', 'LOCALAPPDATA'].each { variable ->
-    def baseDir = System.getenv(variable)
-    if (baseDir) {
-        devEcoCandidates.add(new File(baseDir, 'Huawei/DevEco Studio'))
-    }
-}
+def devEcoDependencyVersion = providers.gradleProperty('devecoDependencyVersion')
+        .orElse('26.0.0.621')
+def devEcoObsBaseUrl = providers.gradleProperty('devecoObsBaseUrl')
+        .orElse('https://cangjie103.obs.cn-north-4.myhuaweicloud.com')
 
-def isDevEcoInstallation = { File candidate ->
-    def productInfo = new File(candidate, 'product-info.json')
-    def openHarmonyLib = new File(candidate, 'plugins/openharmony/lib')
-    if (!productInfo.isFile() || !openHarmonyLib.isDirectory()) {
-        return false
-    }
-    try {
-        def product = new JsonSlurper().parse(productInfo)
-        def hasProjectModel = openHarmonyLib.listFiles()?.any {
-            it.isFile() && it.name ==~ /ohos-project-model-.+\.jar/
+repositories {
+    ivy {
+        name = 'devEcoObs'
+        url = uri("${devEcoObsBaseUrl.get()}/DevecoPluginsBuild")
+        patternLayout {
+            artifact '[revision]/[artifact].[ext]'
         }
-        return product.name == 'DevEco Studio' && hasProjectModel
-    } catch (Exception ignored) {
-        return false
+        metadataSources {
+            artifact()
+        }
+        content {
+            includeModule('com.huawei.deveco', 'deveco-dependencies')
+        }
     }
 }
 
-def resolvedDevEcoDir = devEcoCandidates.find(isDevEcoInstallation)
-if (resolvedDevEcoDir == null) {
-    def checkedPaths = devEcoCandidates.collect { it.absolutePath }.join(', ')
-    throw new GradleException(
-            "DevEco Studio installation was not found. Gradle JVM: ${gradleJavaHome.absolutePath}. " +
-                    "Checked: ${checkedPaths}"
-    )
+configurations {
+    devEcoBundle {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
+}
+
+dependencies {
+    devEcoBundle "com.huawei.deveco:deveco-dependencies:${devEcoDependencyVersion.get()}@zip"
+}
+
+def devEcoDirProvider = layout.buildDirectory.dir(
+        devEcoDependencyVersion.map { "deveco/${it}" })
+def prepareDevEcoDependencies = tasks.register('prepareDevEcoDependencies', Sync) {
+    group = 'build setup'
+    description = 'Downloads and extracts the versioned DevEco dependency bundle from OBS.'
+    from { zipTree(configurations.devEcoBundle.singleFile) }
+    into devEcoDirProvider
+    inputs.property('devEcoDependencyVersion', devEcoDependencyVersion)
+    doLast {
+        def extractedDir = devEcoDirProvider.get().asFile
+        if (!new File(extractedDir, 'product-info.json').isFile() ||
+                !new File(extractedDir, 'plugins/openharmony/lib').isDirectory()) {
+            throw new GradleException(
+                    "Invalid DevEco dependency bundle ${devEcoDependencyVersion.get()} " +
+                            "downloaded from ${devEcoObsBaseUrl.get()}")
+        }
+    }
 }
 
 ext {
-    devEcoDir = resolvedDevEcoDir
+    devEcoDir = devEcoDirProvider.get().asFile
     intellijIdeaVersion = targetIdeaVersion
 }
 
 ext.devEcoJars = { Project target, List<String> patterns ->
-    def resolved = patterns.collect { pattern ->
-        def matches = target.fileTree(rootProject.devEcoDir) { include pattern }.files.sort()
-        if (matches.size() != 1) {
-            throw new GradleException(
-                    "${target.path}: expected exactly one DevEco JAR for '${pattern}', but found " +
-                            "${matches.size()} under ${rootProject.devEcoDir.absolutePath}: " +
-                            matches.collect { it.name }.join(', '))
-        }
-        matches[0]
+    def jarTrees = patterns.collect { pattern ->
+        target.fileTree(rootProject.devEcoDir) { include pattern }
     }
-    target.files(resolved)
+    def verifyTask = target.tasks.register(
+            'verifyDevEcoDependencies', VerifyDevEcoDependencies) {
+        group = 'verification'
+        dependsOn prepareDevEcoDependencies
+        devEcoDirectory.set(devEcoDirProvider)
+        jarPatterns.set(patterns)
+        modulePath.set(target.path)
+    }
+    target.files(jarTrees).builtBy(verifyTask)
 }
 
 allprojects {
