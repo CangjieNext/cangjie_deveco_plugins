@@ -67,6 +67,10 @@ generateGrammarSource {
     arguments += ['-package', 'cjgrammar.parser', '-Xexact-output-dir']
 }
 
+tasks.named('compileJava') {
+    dependsOn tasks.named('generateGrammarSource')
+}
+
 tasks.named('test') {
     failOnNoDiscoveredTests = false
 }
