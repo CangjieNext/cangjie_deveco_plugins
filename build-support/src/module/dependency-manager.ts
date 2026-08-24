@@ -6,21 +6,22 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {hvigorCore, Json5Reader} from '@ohos/hvigor';
+import type {BasePackageResolver, ModuleModel, ProjectModel} from '../../types/hvigor-imports';
+import {
+  CommonConst,
+  ConfigJson,
+  DependencyType,
+  hvigorCore,
+  Json5Reader,
+  ModuleJson,
+  ModuleType,
+  NpmPackageResolver,
+  OhosLogger,
+  OhpmPackageResolver
+} from '../../types/hvigor-imports';
 import fs from 'fs';
 import path from 'path';
 import type {PackageJson} from 'type-fest';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {ConfigJson} from '@ohos/hvigor-ohos-plugin/src/options/configure/config-json-options';
-import {ModuleJson} from '@ohos/hvigor-ohos-plugin/src/options/configure/module-json-options';
-import type {ModuleModel} from '@ohos/hvigor-ohos-plugin/src/model/module/module-model';
-import type {ProjectModel} from '@ohos/hvigor-ohos-plugin/src/model/project/project-model';
-import {DependencyType} from '@ohos/hvigor-ohos-plugin/src/project/dependency/core/dependency-interface';
-import type {BasePackageResolver} from '@ohos/hvigor-ohos-plugin/src/utils/resolver/base-package-resolver';
-import {NpmPackageResolver} from '@ohos/hvigor-ohos-plugin/src/utils/resolver/npm-package-resolver';
-import {OhpmPackageResolver} from '@ohos/hvigor-ohos-plugin/src/utils/resolver/ohpm-package-resolver';
-import {CommonConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
-import {ModuleType} from '@ohos/hvigor-ohos-plugin/src/enum/module-type-enum';
 import {CangjieLogger} from '../log/cangjie-logger';
 import ConfigOptObj = ConfigJson.ConfigOptObj;
 import ModuleOptObj = ModuleJson.ModuleOptObj;

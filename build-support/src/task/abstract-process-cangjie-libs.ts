@@ -6,15 +6,13 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
+import type {TargetTaskService, TaskDetails} from '../../types/hvigor-imports';
+import {InjectUtil, OhosLogger} from '../../types/hvigor-imports';
 import {BaseCangjieTask} from './base-cangjie-task';
 import fs from 'fs';
-import type {TaskDetails} from '@ohos/hvigor';
 import {CangjieCommonPath} from '../common/cangjie-common-path';
 import {CangjieLogger} from '../log/cangjie-logger';
 import {copyAllSubFilesNoDir, copyAllSubFilesWithDir} from '../utils/cangjie-file-util';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
 
 /**
  * process cangjie libs task

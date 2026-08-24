@@ -8,9 +8,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import {BuildProfileSchemaFileConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {ValidatorStore} from '@ohos/hvigor-ohos-plugin/src/utils/validate/validator-store';
+import {BuildProfileSchemaFileConst, OhosLogger, ValidatorStore} from '../../../types/hvigor-imports';
 import {
   CANGJIE_OPTIONS_CONFIG,
   CANGJIE_OPTIONS_CONFIG_ZH,

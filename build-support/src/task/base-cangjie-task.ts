@@ -6,22 +6,23 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {OhosHapTask} from '@ohos/hvigor-ohos-plugin/src/tasks/task/ohos-hap-task';
+import type {CangjieOpt, TargetTaskService, TaskDetails} from '../../types/hvigor-imports';
+import {
+  ApiType,
+  CommonConst,
+  DefaultTargetConst,
+  hvigorCore,
+  InjectUtil,
+  OhosHapTask,
+  OhosLogger
+} from '../../types/hvigor-imports';
 import {checkIsValid} from '../utils/common-utils';
 import path from 'path';
-import {CommonConst, DefaultTargetConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
 import {CANGJIE_NAME, CJPM_TOML_NAME} from '../constants/constants';
-import type {TaskDetails} from '@ohos/hvigor';
-import {hvigorCore} from '@ohos/hvigor';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import type {CangjieOpt} from '@ohos/hvigor-ohos-plugin/src/options/build/build-opt';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
 import fs from 'fs';
-import {ApiType} from '@ohos/hvigor-ohos-plugin/src/project/data/hap-extra-info';
 import {getSdkComponent} from '../sdk/cangjie-sdk-info';
 import {SdkCangjieComponent} from '../sdk/sdk-cangjie-component';
 import {hasEtsModule, linkFile, matchFiles, onlyCangjieModule} from '../utils/cangjie-file-util';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
 import {CangjieLogger} from '../log/cangjie-logger';
 import {CompileAppTypeEnum} from '../enums/compile-app-type-enum';
 import {CangjieModuleOptions} from '../module/cangjie-module-options';

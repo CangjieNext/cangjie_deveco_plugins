@@ -8,34 +8,39 @@
 
 import fs from 'fs';
 import * as path from 'path';
-import {CommonConst, DefaultTargetConst, ValidateRegExp} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
-import type {TargetSourceSetImpl} from '@ohos/hvigor-ohos-plugin/src/model/source-set/target-source-set-impl';
-import {ModuleJson} from '@ohos/hvigor-ohos-plugin/src/options/configure/module-json-options';
-import {FileUtil} from '@ohos/hvigor-ohos-plugin/src/utils/file-util';
-import {resModelLoader} from '@ohos/hvigor-ohos-plugin/src/utils/loader/file/res-model-loader';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
-import {JsonUtil} from '@ohos/hvigor-ohos-plugin/src/utils/json-util';
+import type {TargetSourceSetImpl} from '../../types/hvigor-imports';
+import {
+  buildOptionPath,
+  CommonConst,
+  DefaultTargetConst,
+  FileSet,
+  FileUtilOhos as FileUtil,
+  InjectUtil,
+  JsonUtil,
+  ModuleJson,
+  OhosLogger,
+  PreBuild,
+  resModelLoader,
+  SourceSetModel,
+  TargetTaskService,
+  ValidateRegExp
+} from '../../types/hvigor-imports';
 import {CangjieTaskNames} from './cangjie-task-names';
 import {
   isCangjieHar,
-  onlyCangjieModule, readModuleConfigToml,
+  onlyCangjieModule,
+  readModuleConfigToml,
   readModuleConfigTomlName,
   readPackageName,
   validateCangjieEntry
 } from '../utils/cangjie-file-util';
-import {PreBuild} from '@ohos/hvigor-ohos-plugin/src/tasks/pre-build';
 import {CANGJIE_NAME, CJPM_TOML_NAME} from '../constants/constants';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
-import {buildOptionPath} from '@ohos/hvigor-ohos-plugin/src/common/build-option-path-info';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
-import {SourceSetModel} from '@ohos/hvigor-ohos-plugin/src/model/source-set/source-set-model';
 import {CangjieLogger} from '../log/cangjie-logger';
-import ModuleOptObj = ModuleJson.ModuleOptObj;
-import {FileSet} from '@ohos/hvigor';
 import {getSdkComponent} from '../sdk/cangjie-sdk-info';
 import {SdkCangjieComponent} from '../sdk/sdk-cangjie-component';
-import {compareVersionsPrefix, compareVersionsUpTo} from '../utils/common-utils';
+import {compareVersionsUpTo} from '../utils/common-utils';
+import ModuleOptObj = ModuleJson.ModuleOptObj;
 
 const _log = CangjieLogger.getLogger('cangjie-preBuild');
 
