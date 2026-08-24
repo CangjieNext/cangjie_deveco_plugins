@@ -7,10 +7,22 @@
  */
 
 import path from 'path';
-import {hvigorCore, iconv, isMac, isWindows, type TaskDetails} from '@ohos/hvigor';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
-import {FileUtil} from '@ohos/hvigor-ohos-plugin/src/utils/file-util';
+import type {TargetTaskService} from '../../types/hvigor-imports';
+import {
+  BuildDirConst,
+  buildOptionManager,
+  DefaultTargetConst,
+  Dependency,
+  FileUtilOhos as FileUtil,
+  hvigorCore,
+  iconv,
+  InjectUtil,
+  isMac,
+  isWindows,
+  OhosLogger,
+  type TaskDetails,
+  TaskNames
+} from '../../types/hvigor-imports';
 import {spawnSync, type SpawnSyncOptions} from 'child_process';
 import {BaseCangjieTask} from './base-cangjie-task';
 import {checkIsValid, getDemandSrcPackages, getSeamlessPath, normalizeCjpmTomlPath, retry} from '../utils/common-utils';
@@ -41,11 +53,6 @@ import {DependencyManager} from '../module/dependency-manager';
 import {CangjiePathImpl} from '../common/cangjie-path-impl';
 import {AbiEnum, getTargetByAbi} from '../enums/cangjie-cpu-abi-enum';
 import {getModuleType} from '../enums/module-types-enum';
-import {BuildDirConst} from '@ohos/hvigor-ohos-plugin/src/const/build-directory-const';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
-import {Dependency} from '@ohos/hvigor-ohos-plugin/src/project/dependency/core/dependency-interface';
-import {buildOptionManager} from '@ohos/hvigor-ohos-plugin/src/project/build-option/build-mode-manager';
 import {CjBuildDirConst} from '../constants/cangjie-build-dir-const';
 import {CangjieLogger} from '../log/cangjie-logger';
 import {
@@ -64,7 +71,6 @@ import {
 } from '../constants/constants';
 import {CangjieHapDependency} from '../module/cangjie-hap-dependency';
 import {CompileAppTypeEnum} from '../enums/compile-app-type-enum';
-import {DefaultTargetConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
 import {CjpmCommandBuilder} from '../utils/cjpm-command-builder';
 import {configOhModulesEnv} from '../utils/env-util';
 import {getCangjieOptimizationConfig, getDefaultProfdataFile, getProjectOption} from '../utils/read-config';

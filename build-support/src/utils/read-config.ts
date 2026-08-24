@@ -9,7 +9,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {checkIsValid} from './common-utils';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
+import {OhosLogger} from '../../types/hvigor-imports';
 
 const rcLogger: OhosLogger = OhosLogger.getLogger('read-config');
 

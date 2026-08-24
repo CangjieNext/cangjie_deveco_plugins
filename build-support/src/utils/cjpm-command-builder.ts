@@ -6,8 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
+import {InjectUtil, OhosLogger} from '../../types/hvigor-imports';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
 
 /**

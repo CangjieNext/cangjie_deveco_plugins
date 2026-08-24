@@ -6,9 +6,9 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
+import type {TargetTaskService} from '../../types/hvigor-imports';
+import {TaskNames} from '../../types/hvigor-imports';
 import {CangjieTaskNames} from './cangjie-task-names';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
 import {AbstractGenerateCangjieResource} from './abstract-generate-cangjie-resource';
 
 /**

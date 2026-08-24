@@ -6,7 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {ModulePathInfoIml} from '@ohos/hvigor-ohos-plugin/src/common/iml/module-path-info-iml';
+import {ModulePathInfoIml} from '../../types/hvigor-imports';
 import path from 'path';
 import {CjBuildDirConst} from '../constants/cangjie-build-dir-const';
 import {AbiEnum, getTargetByAbi} from '../enums/cangjie-cpu-abi-enum';

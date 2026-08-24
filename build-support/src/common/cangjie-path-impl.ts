@@ -6,12 +6,11 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {ModulePathInfoIml} from '@ohos/hvigor-ohos-plugin/src/common/iml/module-path-info-iml';
+import {ModulePathInfoIml, OhosLogger} from '../../types/hvigor-imports';
 import {checkIsValid} from '../utils/common-utils';
 import {SdkCangjieComponent} from '../sdk/sdk-cangjie-component';
 import {CangjieCommonPath} from './cangjie-common-path';
 import {AbiEnum, reportAbiError} from '../enums/cangjie-cpu-abi-enum';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
 import fs from 'fs';
 import {CangjieLogger} from '../log/cangjie-logger';
 import path from 'path';

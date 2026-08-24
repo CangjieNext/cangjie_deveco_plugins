@@ -6,7 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {CangjieOpt} from '@ohos/hvigor-ohos-plugin/src/options/build/build-opt';
+import {CangjieOpt} from '../../types/hvigor-imports';
 import {getCustomCjpmArguments, initAbiFilters} from '../utils/common-utils';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
 

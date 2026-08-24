@@ -7,7 +7,7 @@
  */
 
 import {spawnSync} from 'child_process';
-import {isLinux, isMac, isWindows} from '@ohos/hvigor';
+import {isLinux, isMac, isWindows} from '../../types/hvigor-imports';
 
 const WIN_CODE_CN = 2052 as const;
 

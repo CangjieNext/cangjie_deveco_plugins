@@ -6,13 +6,12 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {ProjectModel} from '@ohos/hvigor-ohos-plugin/src/model/project/project-model';
+import {Json5Reader, ProjectModel} from '../../types/hvigor-imports';
 import path from 'path';
 import fs from 'fs';
 import {dependToPlaceHolder, formatEnvName} from './common-utils';
 import {cangjieSrcRelatePath} from './cangjie-file-util';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
-import {Json5Reader} from '@ohos/hvigor';
 
 export function configOhModulesEnv(projectModel: ProjectModel, env: NodeJS.ProcessEnv): void {
   const ohpmPath = path.join(projectModel.getProjectDir(), 'oh_modules', '.ohpm');
