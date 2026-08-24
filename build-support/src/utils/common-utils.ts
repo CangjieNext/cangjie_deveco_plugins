@@ -9,10 +9,8 @@
 import path from 'path';
 import {execSync} from 'child_process';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
-import {isMac, isWindows} from '@ohos/hvigor';
+import {AbstractModulePlugin, CangjieOpt, isMac, isWindows, OhosLogger} from '../../types/hvigor-imports';
 import os from 'os';
-import {CangjieOpt} from '@ohos/hvigor-ohos-plugin/src/options/build/build-opt';
-import {AbstractModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-module-plugin';
 import {
   CANGJIE_OPTIONS,
   CJPM_DEFAULT_PATH,
@@ -23,7 +21,6 @@ import {
 import fs from 'fs';
 import {ideaConfigPath} from '../plugin/cangjie-plugin-factory';
 import {CangjieLogger} from '../log/cangjie-logger';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
 
 export function checkIsValid(val: unknown): boolean {
   if (val === null || val === undefined) {

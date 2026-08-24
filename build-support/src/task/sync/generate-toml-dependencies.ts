@@ -9,7 +9,18 @@
 import fs from 'fs';
 import path from 'path';
 import {BaseCangjieTask} from '../base-cangjie-task';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
+import {
+  DefaultTargetConst,
+  Dependency,
+  DependencyType,
+  HmosSdkLoader,
+  OhosLogger,
+  OhosSdkLoader,
+  ProjectBuildProfile,
+  SdkComponentType,
+  TargetTaskService,
+  TaskNames
+} from '../../../types/hvigor-imports';
 import {checkIsValid, dependToPlaceHolder, formatForwardSlashPath} from '../../utils/common-utils';
 import {
   BIN_DEPENDENCIES,
@@ -22,26 +33,19 @@ import {
   VERSION
 } from '../../constants/constants';
 import {TOML} from '../../utils/toml/toml-export';
-import {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
 import {CangjieTaskNames} from '../cangjie-task-names';
 import {
   buildLogRelatePath,
   cangjieSrcRelatePath,
   createDir,
-  hasCangjieModule, readPackageName,
+  hasCangjieModule,
+  readPackageName,
   syscapApiConfigPath
 } from '../../utils/cangjie-file-util';
 import {AbiEnum, getTargetByAbi, isValueInAbiEnum} from '../../enums/cangjie-cpu-abi-enum';
-import {Dependency, DependencyType} from '@ohos/hvigor-ohos-plugin/src/project/dependency/core/dependency-interface';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
-import {SdkComponentType} from '@ohos/hvigor-ohos-plugin/src/sdk/sdk-info';
-import {HmosSdkLoader} from '@ohos/hvigor-ohos-plugin/src/sdk/hmos-sdk-loader';
 import {CjBuildDirConst} from '../../constants/cangjie-build-dir-const';
 import {CangjieLogger} from '../../log/cangjie-logger';
 import {BitUpdateFlag, BitUpdateFlagUtils} from '../../enums/bit-update-flag';
-import {OhosSdkLoader} from '@ohos/hvigor-ohos-plugin/src/sdk/ohos-sdk-loader';
-import {ProjectBuildProfile} from '@ohos/hvigor-ohos-plugin/src/options/build/project-build-profile';
-import {DefaultTargetConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
 
 /**
  * generate toml dependencies

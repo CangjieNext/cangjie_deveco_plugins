@@ -6,8 +6,8 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {TaskDetails} from '@ohos/hvigor';
-import {TaskGroupType} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
+import type {TaskDetails} from '../../types/hvigor-imports';
+import {TaskGroupType} from '../../types/hvigor-imports';
 
 /**
  * cangjie task names

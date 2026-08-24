@@ -6,7 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {VersionConst} from '@ohos/hvigor-ohos-plugin/src/const/version-const';
+import {VersionConst} from '../../types/hvigor-imports';
 
 export const CJ_CONFIG = require(`${__dirname}/../../res/cangjie-build-config.json`);
 export const CJ_COLLECT_LIBS_CONFIG = require(`${__dirname}/../../res/cangjie-collect-libs-config.json`);

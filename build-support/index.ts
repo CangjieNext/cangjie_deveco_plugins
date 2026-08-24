@@ -6,20 +6,19 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {Module, Project} from '@ohos/hvigor';
+import type {AppPlugin, HapPlugin, HarPlugin, HspPlugin, Module, Project} from './types/hvigor-imports';
+import {AbstractHapModulePlugin, AbstractHarModulePlugin} from './types/hvigor-imports';
 import {
+  createAppTask,
+  createHapTask,
+  createHarTask,
+  createHspTask,
+  handleSchema,
   registerAppTask,
   registerHapTask,
   registerHarTask,
-  registerHspTask,
-  handleSchema, createAppTask, createHapTask, createHarTask, createHspTask
+  registerHspTask
 } from './src/plugin/cangjie-plugin-factory';
-import type {HapPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/hap-plugin';
-import type {HarPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/har-plugin';
-import type {HspPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/hsp-plugin';
-import type {AppPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/app-plugin';
-import {AbstractHapModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-hap-module-plugin';
-import {AbstractHarModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-har-module-plugin';
 
 /**
  * 生成或删除仓颉schema
