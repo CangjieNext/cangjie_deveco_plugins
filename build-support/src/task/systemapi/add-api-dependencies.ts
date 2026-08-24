@@ -8,11 +8,10 @@
 
 import fs from 'fs';
 import {BaseCangjieTask} from '../base-cangjie-task';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
+import {OhosLogger, TargetTaskService} from '../../../types/hvigor-imports';
 import {checkIsValid, getSeamlessPath} from '../../utils/common-utils';
 import {BIN_DEPENDENCIES, PATH_OPTION, TARGET} from '../../constants/constants';
 import {TOML} from '../../utils/toml/toml-export';
-import {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
 import {CangjieTaskNames} from '../cangjie-task-names';
 import {hasArktsCangjieModule} from '../../utils/cangjie-file-util';
 import {CangjieLogger} from '../../log/cangjie-logger';

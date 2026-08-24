@@ -9,6 +9,8 @@ tsconfig.json
 *.log
 /src/**/*.ts
 index.ts
+hvigor-imports.ts
+/types/hvigor-shim.d.ts
 !/src/**/*.d.ts
 **/*.js.map
 .eslintrc.js

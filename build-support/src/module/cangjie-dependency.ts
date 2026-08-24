@@ -8,7 +8,7 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
+import {InjectUtil, OhosLogger, TargetTaskService} from '../../types/hvigor-imports';
 import {
   BIN_DEPENDENCIES,
   C,
@@ -38,9 +38,7 @@ import {
 } from '../utils/cangjie-file-util';
 import {getTargetByAbi} from '../enums/cangjie-cpu-abi-enum';
 import {CjBuildDirConst} from '../constants/cangjie-build-dir-const';
-import {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
 import {CangjieLogger} from '../log/cangjie-logger';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
 
 /**
  * cangjie dependent dynamic library collection

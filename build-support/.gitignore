@@ -9,6 +9,7 @@ src/**/*.js
 test/**/*.js
 **/*.js.map
 **/*.d.ts
+!types/hvigor-shim.d.ts
 
 index.js
 test/temp

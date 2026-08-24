@@ -1,7 +1,8 @@
 {
   "include": [
     "index.ts",
-    "src/**/*"
+    "src/**/*",
+    "types/hvigor-imports.ts"
   ],
   "exclude": [
     "**/*.js",
@@ -28,7 +29,22 @@
     /* Completeness */
     "skipLibCheck": true,
     /* Skip type checking all .d.ts files. */
-    "preserveSymlinks": true
+    "preserveSymlinks": true,
     /* Do not resolve symlinks to their real path; preserves the node_modules logical layout so @ohos/hvigor is found via build-support/node_modules when the importer is a junction target. */
+    "baseUrl": ".",
+    /* Base for non-relative module names below; needed for paths to take effect. */
+    "paths": {
+      /* Replace @ohos/hvigor's official .d.ts entry with a local shim that also re-exports runtime-but-undeclared internal symbols, so we no longer need to patch node_modules via postinstall. Runtime resolution (Node require) is unaffected: paths only redirects TS module resolution, not emit. This is a package-level type patch: it makes ALL `import ... from '@ohos/hvigor'` (including ones inside @ohos/hvigor-ohos-plugin's own .d.ts files) resolve the full set of symbols, not just the 13 in the official index.d.ts. */
+      "@ohos/hvigor": [
+        "./types/hvigor-shim.d.ts"
+      ],
+      /* log4js and @ohos/hvigor-common are only nested under @ohos/hvigor/node_modules in this repo (build-support has no direct dep on them); alias them so the shim's `export * from 'log4js'` and `from '@ohos/hvigor-common'` resolve. */
+      "log4js": [
+        "./node_modules/@ohos/hvigor/node_modules/log4js"
+      ],
+      "@ohos/hvigor-common": [
+        "./node_modules/@ohos/hvigor/node_modules/@ohos/hvigor-common"
+      ]
+    }
   }
 }

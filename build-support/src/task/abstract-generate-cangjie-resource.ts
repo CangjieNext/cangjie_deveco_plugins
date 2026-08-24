@@ -8,13 +8,19 @@
 
 import path from 'path';
 import fs from 'fs';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
+import type {TargetSourceSetModel, TargetTaskService} from '../../types/hvigor-imports';
+import {
+  DefaultTargetConst,
+  FileSet,
+  InjectUtil,
+  OhosLogger,
+  type TaskDetails,
+  TaskInputValue,
+  ValidateRegExp
+} from '../../types/hvigor-imports';
 import {BaseCangjieTask} from './base-cangjie-task';
-import {FileSet, type TaskDetails, TaskInputValue} from '@ohos/hvigor';
 import {NAME, PACKAGE} from '../constants/constants';
-import {DefaultTargetConst, ValidateRegExp} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
 import {checkIsValid, replaceWithEnv} from '../utils/common-utils';
-import type {TargetSourceSetModel} from '@ohos/hvigor-ohos-plugin/src/model/source-set/source-set-model';
 import {
   createDir,
   onlyCangjieModule,
@@ -22,9 +28,7 @@ import {
   readTomlSrcDir,
   validateCangjieEntry
 } from '../utils/cangjie-file-util';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
 import {TOML} from '../utils/toml/toml-export';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
 import {CangjieLogger} from '../log/cangjie-logger';
 
 /**

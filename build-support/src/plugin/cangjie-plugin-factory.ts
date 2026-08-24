@@ -6,27 +6,26 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {hvigor, type HvigorCoreNode, type Module, type Project} from '@ohos/hvigor';
-import type {HapPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/hap-plugin';
+import type {AbstractModulePlugin, AppPlugin, HapPlugin, HarPlugin, HspPlugin} from '../../types/hvigor-imports';
 import {
+  AbstractHapModulePlugin,
+  AbstractHarModulePlugin,
+  hvigor,
+  type HvigorCoreNode,
+  type Module,
   PluginFactory,
-  PluginFactory as HvigorPluginFactory
-} from '@ohos/hvigor-ohos-plugin/src/plugin/factory/plugin-factory';
-import type {HarPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/har-plugin';
-import type {HspPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/hsp-plugin';
+  type Project,
+  TaskCreatorManager,
+  TaskNames
+} from '../../types/hvigor-imports';
 import {CangjieHapPlugin} from './cangjie-hap-plugin';
 import {CangjieHarPlugin} from './cangjie-har-plugin';
 import {CangjieHspPlugin} from './cangjie-hsp-plugin';
-import type {AppPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/app-plugin';
-import {TaskCreatorManager} from '@ohos/hvigor-ohos-plugin/src/tasks/task-creator';
 import {
   GenerateApiDependenciesCA,
   GenerateCangjieInteropApiCA,
   SyncCangjieResourceCA
 } from '../task/cangjie-task-initializer';
-import type {AbstractModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-module-plugin';
-import {AbstractHapModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-hap-module-plugin';
-import {AbstractHarModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-har-module-plugin';
 import {GenerateCangjieSchema} from '../task/sync/generate-cangjie-schema';
 import path from 'path';
 import {getHomedir} from '../utils/homedir';
@@ -35,7 +34,6 @@ import {CURRENT_IDE_VERSION} from '../constants/constants';
 import {isCangjieModule} from '../utils/common-utils';
 import {CangjieTaskNames} from '../task/cangjie-task-names';
 import {CompileNodeGraphMatch} from '../utils/compile-node-graph-match';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
 import CommonHookTask = TaskNames.CommonHookTask;
 
 export const ideaConfigPath = getIdeaConfigPath();
@@ -106,7 +104,7 @@ export function createAppTask(project: Project): AppPlugin {
  */
 export function createHapTask(module: Module): HapPlugin {
   handleSchema();
-  const hapPlugin: HapPlugin = <HapPlugin>HvigorPluginFactory.getHapPlugin(module);
+  const hapPlugin: HapPlugin = <HapPlugin>PluginFactory.getHapPlugin(module);
   return addCangjieHapTask(hapPlugin, module);
 }
 
@@ -126,7 +124,7 @@ function addCangjieHarTask(harPlugin: HarPlugin, module: HvigorCoreNode): HarPlu
  */
 export function createHarTask(module: Module): HarPlugin {
   handleSchema();
-  const harPlugin: HarPlugin = <HarPlugin>HvigorPluginFactory.getHarPlugin(module);
+  const harPlugin: HarPlugin = <HarPlugin>PluginFactory.getHarPlugin(module);
   return addCangjieHarTask(harPlugin, module);
 }
 
@@ -146,7 +144,7 @@ function addCangjieHspTask(hspPlugin: HspPlugin, module: HvigorCoreNode): HspPlu
  */
 export function createHspTask(module: Module): HspPlugin {
   handleSchema();
-  const hspPlugin: HspPlugin = <HspPlugin>HvigorPluginFactory.getHspPlugin(module);
+  const hspPlugin: HspPlugin = <HspPlugin>PluginFactory.getHspPlugin(module);
   return addCangjieHspTask(hspPlugin, module);
 }
 

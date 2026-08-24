@@ -6,18 +6,14 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
+import type {TargetTaskService} from '../../types/hvigor-imports';
+import {isWindows, OhosLogger, OhosSdkLoader, ProjectBuildProfile, SdkComponentType} from '../../types/hvigor-imports';
 import {CANGJIE_NAME, CURRENT_IDE_VERSION} from '../constants/constants';
 import os from 'os';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
 import path from 'path';
 import fs from 'fs';
 import {CangjieLogger} from '../log/cangjie-logger';
-import {isWindows} from '@ohos/hvigor';
 import {checkIsValid, delay} from '../utils/common-utils';
-import {OhosSdkLoader} from '@ohos/hvigor-ohos-plugin/src/sdk/ohos-sdk-loader';
-import {SdkComponentType} from '@ohos/hvigor-ohos-plugin/src/sdk/sdk-info';
-import {ProjectBuildProfile} from '@ohos/hvigor-ohos-plugin/src/options/build/project-build-profile';
 
 export const componentMap: Map<string, any> = new Map();
 const _log: OhosLogger = CangjieLogger.getLogger('CangjieSdkInfo');

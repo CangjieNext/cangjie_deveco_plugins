@@ -6,7 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
+import {OhosLogger} from '../../types/hvigor-imports';
 import {CangjieAdaptorError} from './cangjie-adaptor-error';
 import {
   CangjieAdaptorErrorMessage,

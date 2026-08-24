@@ -8,7 +8,7 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
+import {OhosLogger} from '../../types/hvigor-imports';
 import {
   BIN_DEPENDENCIES,
   C,

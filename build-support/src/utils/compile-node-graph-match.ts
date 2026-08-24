@@ -6,20 +6,28 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {ProjectModel} from '@ohos/hvigor-ohos-plugin/src/model/project/project-model';
+import {
+  DefaultTargetConst,
+  globalData,
+  hvigor,
+  HvigorBuildConst,
+  hvigorCore,
+  instanceOf,
+  Module,
+  ModuleModel,
+  OhosLogger,
+  Project,
+  ProjectModel,
+  projectTaskDag,
+  TaskNames
+} from '../../types/hvigor-imports';
 import fs from 'fs';
 import {checkIsValid, replaceWithEnv} from './common-utils';
 import path from 'path';
 import {CANGJIE_OPTIONS, CJPM_TOML_NAME, DEPENDENCIES, NAME, PACKAGE, PATH} from '../constants/constants';
 import {TOML} from './toml/toml-export';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
 import {CangjieLogger} from '../log/cangjie-logger';
-import {DefaultTargetConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
 import {configOhModulesEnv} from './env-util';
-import {globalData, hvigor, HvigorBuildConst, hvigorCore, Module, Project, projectTaskDag} from '@ohos/hvigor';
-import {ModuleModel} from '@ohos/hvigor-ohos-plugin/src/model/module/module-model';
-import {instanceOf} from '@ohos/hvigor/src/base/util/class-identify-util';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
 import CommonHookTask = TaskNames.CommonHookTask;
 
 const PACKAGE_TASKS = [

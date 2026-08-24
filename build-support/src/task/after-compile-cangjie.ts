@@ -6,21 +6,23 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {FileSet, TaskInputValue} from '@ohos/hvigor';
+import {TargetTaskService, TaskNames} from '../../types/hvigor-imports';
+import {
+  ApiType,
+  BuildArtifactConst,
+  FileSet,
+  InjectUtil,
+  OhosLogger,
+  TaskInputValue
+} from '../../types/hvigor-imports';
 import path from 'path';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
 import {CangjieTaskNames} from './cangjie-task-names';
 import fs from 'fs';
 import {createDir, deleteIfNoFiles, onlyCangjieModule, readPackageName} from '../utils/cangjie-file-util';
 import {retry} from '../utils/common-utils';
-import {ApiType} from '@ohos/hvigor-ohos-plugin/src/project/data/hap-extra-info';
 import {BaseCangjieTask} from './base-cangjie-task';
-import {DoNativeStrip} from '@ohos/hvigor-ohos-plugin/src/tasks/do-native-strip';
 import {CangjieCommonPath} from '../common/cangjie-common-path';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
 import {CangjieLogger} from '../log/cangjie-logger';
-import {BuildArtifactConst} from '@ohos/hvigor-ohos-plugin/src/const/build-directory-const';
 import {CjBuildDirConst} from '../constants/cangjie-build-dir-const';
 
 /**
@@ -66,7 +68,7 @@ export class AfterCompileCangjie extends BaseCangjieTask {
   }
 
   initTaskDepends(): void {
-    this.declareDepends(DoNativeStrip.name);
+    this.declareDepends(TaskNames.Task.DO_NATIVE_STRIP.name);
   }
 
   protected async doTaskAction(): Promise<void> {

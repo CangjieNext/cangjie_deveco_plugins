@@ -6,7 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {HspPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/hsp-plugin';
+import type {HspPlugin} from '../../types/hvigor-imports';
 import {BaseCangjiePlugin} from './base-cangjie-plugin';
 
 /**
