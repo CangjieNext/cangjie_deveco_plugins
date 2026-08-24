@@ -7,7 +7,7 @@
  */
 
 import path from 'path';
-import {isLinux, isMac, isWindows} from '@ohos/hvigor';
+import {isLinux, isMac, isWindows} from '../../types/hvigor-imports';
 import {SdkComponent} from './cangjie-sdk-info';
 import os from 'os';
 import fs from 'fs';

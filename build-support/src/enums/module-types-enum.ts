@@ -6,8 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {CoreModuleModelImpl} from '@ohos/hvigor-ohos-plugin/src/model/module/core-module-model-impl';
+import {CoreModuleModelImpl, OhosLogger} from '../../types/hvigor-imports';
 import {CangjieLogger} from '../log/cangjie-logger';
 
 export enum ModuleTypeEnum {

@@ -11,10 +11,7 @@ import path from 'path';
 import {TOML} from './toml/toml-export';
 import {ASAN_ENABLED_CONFIG, NAME, PACKAGE, SRC_DIR} from '../constants/constants';
 import {checkIsValid} from './common-utils';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
-import {FileUtil} from '@ohos/hvigor-ohos-plugin/src/utils/file-util';
-import {Json5Reader} from '@ohos/hvigor';
+import {FileUtilOhos as FileUtil, Json5Reader, OhosLogger, TargetTaskService} from '../../types/hvigor-imports';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
 import {CjBuildDirConst} from '../constants/cangjie-build-dir-const';
 

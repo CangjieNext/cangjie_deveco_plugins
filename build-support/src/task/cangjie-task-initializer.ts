@@ -6,44 +6,43 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {GlobalTaskCreator, TargetTaskCreator} from '@ohos/hvigor-ohos-plugin/src/tasks/task-creator';
-import type {CoreTask, TaskDetails} from '@ohos/hvigor';
+import type {CoreTask, TaskDetails} from '../../types/hvigor-imports';
+import {
+  ApiType,
+  CmakeUtil,
+  DefaultTargetConst,
+  GlobalTaskCreator,
+  HarTargetUtil,
+  hvigorOrToolChainsChanged,
+  OhosLogger,
+  PreBuild,
+  TargetTaskCreator,
+  TargetTaskService,
+  TaskNames
+} from '../../types/hvigor-imports';
 import {CangjieTaskNames} from './cangjie-task-names';
 import {GenerateCangjieResource} from './generate-cangjie-resource';
 import {CompileCangjie} from './compile-cangjie';
 import {SyncCangjieResource} from './sync-cangjie-resource';
 import {AfterCompileCangjie} from './after-compile-cangjie';
-import {DoNativeStrip} from '@ohos/hvigor-ohos-plugin/src/tasks/do-native-strip';
 import {PreviewGenerateCangjieResource} from './preview-generate-cangjie-resource';
-import {ProcessLibs} from '@ohos/hvigor-ohos-plugin/src/tasks/process-libs';
 import {ProcessCangjieLibs} from './process-cangjie-libs';
-import {hvigorOrToolChainsChanged} from '@ohos/hvigor-ohos-plugin/src/utils/meta-util';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
 import {CangjiePreBuild} from './cangjie-pre-build';
-import {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
-import {DefaultTargetConst} from '@ohos/hvigor-ohos-plugin/src/const/common-const';
-import {HarTargetUtil} from '@ohos/hvigor-ohos-plugin/src/utils/har-target-util';
 import {checkIsValid} from '../utils/common-utils';
 import {GenerateCangjieInteropApi} from './generate-cangjie-interop-api';
 import {CompileCangjieForIdl} from './compile-cangjie-for-idl';
 import {GenerateTomlDependencies} from './sync/generate-toml-dependencies';
-import {ApiType} from '@ohos/hvigor-ohos-plugin/src/project/data/hap-extra-info';
 import fs from 'fs';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
 import {C, FFI, PATH} from '../constants/constants';
 import path from 'path';
 import {BeforeProcessLibs} from './before-process-libs';
-import {BuildNativeWithNinja} from '@ohos/hvigor-ohos-plugin/src/tasks/build-native-with-ninja';
-import {PreBuild} from '@ohos/hvigor-ohos-plugin/src/tasks/pre-build';
-import CommonTask = TaskNames.CommonTask;
 import {readTomlContent} from '../utils/cangjie-file-util';
-import {CompileResource} from '@ohos/hvigor-ohos-plugin/src/tasks/compile-resource';
 import {MoveCangjieLibs} from './move-cangjie-libs';
 import {CangjieLogger} from '../log/cangjie-logger';
 import {AddApiDependencies} from './systemapi/add-api-dependencies';
 import {GenerateApiDependencies} from './systemapi/generate-api-dependencies';
-import {CmakeUtil} from '@ohos/hvigor-ohos-plugin/src/utils/cmake/cmake-util';
 import {UnitTestCompileCangjie} from './unitTest/unit-test-compile-cangjie';
+import CommonTask = TaskNames.CommonTask;
 
 const logger: OhosLogger = CangjieLogger.getLogger('cangjie-task-initialzers');
 
@@ -78,7 +77,7 @@ export class PreviewGenerateCangjieResourceCA extends TargetTaskCreator {
 
 export class CompileCangjieCA extends TargetTaskCreator {
   declareDepends = (): string[] => {
-    const depends: string[] = [GenerateCangjieResource.name, CompileResource.name];
+    const depends: string[] = [GenerateCangjieResource.name, TaskNames.Task.COMPILE_RESOURCE.name];
     getModuleDependencies(this.targetService, CangjieTaskNames.COMPILE_CJ_NODE.name, depends);
     if (getCppDepends(this.targetService).length > 0) {
       depends.push(BeforeProcessLibs.name);
@@ -92,7 +91,7 @@ export class CompileCangjieCA extends TargetTaskCreator {
 }
 
 export class ProcessCangjieLibsCA extends TargetTaskCreator {
-  declareDepends = (): string[] => [CompileCangjie.name, ProcessLibs.name];
+  declareDepends = (): string[] => [CompileCangjie.name, TaskNames.Task.PROCESS_LIB.name];
 
   declareTaskDetail = (): TaskDetails => CangjieTaskNames.PROCESS_CJ_LIBS;
 
@@ -100,7 +99,7 @@ export class ProcessCangjieLibsCA extends TargetTaskCreator {
 }
 
 export class AfterCompileCangjieCA extends TargetTaskCreator {
-  declareDepends = (): string[] => [DoNativeStrip.name];
+  declareDepends = (): string[] => [TaskNames.Task.DO_NATIVE_STRIP.name];
 
   declareTaskDetail = (): TaskDetails => CangjieTaskNames.AFTER_COMPILE_CANGJIE;
 
@@ -108,7 +107,7 @@ export class AfterCompileCangjieCA extends TargetTaskCreator {
 }
 
 export class MoveCangjieLibsCA extends TargetTaskCreator {
-  declareDepends = (): string[] => [ProcessLibs.name];
+  declareDepends = (): string[] => [TaskNames.Task.PROCESS_LIB.name];
 
   declareTaskDetail = (): TaskDetails => CangjieTaskNames.MOVE_CANGJIE_LIBS;
 
@@ -134,7 +133,7 @@ export class GenerateCangjieInteropApiCA extends GlobalTaskCreator {
 
 export class CompileCangjieForIdlCA extends TargetTaskCreator {
   declareDepends = (): string[] => {
-    const depends: string[] = [GenerateCangjieResource.name, CompileResource.name];
+    const depends: string[] = [GenerateCangjieResource.name, TaskNames.Task.COMPILE_RESOURCE.name];
     getModuleDependencies(this.targetService, CangjieTaskNames.COMPILE_CANGJIE_FOR_IDL.name, depends);
     if (getCppDepends(this.targetService).length > 0) {
       depends.push(BeforeProcessLibs.name);
@@ -156,7 +155,7 @@ export class GenerateTomlDependenciesCA extends TargetTaskCreator {
 }
 
 export class BeforeProcessLibsCA extends TargetTaskCreator {
-  declareDepends = (): string[] => [BuildNativeWithNinja.name];
+  declareDepends = (): string[] => [TaskNames.Task.BUILD_NATIVE_WITH_NINJA.name];
 
   declareTaskDetail = (): TaskDetails => CangjieTaskNames.BEFORE_PROCESS_LIBS;
 
@@ -180,7 +179,7 @@ export class GenerateApiDependenciesCA extends GlobalTaskCreator {
 }
 
 export class UnitTestCompileCangjieCA extends TargetTaskCreator {
-  declareDepends = (): string[] => [CompileResource.name];
+  declareDepends = (): string[] => [TaskNames.Task.COMPILE_RESOURCE.name];
 
   declareTaskDetail = (): TaskDetails => CangjieTaskNames.UNIT_TEST_COMPILE_CJ_NODE;
 

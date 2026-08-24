@@ -6,7 +6,7 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {HarPlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/har-plugin';
+import type {HarPlugin} from '../../types/hvigor-imports';
 import {BaseCangjiePlugin} from './base-cangjie-plugin';
 
 /**

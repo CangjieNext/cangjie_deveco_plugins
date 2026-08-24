@@ -6,18 +6,22 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {formatTime, iconv, isWindows} from '@ohos/hvigor';
+import type {BooleanCallback} from '../../types/hvigor-imports';
+import {
+  formatTime,
+  formatTimeToNumPair,
+  HVIGOR_PROCESS_EVENT_ID,
+  hvigorProcess,
+  iconv,
+  isWindows,
+  LogCombineType,
+  OhosLogger
+} from '../../types/hvigor-imports';
 import {type ChildProcess, execSync, spawn, type SpawnOptionsWithoutStdio, type SpawnSyncOptions} from 'child_process';
 import fs from 'fs';
 import * as os from 'os';
 import path from 'path';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import {LogCombineType} from '@ohos/hvigor-ohos-plugin/src/utils/log/log-combine-type';
-import type {BooleanCallback} from '@ohos/hvigor-ohos-plugin/src/common/type/callback-type';
-import {hvigorProcess} from '@ohos/hvigor/src/base/internal/lifecycle/hvigor-process';
-import {HVIGOR_PROCESS_EVENT_ID} from '@ohos/hvigor/src/base/internal/lifecycle/event/event-id-options';
 import {checkIsValid, killProcessAndChildren} from './common-utils';
-import {formatTimeToNumPair} from '@ohos/hvigor/src/base/util/time-util';
 import {CangjieLogger} from '../log/cangjie-logger';
 
 /**

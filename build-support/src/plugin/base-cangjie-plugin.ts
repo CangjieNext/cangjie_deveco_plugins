@@ -6,14 +6,10 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import type {ModuleModel} from '@ohos/hvigor-ohos-plugin/src/model/module/module-model';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
-import type {Module} from '@ohos/hvigor';
+import type {AbstractModulePlugin, Module, ModuleModel, TargetTaskService} from '../../types/hvigor-imports';
+import {TaskContainer, TaskCreatorManager, TaskNames} from '../../types/hvigor-imports';
 import {initSdkInfo} from '../sdk/cangjie-sdk-info';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
 import {CangjieTaskNames} from '../task/cangjie-task-names';
-import type {AbstractModulePlugin} from '@ohos/hvigor-ohos-plugin/src/plugin/common/abstract-module-plugin';
-import {TaskCreatorManager} from '@ohos/hvigor-ohos-plugin/src/tasks/task-creator';
 import {
   AddApiDependenciesCA,
   AfterCompileCangjieCA,
@@ -28,7 +24,6 @@ import {
   ProcessCangjieLibsCA,
   UnitTestCompileCangjieCA
 } from '../task/cangjie-task-initializer';
-import {TaskContainer} from '@ohos/hvigor/src/base/internal/task/interface/task-container-interface';
 import {checkIsValid, isCangjieModule} from '../utils/common-utils';
 
 /**

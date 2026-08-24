@@ -6,22 +6,16 @@
  * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
-import {FileSet} from '@ohos/hvigor';
-import {FileUtil} from '@ohos/hvigor-ohos-plugin/src/utils/file-util';
+import type {TargetTaskService} from '../../types/hvigor-imports';
+import {ApiType, FileSet, InjectUtil, OhosHapTask, OhosLogger, TaskNames} from '../../types/hvigor-imports';
 import path from 'path';
-import {OhosLogger} from '@ohos/hvigor-ohos-plugin/src/utils/log/ohos-logger';
-import type {TargetTaskService} from '@ohos/hvigor-ohos-plugin/src/tasks/service/target-task-service';
 import {CangjieTaskNames} from './cangjie-task-names';
 import fs from 'fs';
 import {retry} from '../utils/common-utils';
-import {ApiType} from '@ohos/hvigor-ohos-plugin/src/project/data/hap-extra-info';
 import {CangjieCommonPath} from '../common/cangjie-common-path';
-import {OhosHapTask} from '@ohos/hvigor-ohos-plugin/src/tasks/task/ohos-hap-task';
 import {copyLibsCommon, linkFile} from '../utils/cangjie-file-util';
 import {AbiEnum} from '../enums/cangjie-cpu-abi-enum';
-import {InjectUtil} from '@ohos/hvigor-ohos-plugin/src/utils/inject-util';
 import {CangjieLogger} from '../log/cangjie-logger';
-import {TaskNames} from '@ohos/hvigor-ohos-plugin/src/tasks/common/task-names';
 
 /**
  * move cangjie libs
