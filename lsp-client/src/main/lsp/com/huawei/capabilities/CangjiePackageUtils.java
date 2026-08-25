@@ -24,6 +24,19 @@ public class CangjiePackageUtils {
     public static final Pattern PACKAGE_DECLARATION_PATTERN = Pattern.compile(
         "^\\s*package\\s+([a-zA-Z_][a-zA-Z0-9_.]*)\\s*;?\\s*$", Pattern.MULTILINE);
 
+    private static final Pattern CANGJIE_IDENT = Pattern.compile("_*[a-zA-Z][a-zA-Z0-9_]*");
+
+
+    /**
+     * 判断是否是有效的文件夹名
+     *
+     * @param name 文件夹名称
+     * @return 是否有效
+     */
+    public static boolean isValidCangjieName(String name) {
+        return name != null && CANGJIE_IDENT.matcher(name).matches();
+    }
+
     /**
      * extract package name
      *

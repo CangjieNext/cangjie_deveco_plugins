@@ -8,6 +8,7 @@
 
 package com.huawei.idea.refactor.extract.dialog;
 
+import com.huawei.capabilities.CangjiePackageUtils;
 import com.huawei.idea.lsp.utils.CangjieBundle;
 import com.huawei.idea.refactor.extract.CangjieMemberInfo;
 import com.huawei.idea.refactor.extract.CangjieMemberSelectionPanel;
@@ -193,6 +194,18 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
             return comboBox.getText();
         }
         return "";
+    }
+
+    @Override
+    protected String validateQualifiedName(String packageName, @NotNull String extractedSuperName) {
+        String trimmedPackage = packageName == null ? "" : packageName.trim();
+        if (trimmedPackage.isEmpty() || "<Default>".equals(trimmedPackage)) {
+            return null;
+        }
+        if (!CangjiePackageUtils.isValidCangjieName(trimmedPackage)) {
+            return "Invalid package name: " + trimmedPackage;
+        }
+        return null;
     }
 
     @Override
