@@ -109,7 +109,7 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
         EditorComboBox comboBox = new EditorComboBox("");
 
         List<String> recentEntries = RecentsManager.getInstance(myProject)
-                .getRecentEntries(getDestinationPackageRecentKey());
+            .getRecentEntries(getDestinationPackageRecentKey());
         if (recentEntries != null && !recentEntries.isEmpty()) {
             comboBox.setHistory(recentEntries.toArray(new String[0]));
         }
@@ -128,7 +128,7 @@ public class CangjieExtractInterfaceDialog extends ExtractSuperBaseDialog<PsiEle
             String initialPath = currentPackage.isEmpty() ? null : currentPackage.replace('.', '/');
 
             CangjiePackageChooserDialog chooserDialog =
-                    new CangjiePackageChooserDialog(myProject, rootDir, initialPath);
+                new CangjiePackageChooserDialog(myProject, rootDir, initialPath);
             if (chooserDialog.showAndGet()) {
                 String relativePath = chooserDialog.getSelectedRelativePath();
                 String packageName = relativePath.replace('/', '.');
