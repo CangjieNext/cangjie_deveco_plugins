@@ -9,10 +9,10 @@
 package com.huawei.cangjie.testframework.utils;
 
 import static com.huawei.cangjie.testframework.runner.CangjieLocalTestRunner.EXECUTOR_SERVICE;
-import static com.huawei.idea.lsp.utils.Constants.NAME;
-import static com.huawei.idea.lsp.utils.Constants.PACKAGE;
-import static com.huawei.idea.lsp.utils.Constants.SRC_DIR;
-import static com.huawei.idea.lsp.utils.PathConstants.CJPM_FILE;
+import static com.huawei.ideacj.lsp.utils.Constants.NAME;
+import static com.huawei.ideacj.lsp.utils.Constants.PACKAGE;
+import static com.huawei.ideacj.lsp.utils.Constants.SRC_DIR;
+import static com.huawei.ideacj.lsp.utils.PathConstants.CJPM_FILE;
 
 import com.huawei.cangjie.projectmgmt.extend.toml.Toml;
 import com.huawei.cangjie.projectmgmt.utils.FileUtils;
@@ -28,7 +28,7 @@ import com.huawei.deveco.projectmodel.ohos.model.TargetManager;
 import com.huawei.deveco.projectmodel.ohos.model.impl.OhosTarget;
 import com.huawei.deveco.projectmodel.ohos.util.ModuleType;
 import com.huawei.deveco.projectmodel.ohos.v2.impl.HvigorProductV2;
-import com.huawei.idea.lsp.utils.Constants;
+import com.huawei.ideacj.lsp.utils.Constants;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;

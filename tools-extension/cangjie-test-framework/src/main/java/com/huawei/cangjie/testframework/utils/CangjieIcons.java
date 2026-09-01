@@ -22,5 +22,5 @@ public class CangjieIcons {
      * definition Cangjie language icon
      */
     public static final Icon CANGJIE_TEST_ICON = IconLoader.getIcon("/icons/cj_test_icon.svg",
-            com.huawei.idea.language.CangjieIcons.class);
+            com.huawei.ideacj.language.CangjieIcons.class);
 }

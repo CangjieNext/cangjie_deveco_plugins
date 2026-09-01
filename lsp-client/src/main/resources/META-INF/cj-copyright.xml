@@ -10,6 +10,6 @@
     <depends>com.intellij.copyright</depends>
     <extensions defaultExtensionNs="com.intellij.copyright">
         <updater filetype="Cangjie"
-                 implementationClass="com.huawei.idea.copyright.CangjieUpdateFileCopyrightProvider"/>
+                 implementationClass="com.huawei.ideacj.copyright.CangjieUpdateFileCopyrightProvider"/>
     </extensions>
 </idea-plugin>

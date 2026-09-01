@@ -9,7 +9,7 @@
 package lsp.service;
 
 import com.google.gson.GsonBuilder;
-import com.huawei.idea.language.CangjieFile;
+import com.huawei.ideacj.language.CangjieFile;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;

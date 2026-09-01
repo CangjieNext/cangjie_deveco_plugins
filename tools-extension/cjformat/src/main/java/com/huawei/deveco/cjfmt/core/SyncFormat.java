@@ -9,14 +9,14 @@
 package com.huawei.deveco.cjfmt.core;
 
 import static com.huawei.deveco.cjfmt.utils.FormatUtils.getFormatToolPath;
-import static com.huawei.deveco.utils.ModuleUtils.hasCangjieModule;
-import static com.huawei.deveco.utils.PathUtils.getExePath;
+import static com.huawei.deveco.cjquality.utils.ModuleUtils.hasCangjieModule;
+import static com.huawei.deveco.cjquality.utils.PathUtils.getExePath;
 
 import com.huawei.deveco.projectmodel.ohos.model.ProjectModel;
 import com.huawei.deveco.projectmodel.ohos.sync.SyncRequest;
 import com.huawei.deveco.projectmodel.ohos.sync.syncinterface.SyncProject;
-import com.huawei.deveco.utils.LogPrinter;
-import com.huawei.deveco.utils.ShellCommand;
+import com.huawei.deveco.cjquality.utils.LogPrinter;
+import com.huawei.deveco.cjquality.utils.ShellCommand;
 
 import com.intellij.openapi.project.Project;
 

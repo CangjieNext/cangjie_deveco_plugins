@@ -10,7 +10,7 @@ package com.huawei.deveco.cjfmt.core;
 
 import com.huawei.deveco.cjfmt.settings.CangjieCodeStyleSettings;
 import com.huawei.deveco.cjfmt.utils.FormatUtils;
-import com.huawei.deveco.utils.LogPrinter;
+import com.huawei.deveco.cjquality.utils.LogPrinter;
 
 import com.intellij.application.options.CodeStyle;
 import com.intellij.ide.plugins.PluginManagerCore;

@@ -10,6 +10,6 @@
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
     <extensions defaultExtensionNs="com.huawei.deveco.projectmodel.ohos">
-        <preSync implementation="com.huawei.idea.sync.CangjieModulePreSyncImpl" order="last"/>
+        <preSync implementation="com.huawei.ideacj.sync.CangjieModulePreSyncImpl" order="last"/>
     </extensions>
 </idea-plugin>

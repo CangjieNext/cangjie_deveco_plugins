@@ -9,7 +9,7 @@
 package com.huawei.deveco.cjlint;
 
 import com.huawei.ace.language.psi.lang.ExtendTypeScriptLanguage;
-import com.huawei.deveco.utils.LogPrinter;
+import com.huawei.deveco.cjquality.utils.LogPrinter;
 import com.huawei.tools.idea.codecheck.support.model.CodeMarsResult;
 import com.huawei.tools.idea.codecheck.utils.PsiUtil;
 
