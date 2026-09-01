@@ -1,0 +1,27 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2026-2026. All rights reserved.
+ * This source file is part of the Cangjie project, licensed under Apache-2.0
+ * with Runtime Library Exception.
+ *
+ * See https://cangjie-lang.cn/pages/LICENSE for license information.
+ */
+
+package com.huawei.ideacj.language.psi.toplevel.macronode;
+
+import com.huawei.ideacj.extend.cjpsi.adaptor.psi.CJPsiNode;
+import com.huawei.ideacj.language.psi.CangjieGetID;
+
+import com.intellij.lang.ASTNode;
+
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * CjMacroInputExprWithoutParens
+ *
+ * @since 2024-02-06
+ */
+public class CjMacroInputExprWithoutParens extends CJPsiNode implements CangjieGetID {
+    public CjMacroInputExprWithoutParens(@NotNull ASTNode node) {
+        super(node);
+    }
+}

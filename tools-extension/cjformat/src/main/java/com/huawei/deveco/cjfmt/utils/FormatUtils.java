@@ -14,8 +14,8 @@ import static com.huawei.deveco.cjfmt.utils.FormatConstant.CJFMT_WINDOWS;
 import static com.huawei.deveco.cjfmt.utils.FormatConstant.REFORMAT_CODE;
 import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
 
-import com.huawei.deveco.utils.LanguageProperties;
-import com.huawei.deveco.utils.NotificationUtil;
+import com.huawei.deveco.cjquality.utils.LanguageProperties;
+import com.huawei.deveco.cjquality.utils.NotificationUtil;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.SystemInfo;

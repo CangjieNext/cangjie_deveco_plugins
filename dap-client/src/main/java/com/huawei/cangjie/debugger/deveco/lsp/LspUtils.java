@@ -32,7 +32,7 @@ public class LspUtils {
             List.of(CANGJIE_FILE_TYPE);
 
     private static final String LSP_EDITORS_PROVIDER_CLASS_NAME =
-            "com.huawei.capabilities.completion.CangjieDebuggerEditorsProvider";
+            "com.huawei.cjlsp.capabilities.completion.CangjieDebuggerEditorsProvider";
 
     /**
      * check is virtual file supported by lsp

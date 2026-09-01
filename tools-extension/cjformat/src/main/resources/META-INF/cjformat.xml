@@ -20,7 +20,7 @@
         <syncProject implementation="com.huawei.deveco.cjfmt.core.SyncFormat"/>
     </extensions>
     <extensions defaultExtensionNs="org.jetbrains.plugins.terminal">
-        <localTerminalCustomizer implementation="com.huawei.deveco.terminal.CangjiePluginLocalTerminalCustomizer"/>
+        <localTerminalCustomizer implementation="com.huawei.deveco.cjquality.terminal.CangjiePluginLocalTerminalCustomizer"/>
     </extensions>
     <actions>
         <unregister id="ReformatCode"/>

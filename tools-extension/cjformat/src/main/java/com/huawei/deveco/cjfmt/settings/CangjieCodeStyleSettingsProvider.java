@@ -8,7 +8,7 @@
 
 package com.huawei.deveco.cjfmt.settings;
 
-import com.huawei.idea.lsp.utils.CangJieLanguage;
+import com.huawei.ideacj.lsp.utils.CangJieLanguage;
 
 import com.intellij.application.options.CodeStyleAbstractConfigurable;
 import com.intellij.application.options.CodeStyleAbstractPanel;

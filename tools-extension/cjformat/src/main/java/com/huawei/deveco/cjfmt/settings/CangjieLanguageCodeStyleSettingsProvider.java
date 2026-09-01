@@ -11,9 +11,9 @@ package com.huawei.deveco.cjfmt.settings;
 import com.huawei.deveco.cjfmt.core.ReformatCodeService;
 import com.huawei.deveco.cjfmt.utils.FormatConstants;
 import com.huawei.deveco.cjfmt.utils.FormatUtils;
-import com.huawei.deveco.utils.LogPrinter;
-import com.huawei.idea.filetypes.CangjieCodeFile;
-import com.huawei.idea.lsp.utils.CangJieLanguage;
+import com.huawei.deveco.cjquality.utils.LogPrinter;
+import com.huawei.ideacj.filetypes.CangjieCodeFile;
+import com.huawei.ideacj.lsp.utils.CangJieLanguage;
 
 import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.lang.Language;

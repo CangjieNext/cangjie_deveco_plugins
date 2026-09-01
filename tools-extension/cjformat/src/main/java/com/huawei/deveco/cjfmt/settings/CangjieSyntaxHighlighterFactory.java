@@ -8,7 +8,7 @@
 
 package com.huawei.deveco.cjfmt.settings;
 
-import com.huawei.idea.syntaxhighlighter.CangjieSyntaxHighlighter;
+import com.huawei.ideacj.syntaxhighlighter.CangjieSyntaxHighlighter;
 
 import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
