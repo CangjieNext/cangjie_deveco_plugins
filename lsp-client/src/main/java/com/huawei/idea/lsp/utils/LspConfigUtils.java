@@ -276,7 +276,8 @@ public class LspConfigUtils {
             } else {
                 String batPath = Paths.get(sdkPath, "build-tools", "envsetup.bat").toString();
                 process =
-                    new ProcessBuilder(WIN_BAT, WIN_BAT_OPTION, "\"" + "\"" + batPath + "\"" + "&&PATH" + "\"").start();
+                    new ProcessBuilder(WIN_BAT, WIN_BAT_OPTION, "chcp 65001 >nul && "
+                        + "\"" + batPath + "\" && PATH").start();
 
                 try (InputStream inputStream = process.getInputStream();
                     BufferedReader reader = new BufferedReader(
