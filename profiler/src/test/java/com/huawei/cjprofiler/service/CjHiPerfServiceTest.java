@@ -4,6 +4,11 @@
 
 package com.huawei.cjprofiler.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.huawei.deveco.insight.ohos.common.constant.CangJieConstant;
 import com.huawei.deveco.insight.ohos.model.vo.HiPerfNode;
 import com.huawei.deveco.insight.ohos.model.vo.hiperf.HiPerfNodeStateVo;
@@ -13,11 +18,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * CjHiPerfServiceTest
