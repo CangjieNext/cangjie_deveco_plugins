@@ -1,0 +1,63 @@
+package com.huawei.cjprofiler.processor;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.alibaba.fastjson2.JSONObject;
+import com.huawei.cjprofiler.service.launch.CjLaunchTraceService;
+import com.huawei.deveco.insight.ohos.common.Response;
+import com.huawei.deveco.insight.ohos.model.dto.request.launch.LaunchLifeCycleRequest;
+import com.huawei.deveco.insight.ohos.model.dto.response.launch.LaunchLifeCycleLane;
+import com.huawei.deveco.insight.ohos.model.dto.response.launch.LaunchThreadMetaData;
+import com.huawei.deveco.insight.ohos.utils.JsonUtil;
+import com.huawei.deveco.insight.ohos.utils.ValidateUtil;
+import com.huawei.deveco.insight.ohos.utils.singleton.SingletonContainer;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+
+class CjLaunchProcessorTest {
+    @Test
+    void queryLifeCycleLaneValidatesDelegatesAndWrapsResult() {
+        JSONObject params = new JSONObject();
+        LaunchLifeCycleRequest request = mock(LaunchLifeCycleRequest.class);
+        CjLaunchTraceService service = mock(CjLaunchTraceService.class);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<SingletonContainer> singleton = mockStatic(SingletonContainer.class)) {
+            json.when(() -> JsonUtil.parseObject(params, LaunchLifeCycleRequest.class)).thenReturn(request);
+            singleton.when(() -> SingletonContainer.getInstance(CjLaunchTraceService.class)).thenReturn(service);
+            when(service.queryLaunchLifeCycleLane(request)).thenReturn(java.util.Collections.emptyList());
+
+            Response<?> response = CjLaunchProcessor.queryLaunchLifeCycleLane(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            assertThat(response.getBody()).isInstanceOf(LaunchLifeCycleLane.class);
+            validate.verify(() -> ValidateUtil.validate(request));
+            verify(service).queryLaunchLifeCycleLane(request);
+        }
+    }
+
+    @Test
+    void queryThreadMetadataValidatesDelegatesAndWrapsResult() {
+        JSONObject params = new JSONObject();
+        LaunchLifeCycleRequest request = mock(LaunchLifeCycleRequest.class);
+        CjLaunchTraceService service = mock(CjLaunchTraceService.class);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<SingletonContainer> singleton = mockStatic(SingletonContainer.class)) {
+            json.when(() -> JsonUtil.parseObject(params, LaunchLifeCycleRequest.class)).thenReturn(request);
+            singleton.when(() -> SingletonContainer.getInstance(CjLaunchTraceService.class)).thenReturn(service);
+
+            Response<?> response = CjLaunchProcessor.queryLaunchThreadMetadata(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            assertThat(response.getBody()).isInstanceOf(LaunchThreadMetaData.class);
+            validate.verify(() -> ValidateUtil.validate(request));
+            verify(service).queryLaunchThreadMetadata(request);
+        }
+    }
+}
