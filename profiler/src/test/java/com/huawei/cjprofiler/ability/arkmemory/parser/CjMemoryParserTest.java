@@ -24,16 +24,16 @@ import java.util.List;
  * Tests for {@link CjMemoryParser} focusing on pure logic methods.
  */
 class CjMemoryParserTest {
-    private static final Class<?>[] PARSER_ARG = {JsonParser.class};
+    private static final List<Class<?>> PARSER_ARG = List.of(JsonParser.class);
 
     @Test
     void convertToMilliseconds_correctlyCombinesHighAndLowBits() throws Exception {
         long result = (long) CjMemoryParserTestSupport.invokePrivate(
-            "convertToMilliseconds", new Class<?>[] {int.class, int.class}, new Object[] {0, 1000});
+            "convertToMilliseconds", List.of(int.class, int.class), List.of(0, 1000));
         assertThat(result).isEqualTo(1L);
 
         result = (long) CjMemoryParserTestSupport.invokePrivate(
-            "convertToMilliseconds", new Class<?>[] {int.class, int.class}, new Object[] {1, 0});
+            "convertToMilliseconds", List.of(int.class, int.class), List.of(1, 0));
         assertThat(result).isEqualTo(4_294_967L);
     }
 
@@ -45,7 +45,7 @@ class CjMemoryParserTest {
 
         @SuppressWarnings("unchecked")
         List<Integer> result = (List<Integer>) CjMemoryParserTestSupport.invokePrivate(
-            "getList", PARSER_ARG, new Object[] {parser});
+            "getList", PARSER_ARG, List.of(parser));
         assertThat(result).containsExactly(1, 2, 3, 42);
     }
 
@@ -55,7 +55,7 @@ class CjMemoryParserTest {
         // getList calls nextToken() -> VALUE_NUMBER, then checks != START_ARRAY -> throws
 
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "getList", PARSER_ARG, new Object[] {parser}))
+            "getList", PARSER_ARG, List.of(parser)))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -63,7 +63,7 @@ class CjMemoryParserTest {
     @Test
     void convertListToIntArray_returnsEmptyArrayForEmptyList() throws Exception {
         int[] result = (int[]) CjMemoryParserTestSupport.invokePrivate(
-            "convertListToIntArray", new Class<?>[] {List.class}, new Object[] {Collections.emptyList()});
+            "convertListToIntArray", List.of(List.class), List.of(Collections.emptyList()));
         assertThat(result).isEmpty();
     }
 }

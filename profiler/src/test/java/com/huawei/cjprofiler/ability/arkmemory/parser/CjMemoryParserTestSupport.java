@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,13 +42,13 @@ final class CjMemoryParserTestSupport {
      * 反射调用 CjMemoryParser 的 private 方法并返回结果。
      *
      * @param methodName 目标 private 方法名
-     * @param paramTypes 目标方法的参数类型数组
-     * @param args       传给目标方法的实参
+     * @param paramTypes 目标方法的参数类型集合
+     * @param args       传给目标方法的实参集合
      * @return 目标方法的返回值
      * @throws Exception 反射调用或目标方法执行失败时抛出
      */
-    static Object invokePrivate(String methodName, Class<?>[] paramTypes, Object[] args) throws Exception {
-        Method method = CjMemoryParser.class.getDeclaredMethod(methodName, paramTypes);
+    static Object invokePrivate(String methodName, List<Class<?>> paramTypes, List<Object> args) throws Exception {
+        Method method = CjMemoryParser.class.getDeclaredMethod(methodName, paramTypes.toArray(new Class<?>[0]));
         method.setAccessible(true);
         CjMemoryParser parser = new CjMemoryParser();
         // 复现生产链路 parseRawJson 的前置初始化：handleProperty 依赖 initRootTypeList
@@ -58,7 +59,7 @@ final class CjMemoryParserTestSupport {
             init.setAccessible(true);
             init.invoke(parser);
         }
-        return method.invoke(parser, args);
+        return method.invoke(parser, args.toArray());
     }
 
     /**
@@ -118,7 +119,7 @@ final class CjMemoryParserTestSupport {
 
         try (JsonParser chunkParser = factory.createParser(fullJson)) {
             Object rawResult = invokePrivate(
-                "readRawCjHeapSnapshot", new Class<?>[] {JsonParser.class}, new Object[] {chunkParser});
+                "readRawCjHeapSnapshot", List.of(JsonParser.class), List.of(chunkParser));
             org.assertj.core.api.Assertions.assertThat(rawResult).isInstanceOf(RawHeapSnapshot.class);
             return (RawHeapSnapshot) rawResult;
         }

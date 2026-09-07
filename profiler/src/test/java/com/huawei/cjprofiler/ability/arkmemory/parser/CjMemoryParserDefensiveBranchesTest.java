@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * 覆盖 {@link CjMemoryParser#readStackFrameList}/{@link CjMemoryParser#samples}
@@ -30,7 +31,7 @@ import java.lang.reflect.InvocationTargetException;
  * 命中子数组/对象元素的异常分支。
  */
 class CjMemoryParserDefensiveBranchesTest {
-    private static final Class<?>[] PARSER_ARG = {JsonParser.class};
+    private static final List<Class<?>> PARSER_ARG = List.of(JsonParser.class);
 
     @AfterEach
     void tearDown() throws Exception {
@@ -44,7 +45,7 @@ class CjMemoryParserDefensiveBranchesTest {
     void readStackFrameList_throwsWhenNotStartArray() throws Exception {
         // 指针停在 VALUE_NUMBER，非 START_ARRAY；无需 nextToken
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "readStackFrameList", PARSER_ARG, new Object[] {new JsonFactory().createParser("42")}))
+            "readStackFrameList", PARSER_ARG, List.of(new JsonFactory().createParser("42"))))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -55,7 +56,7 @@ class CjMemoryParserDefensiveBranchesTest {
         JsonParser parser = new JsonFactory().createParser("[42]");
         parser.nextToken();
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "readStackFrameList", PARSER_ARG, new Object[] {parser}))
+            "readStackFrameList", PARSER_ARG, List.of(parser)))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -66,7 +67,7 @@ class CjMemoryParserDefensiveBranchesTest {
         JsonParser parser = new JsonFactory().createParser("[[100,1,2,66,999]]");
         parser.nextToken();
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "readStackFrameList", PARSER_ARG, new Object[] {parser}))
+            "readStackFrameList", PARSER_ARG, List.of(parser)))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -77,7 +78,7 @@ class CjMemoryParserDefensiveBranchesTest {
     void samples_throwsWhenNotStartArray() throws Exception {
         // 指针停在 VALUE_NUMBER，非 START_ARRAY；无需 nextToken
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "samples", PARSER_ARG, new Object[] {new JsonFactory().createParser("42")}))
+            "samples", PARSER_ARG, List.of(new JsonFactory().createParser("42"))))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -88,7 +89,7 @@ class CjMemoryParserDefensiveBranchesTest {
         JsonParser parser = new JsonFactory().createParser("[42]");
         parser.nextToken();
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "samples", PARSER_ARG, new Object[] {parser}))
+            "samples", PARSER_ARG, List.of(parser)))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -100,7 +101,7 @@ class CjMemoryParserDefensiveBranchesTest {
             new JsonFactory().createParser("[{\"size\":16,\"nodeId\":1,\"ordinal\":0,\"extra\":1}]");
         parser.nextToken();
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "samples", PARSER_ARG, new Object[] {parser}))
+            "samples", PARSER_ARG, List.of(parser)))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }

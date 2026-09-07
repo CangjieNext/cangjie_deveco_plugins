@@ -55,7 +55,6 @@ class CjThreadDaoTest {
         TraceDatabase traceDatabase = mock(TraceDatabase.class);
         CjThreadSliceInfoPo slice = mock(CjThreadSliceInfoPo.class);
         CjThreadInfoVo thread = mock(CjThreadInfoVo.class);
-        ProcessListInfoVo process = mock(ProcessListInfoVo.class);
         List<Long> processIds = List.of(7L, 8L);
         CjThreadMapper mapper = mock(CjThreadMapper.class);
         when(mapperManager.getDatabaseTypeByMapper(CjThreadMapper.class)).thenReturn(DatabaseType.TRACE);
@@ -67,6 +66,7 @@ class CjThreadDaoTest {
         when(mapper.queryCjThreadList(OFFSET, START, END)).thenReturn(List.of(thread));
         when(mapper.queryCjThreadLaneList(OFFSET, "WAITING", START, END, processIds)).thenReturn(List.of(slice));
         when(mapper.queryCjThreadTotalLaneList(OFFSET, START, END, processIds)).thenReturn(List.of(slice));
+        ProcessListInfoVo process = mock(ProcessListInfoVo.class);
         when(mapper.queryCjThreadProcessList(START, END, OFFSET)).thenReturn(List.of(process));
 
         try (MockedStatic<CjMapperManager> mapperStatic = mockStatic(CjMapperManager.class);

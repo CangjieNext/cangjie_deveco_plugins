@@ -67,11 +67,11 @@ class CjMemoryServicePureLogicTest {
         return node;
     }
 
-    private static Object invoke(Object target, String methodName, Class<?>[] paramTypes, Object[] args)
+    private static Object invoke(Object target, String methodName, List<Class<?>> paramTypes, List<Object> args)
         throws Exception {
-        Method method = CjMemoryService.class.getDeclaredMethod(methodName, paramTypes);
+        Method method = CjMemoryService.class.getDeclaredMethod(methodName, paramTypes.toArray(new Class<?>[0]));
         method.setAccessible(true);
-        return method.invoke(target, args);
+        return method.invoke(target, args.toArray());
     }
 
     /**
@@ -87,7 +87,7 @@ class CjMemoryServicePureLogicTest {
 
         @SuppressWarnings("unchecked")
         Object treeResult = invoke(service, "buildSingleTree",
-            new Class<?>[] {List.class}, new Object[] {path});
+            List.of(List.class), List.of(path));
         assertThat(treeResult).isInstanceOf(JsHeapSnapshotInstanceNode.class);
         JsHeapSnapshotInstanceNode result = (JsHeapSnapshotInstanceNode) treeResult;
 
@@ -112,7 +112,7 @@ class CjMemoryServicePureLogicTest {
 
         @SuppressWarnings("unchecked")
         Object treeResult = invoke(service, "buildSingleTree",
-            new Class<?>[] {List.class}, new Object[] {path});
+            List.of(List.class), List.of(path));
         assertThat(treeResult).isInstanceOf(JsHeapSnapshotInstanceNode.class);
         JsHeapSnapshotInstanceNode result = (JsHeapSnapshotInstanceNode) treeResult;
 
@@ -144,8 +144,8 @@ class CjMemoryServicePureLogicTest {
 
         @SuppressWarnings("unchecked")
         List<JsHeapSnapshotInstanceNode> result = (List<JsHeapSnapshotInstanceNode>) invoke(service,
-            "covertInstanceToTree", new Class<?>[] {List.class, int.class},
-            new Object[] {new ArrayList<>(), 0});
+            "covertInstanceToTree", List.of(List.class, int.class),
+            List.of(new ArrayList<>(), 0));
 
         assertThat(result).isEmpty();
     }
@@ -168,8 +168,8 @@ class CjMemoryServicePureLogicTest {
 
         @SuppressWarnings("unchecked")
         List<JsHeapSnapshotInstanceNode> result = (List<JsHeapSnapshotInstanceNode>) invoke(service,
-            "covertInstanceToTree", new Class<?>[] {List.class, int.class},
-            new Object[] {pathList, 5});
+            "covertInstanceToTree", List.of(List.class, int.class),
+            List.of(pathList, 5));
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getName()).isEqualTo("A");
@@ -192,8 +192,8 @@ class CjMemoryServicePureLogicTest {
         ArkHeapNodeExpandRequest request = org.mockito.Mockito.mock(ArkHeapNodeExpandRequest.class);
 
         Object isFindResult = invoke(service, "isFind",
-            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class},
-            new Object[] {request, node});
+            List.of(ArkHeapNodeExpandRequest.class, ConstructorNode.class),
+            List.of(request, node));
         assertThat(isFindResult).isInstanceOf(Boolean.class);
         Boolean isFoundEmpty = (Boolean) isFindResult;
 
@@ -218,8 +218,8 @@ class CjMemoryServicePureLogicTest {
         org.mockito.Mockito.when(request.getNodeId()).thenReturn(7);
 
         Object isFoundResult = invoke(service, "isFind",
-            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class},
-            new Object[] {request, node});
+            List.of(ArkHeapNodeExpandRequest.class, ConstructorNode.class),
+            List.of(request, node));
         assertThat(isFoundResult).isInstanceOf(Boolean.class);
         Boolean isFoundMatching = (Boolean) isFoundResult;
 
@@ -243,8 +243,8 @@ class CjMemoryServicePureLogicTest {
         org.mockito.Mockito.when(request.getNodeId()).thenReturn(999);
 
         Object isFoundResult = invoke(service, "isFind",
-            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class},
-            new Object[] {request, node});
+            List.of(ArkHeapNodeExpandRequest.class, ConstructorNode.class),
+            List.of(request, node));
         assertThat(isFoundResult).isInstanceOf(Boolean.class);
         Boolean isFoundNone = (Boolean) isFoundResult;
 
@@ -264,8 +264,8 @@ class CjMemoryServicePureLogicTest {
         File file = new File("noSuffix");
 
         assertThatThrownBy(() -> invoke(service, "saveSnapshotFileData",
-            new Class<?>[] {String.class, long.class, long.class, File.class, boolean.class},
-            new Object[] {"session", 100L, 200L, file, false}))
+            List.of(String.class, long.class, long.class, File.class, boolean.class),
+            List.of("session", 100L, 200L, file, false)))
             .isInstanceOf(InvocationTargetException.class)
             .hasCauseInstanceOf(ProfilerException.class);
     }
@@ -284,8 +284,8 @@ class CjMemoryServicePureLogicTest {
         parent.setChildren(new ArrayList<>());
 
         invoke(service, "handleCjStackTree",
-            new Class<?>[] {int.class, List.class, com.huawei.cjprofiler.ability.arkmemory.entity.CjStack.class},
-            new Object[] {0, new ArrayList<>(), parent});
+            List.of(int.class, List.class, com.huawei.cjprofiler.ability.arkmemory.entity.CjStack.class),
+            List.of(0, new ArrayList<>(), parent));
 
         assertThat(parent.getChildren()).isEmpty();
     }

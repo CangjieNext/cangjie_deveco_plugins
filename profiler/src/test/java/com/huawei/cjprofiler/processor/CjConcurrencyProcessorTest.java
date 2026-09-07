@@ -47,8 +47,7 @@ class CjConcurrencyProcessorTest {
         when(service.queryConcurrencyMeasureList(request)).thenReturn(details);
         try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
              MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
-             MockedStatic<CjConcurrencyMeasureService> serviceStatic =
-                mockStatic(CjConcurrencyMeasureService.class)) {
+             MockedStatic<CjConcurrencyMeasureService> serviceStatic = mockStatic(CjConcurrencyMeasureService.class)) {
             json.when(() -> JsonUtil.parseObject(params, QueryConcurrencyMeasureRequest.class)).thenReturn(request);
             serviceStatic.when(CjConcurrencyMeasureService::getInstance).thenReturn(service);
 
@@ -71,8 +70,7 @@ class CjConcurrencyProcessorTest {
         when(service.queryConcurrencyMeasureList(request)).thenReturn(List.of());
         try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
              MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
-             MockedStatic<CjConcurrencyMeasureService> serviceStatic =
-                mockStatic(CjConcurrencyMeasureService.class)) {
+             MockedStatic<CjConcurrencyMeasureService> serviceStatic = mockStatic(CjConcurrencyMeasureService.class)) {
             json.when(() -> JsonUtil.parseObject(params, QueryConcurrencyMeasureRequest.class)).thenReturn(request);
             serviceStatic.when(CjConcurrencyMeasureService::getInstance).thenReturn(service);
 

@@ -108,7 +108,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initRootTypeMap_realSnapshot_populatesRootMap() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initRootTypeMap", new Object[] {parseRealSnapshot()});
+        invokePrivate(service, "initRootTypeMap", List.of(parseRealSnapshot()));
 
         @SuppressWarnings("unchecked")
         Map<Integer, String> rootTypeMap = getField(service, "rootTypeMap");
@@ -119,7 +119,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initArrayLength_realSnapshot_populatesLengthMap() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initArrayLength", new Object[] {parseRealSnapshot()});
+        invokePrivate(service, "initArrayLength", List.of(parseRealSnapshot()));
 
         @SuppressWarnings("unchecked")
         Map<Integer, Integer> arrayLengthMap = getField(service, "arrayLengthMap");
@@ -129,7 +129,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initHeapThreadDetail_realSnapshot_keysHeapThreadMapByStartTime() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initHeapThreadDetail", new Object[] {parseRealSnapshot()});
+        invokePrivate(service, "initHeapThreadDetail", List.of(parseRealSnapshot()));
 
         @SuppressWarnings("unchecked")
         Map<String, List<HeapThreadInfo>> heapThreadMap = getField(service, "heapThreadMap");
@@ -140,7 +140,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initTraceTreeMap_realSnapshot_emptyTree_storesEmptyChildren() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initTraceTreeMap", new Object[] {parseRealSnapshot(), 1});
+        invokePrivate(service, "initTraceTreeMap", List.of(parseRealSnapshot(), 1));
 
         // 空树: cjTraceTreeMap 记录 tid → 空 children
         assertThat(service.getStackList(1)).isEmpty();
@@ -149,7 +149,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void getHeapThreadInfo_whenSnapshotKeyPresentButEmpty_returnsEmptyWit() {
         CjMemoryService service = new CjMemoryService();
-        invokePrivateQuietly(service, "initHeapThreadDetail", new Object[] {parseRealSnapshot()});
+        invokePrivateQuietly(service, "initHeapThreadDetail", List.of(parseRealSnapshot()));
 
         List<HeapThreadInfo> result = service.getHeapThreadInfo("session", START_TIME);
 
@@ -181,27 +181,28 @@ class CjMemoryServiceRealDataTest {
 
     // ---- 工具方法 ----
 
-    private static void invokePrivate(Object target, String name, Object[] args) throws Exception {
-        Class<?>[] types = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            types[i] = args[i].getClass();
+    private static void invokePrivate(Object target, String name, List<Object> args)
+        throws ReflectiveOperationException {
+        Class<?>[] types = new Class<?>[args.size()];
+        for (int i = 0; i < args.size(); i++) {
+            types[i] = args.get(i).getClass();
             if (types[i] == Integer.class) {
                 types[i] = int.class;
             } else if (types[i] == Boolean.class) {
                 types[i] = boolean.class;
             } else {
-                types[i] = args[i].getClass();
+                types[i] = args.get(i).getClass();
             }
         }
         Method method = CjMemoryService.class.getDeclaredMethod(name, types);
         method.setAccessible(true);
-        method.invoke(target, args);
+        method.invoke(target, args.toArray());
     }
 
-    private static void invokePrivateQuietly(Object target, String name, Object[] args) {
+    private static void invokePrivateQuietly(Object target, String name, List<Object> args) {
         try {
             invokePrivate(target, name, args);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Failed to invoke " + name, e);
         }
     }
