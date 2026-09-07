@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2026-2026. All rights reserved.
+ * This source file is part of the Cangjie project, licensed under Apache-2.0
+ * with Runtime Library Exception.
+ *
+ * See https://cangjie-lang.cn/pages/LICENSE for license information.
+ */
+
 package com.huawei.cjprofiler.utils;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,9 +41,9 @@ public class CjCommonImplTest {
         TypeRule typeRule = new TypeRule();
         setTypeField(typeRule, "other_type");
 
-        boolean result = cjCommonImpl.isNotifyCjFileNumExceedLimit(typeRule);
+        boolean isNotifyExceedLimit = cjCommonImpl.isNotifyCjFileNumExceedLimit(typeRule);
 
-        assertFalse(result);
+        assertFalse(isNotifyExceedLimit);
     }
 
     /**
@@ -48,9 +56,9 @@ public class CjCommonImplTest {
         setTypeField(typeRule, null);
 
         // Should not throw NullPointerException
-        boolean result = cjCommonImpl.isNotifyCjFileNumExceedLimit(typeRule);
+        boolean isNotifyExceedLimit = cjCommonImpl.isNotifyCjFileNumExceedLimit(typeRule);
 
-        assertFalse(result);
+        assertFalse(isNotifyExceedLimit);
     }
 
     /**
@@ -62,9 +70,9 @@ public class CjCommonImplTest {
         TypeRule typeRule = new TypeRule();
         setTypeField(typeRule, "");
 
-        boolean result = cjCommonImpl.isNotifyCjFileNumExceedLimit(typeRule);
+        boolean isNotifyExceedLimit = cjCommonImpl.isNotifyCjFileNumExceedLimit(typeRule);
 
-        assertFalse(result);
+        assertFalse(isNotifyExceedLimit);
     }
 
     /**
