@@ -23,7 +23,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class MeasureDetailVoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         MeasureDetailVo vo = new MeasureDetailVo();

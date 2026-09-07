@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjStackTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         CjStack stack = new CjStack();

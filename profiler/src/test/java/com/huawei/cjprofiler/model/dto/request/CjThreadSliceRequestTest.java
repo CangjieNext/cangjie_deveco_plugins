@@ -23,7 +23,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjThreadSliceRequestTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         CjThreadSliceRequest request = new CjThreadSliceRequest();

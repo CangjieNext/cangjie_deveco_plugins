@@ -30,6 +30,11 @@ import org.mockito.MockedStatic;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjThreadDao} thread query methods.
+ *
+ * @since 2026-08-14
+ */
 class CjThreadDaoTest {
     private static final String SESSION_ID = "thread-session";
     private static final long OFFSET = 100L;
@@ -44,7 +49,6 @@ class CjThreadDaoTest {
 
     @Test
     void queryMethods_delegateAllArgumentsAndCloseEachSession() {
-        CjThreadMapper mapper = mock(CjThreadMapper.class);
         SqlSession sqlSession = mock(SqlSession.class);
         CjMapperManager mapperManager = mock(CjMapperManager.class);
         DatabaseManager databaseManager = mock(DatabaseManager.class);
@@ -53,6 +57,7 @@ class CjThreadDaoTest {
         CjThreadInfoVo thread = mock(CjThreadInfoVo.class);
         ProcessListInfoVo process = mock(ProcessListInfoVo.class);
         List<Long> processIds = List.of(7L, 8L);
+        CjThreadMapper mapper = mock(CjThreadMapper.class);
         when(mapperManager.getDatabaseTypeByMapper(CjThreadMapper.class)).thenReturn(DatabaseType.TRACE);
         when(databaseManager.getSqlSession(SESSION_ID, DatabaseType.TRACE)).thenReturn(Optional.of(sqlSession));
         when(traceDatabase.getAbsoluteOffsetBySessionId(SESSION_ID)).thenReturn(OFFSET);

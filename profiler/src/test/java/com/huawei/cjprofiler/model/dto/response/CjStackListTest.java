@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjStackListTest {
-
     @Test
     void constructor_setsCjStackList() {
         List<CjStack> stacks = new ArrayList<>();

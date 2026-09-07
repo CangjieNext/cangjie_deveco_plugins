@@ -23,6 +23,11 @@ import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+/**
+ * Unit tests for {@code CjTraceProcessor} trace request handling.
+ *
+ * @since 2026-08-14
+ */
 class CjTraceProcessorTest {
     @Test
     void deleteTraceSessionDelegatesAndReturnsServiceResponse() {

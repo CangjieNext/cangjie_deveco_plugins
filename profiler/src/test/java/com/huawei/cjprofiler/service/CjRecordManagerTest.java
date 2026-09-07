@@ -19,6 +19,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjRecordManager} service creation and resource release.
+ *
+ * @since 2026-08-14
+ */
 class CjRecordManagerTest {
     private final CjRecordManager manager = CjRecordManager.getInstance();
 
@@ -42,7 +47,7 @@ class CjRecordManagerTest {
     }
 
     @Test
-    void createCjRecordService_whenProcessIsMissing_createsRetrievableService() {
+    void createCjRecordService_whenProcessIsMissing_createsRetrievableSer() {
         manager.creatCjRecordService(12);
 
         assertThat(manager.getCjRecordService(12))
@@ -53,7 +58,7 @@ class CjRecordManagerTest {
     }
 
     @Test
-    void createCjRecordService_whenProcessAlreadyExists_keepsExistingService() {
+    void createCjRecordService_whenProcessAlreadyExists_keepsExistingServ() {
         manager.creatCjRecordService(21);
         CjRecordService first = manager.getCjRecordService(21).orElseThrow();
 
@@ -64,7 +69,7 @@ class CjRecordManagerTest {
     }
 
     @Test
-    void createCjMemoryService_whenSessionIsMissing_createsAndCachesService() {
+    void createCjMemoryService_whenSessionIsMissing_createsAndCachesServi() {
         CjMemoryService created = manager.creatCjMemoryService("session-1");
 
         assertThat(created).isNotNull();
@@ -72,7 +77,7 @@ class CjRecordManagerTest {
     }
 
     @Test
-    void createCjMemoryService_whenSessionAlreadyExists_keepsExistingService() {
+    void createCjMemoryService_whenSessionAlreadyExists_keepsExistingServ() {
         CjMemoryService first = manager.creatCjMemoryService("session-2");
 
         CjMemoryService second = manager.creatCjMemoryService("session-2");
@@ -82,7 +87,7 @@ class CjRecordManagerTest {
     }
 
     @Test
-    void releaseAllMemoryResources_releasesEveryMemoryServiceAndClearsBothCaches() {
+    void releaseAllMemoryResources_releasesEveryMemoryServiceAndClearsBot() {
         CjMemoryService first = mock(CjMemoryService.class);
         CjMemoryService second = mock(CjMemoryService.class);
         manager.getCjMemoryServiceMap().put("first", first);

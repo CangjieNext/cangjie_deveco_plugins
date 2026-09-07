@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CjNotificationErrorTest {
-
     @Test
     void cjImportExceedsQuantityLimitErrorConstant_isNonNull() {
         NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
@@ -35,21 +34,21 @@ class CjNotificationErrorTest {
     }
 
     @Test
-    void cjImportExceedsQuantityLimitErrorConstant_isInstanceOfCjNotificationError() {
+    void cjImportExceedsLimitError_isInstanceOfCjNotificationError() {
         NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
 
         assertEquals(true, error instanceof CjNotificationError);
     }
 
     @Test
-    void cjImportExceedsQuantityLimitErrorConstant_getContentReturnsNonNull() {
+    void cjImportExceedsLimitError_getContentReturnsNonNull() {
         NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
 
         assertNotNull(error.getContent());
     }
 
     @Test
-    void cjImportExceedsQuantityLimitErrorConstant_getContentWithBundleReturnsNonNull() {
+    void cjImportExceedsLimitError_getContentWithBundleReturnsNonNull() {
         NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
 
         assertNotNull(error.getContent("any.bundle"));

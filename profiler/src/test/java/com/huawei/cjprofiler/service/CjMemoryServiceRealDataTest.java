@@ -37,7 +37,6 @@ import java.util.Map;
  * </ul>
  */
 class CjMemoryServiceRealDataTest {
-
     private static final String FIXTURE = "src/test/resources/fixtures/real-cangjie-heap-snapshot.cjheapsnapshot";
     private static final String START_TIME = "1787729306440";
 
@@ -109,7 +108,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initRootTypeMap_realSnapshot_populatesRootMap() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initRootTypeMap", parseRealSnapshot());
+        invokePrivate(service, "initRootTypeMap", new Object[] {parseRealSnapshot()});
 
         @SuppressWarnings("unchecked")
         Map<Integer, String> rootTypeMap = getField(service, "rootTypeMap");
@@ -120,7 +119,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initArrayLength_realSnapshot_populatesLengthMap() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initArrayLength", parseRealSnapshot());
+        invokePrivate(service, "initArrayLength", new Object[] {parseRealSnapshot()});
 
         @SuppressWarnings("unchecked")
         Map<Integer, Integer> arrayLengthMap = getField(service, "arrayLengthMap");
@@ -130,7 +129,7 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initHeapThreadDetail_realSnapshot_keysHeapThreadMapByStartTime() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initHeapThreadDetail", parseRealSnapshot());
+        invokePrivate(service, "initHeapThreadDetail", new Object[] {parseRealSnapshot()});
 
         @SuppressWarnings("unchecked")
         Map<String, List<HeapThreadInfo>> heapThreadMap = getField(service, "heapThreadMap");
@@ -141,16 +140,16 @@ class CjMemoryServiceRealDataTest {
     @Test
     void initTraceTreeMap_realSnapshot_emptyTree_storesEmptyChildren() throws Exception {
         CjMemoryService service = new CjMemoryService();
-        invokePrivate(service, "initTraceTreeMap", parseRealSnapshot(), 1);
+        invokePrivate(service, "initTraceTreeMap", new Object[] {parseRealSnapshot(), 1});
 
         // 空树: cjTraceTreeMap 记录 tid → 空 children
         assertThat(service.getStackList(1)).isEmpty();
     }
 
     @Test
-    void getHeapThreadInfo_whenSnapshotKeyPresentButEmpty_returnsEmptyWithoutFilter() {
+    void getHeapThreadInfo_whenSnapshotKeyPresentButEmpty_returnsEmptyWit() {
         CjMemoryService service = new CjMemoryService();
-        invokePrivateQuietly(service, "initHeapThreadDetail", parseRealSnapshot());
+        invokePrivateQuietly(service, "initHeapThreadDetail", new Object[] {parseRealSnapshot()});
 
         List<HeapThreadInfo> result = service.getHeapThreadInfo("session", START_TIME);
 
@@ -160,7 +159,7 @@ class CjMemoryServiceRealDataTest {
     // ---- parseArkHeapTimeline：真实快照 + isImport=true 跳过 savaTraceFile ----
 
     @Test
-    void parseArkHeapTimeline_realSnapshot_importMode_processesWithoutSavingFile() {
+    void parseArkHeapTimeline_realSnapshot_importMode_processesWithoutSav() {
         CjMemoryService service = new CjMemoryService();
         RawHeapSnapshot raw = parseRealSnapshot();
 
@@ -182,7 +181,7 @@ class CjMemoryServiceRealDataTest {
 
     // ---- 工具方法 ----
 
-    private static void invokePrivate(Object target, String name, Object... args) throws Exception {
+    private static void invokePrivate(Object target, String name, Object[] args) throws Exception {
         Class<?>[] types = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++) {
             types[i] = args[i].getClass();
@@ -190,6 +189,8 @@ class CjMemoryServiceRealDataTest {
                 types[i] = int.class;
             } else if (types[i] == Boolean.class) {
                 types[i] = boolean.class;
+            } else {
+                types[i] = args[i].getClass();
             }
         }
         Method method = CjMemoryService.class.getDeclaredMethod(name, types);
@@ -197,7 +198,7 @@ class CjMemoryServiceRealDataTest {
         method.invoke(target, args);
     }
 
-    private static void invokePrivateQuietly(Object target, String name, Object... args) {
+    private static void invokePrivateQuietly(Object target, String name, Object[] args) {
         try {
             invokePrivate(target, name, args);
         } catch (Exception e) {

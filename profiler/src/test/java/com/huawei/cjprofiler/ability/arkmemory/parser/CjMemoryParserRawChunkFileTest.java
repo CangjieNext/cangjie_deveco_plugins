@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
  * JaCoCo 行覆盖完全一致（均 85/150 = 58%，diff 逐字节相同），因此测试只保留一个文件即可。
  */
 class CjMemoryParserRawChunkFileTest {
-
     private static final String RAW_FILE =
         "D:/workspace/devEco/output/raw_cangjie_heap_snapshot72d29bf3b18d496a835d81af721a9e0f.data";
 

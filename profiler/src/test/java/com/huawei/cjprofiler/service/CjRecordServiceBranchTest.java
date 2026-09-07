@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 import com.huawei.cjprofiler.dao.CjVmProfilerDao;
 import com.huawei.deveco.insight.ohos.ability.arkmemory.entity.HeapUsages;
-import com.huawei.deveco.insight.ohos.ability.arkmemory.entity.RawHeapSnapshot;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonExecuteRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonQueryRequest;
 import com.huawei.deveco.insight.ohos.service.ark.RecordServiceBase;
@@ -31,6 +30,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Unit tests for {@code CjRecordService} branch behaviors on heap timeline and usage records.
+ *
+ * @since 2026-08-14
+ */
 class CjRecordServiceBranchTest {
     private TestRecordService service;
 
@@ -48,7 +52,7 @@ class CjRecordServiceBranchTest {
     }
 
     @Test
-    void startCjHeapTimeLine_whenConnectionMissing_returnsFalseAndMarksMemoryRunning() {
+    void startCjHeapTimeLine_whenConnectionMissing_returnsFalseAndMarksMe() {
         assertThat(service.startCjHeapTimeLine(false)).isFalse();
         assertThat(service.memoryRunning()).isTrue();
     }
@@ -75,7 +79,7 @@ class CjRecordServiceBranchTest {
     }
 
     @Test
-    void queryCjHeapUsages_whenCacheInserted_delegatesToDaoDespiteCachedValues() {
+    void queryCjHeapUsages_whenCacheInserted_delegatesToDaoDespiteCachedV() {
         service.addUsage(new HeapUsages(2D, 4D, 1_010L));
         service.markInserted();
         CommonQueryRequest request = queryRequest("session", 42, 0L, 50_000_000L, 1_000L);
@@ -92,7 +96,7 @@ class CjRecordServiceBranchTest {
     }
 
     @Test
-    void queryCjHeapUsages_whenLiveCacheExists_filtersRangeAndConvertsTimestampToNanos() {
+    void queryCjHeapUsages_whenLiveCacheExists_filtersRangeAndConvertsTim() {
         service.addUsage(new HeapUsages(1D, 10D, 1_005L));
         service.addUsage(new HeapUsages(2D, 20D, 1_015L));
         service.addUsage(new HeapUsages(3D, 30D, 1_025L));
@@ -130,7 +134,7 @@ class CjRecordServiceBranchTest {
     }
 
     @Test
-    void stopCjHeapUsageTimerAndSaveData_whenNotRunning_returnsFalseForNoData() {
+    void stopCjHeapUsageTimerAndSaveData_whenNotRunning_returnsFalseForNo() {
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
         when(dao.insertCjHeapUsages(org.mockito.ArgumentMatchers.eq("session"), org.mockito.ArgumentMatchers.eq(42),
             org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.any()))
@@ -154,7 +158,8 @@ class CjRecordServiceBranchTest {
             RecordServiceBase.CustomThread thread = service.createHandleSnapshotThread();
             thread.start();
             thread.join(2000);
-        } catch (Exception ignored) {
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
     }
 

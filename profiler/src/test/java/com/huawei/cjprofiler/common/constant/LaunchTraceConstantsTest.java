@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
  * @since 2026-08-14
  */
 class LaunchTraceConstantsTest {
-
     @Test
     void maxLifeCycleDurationConstant_isMinusOne() {
         assertEquals(Long.valueOf(-1L), LaunchTraceConstants.MAX_LIFE_CYCLE_DURATION);

@@ -22,7 +22,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class InstanceNodeTest {
-
     @Test
     void noArgConstructor_initializesChildrenAndRetainers() {
         InstanceNode node = new InstanceNode();

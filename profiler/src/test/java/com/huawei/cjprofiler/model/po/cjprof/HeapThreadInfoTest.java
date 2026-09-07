@@ -23,7 +23,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class HeapThreadInfoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         HeapThreadInfo info = new HeapThreadInfo();

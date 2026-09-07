@@ -27,14 +27,19 @@ import org.mockito.MockedStatic;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjHeapUsageService} branch behaviors.
+ *
+ * @since 2026-08-14
+ */
 class CjHeapUsageServiceBranchTest {
     @Test
-    void queryHeapUsage_whenLiveRecordServiceExists_usesLiveDataWithoutDao() {
+    void queryHeapUsage_whenLiveRecordServiceExists_usesLiveDataWithoutDa() {
         CommonQueryRequest request = commonRequest();
         CjRecordManager manager = mock(CjRecordManager.class);
         CjRecordService recordService = mock(CjRecordService.class);
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
-        HeapUsages liveUsage = usage(4D);
+        HeapUsages liveUsage = usage(4L);
         when(manager.getCjRecordService(7)).thenReturn(Optional.of(recordService));
         when(recordService.queryCjHeapUsages(request)).thenReturn(List.of(liveUsage));
 
@@ -56,7 +61,7 @@ class CjHeapUsageServiceBranchTest {
         CommonQueryRequest request = commonRequest();
         CjRecordManager manager = mock(CjRecordManager.class);
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
-        HeapUsages storedUsage = usage(8D);
+        HeapUsages storedUsage = usage(8L);
         when(manager.getCjRecordService(7)).thenReturn(Optional.empty());
         when(dao.selectCjHeapUsages("session", 7, 10L, 20L)).thenReturn(List.of(storedUsage));
 
@@ -74,7 +79,7 @@ class CjHeapUsageServiceBranchTest {
         ArkAllHeapUsageRequest request = allRequest();
         CjRecordManager manager = mock(CjRecordManager.class);
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
-        HeapUsages usage = usage(3D);
+        HeapUsages usage = usage(3L);
         when(manager.getCjRecordService(99)).thenReturn(Optional.empty());
         when(dao.selectCjHeapUsages("session", 99, 10L, 20L)).thenReturn(List.of(usage));
 
@@ -132,7 +137,7 @@ class CjHeapUsageServiceBranchTest {
         ArkAllHeapUsageRequest request = allRequest();
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
         when(dao.selectCjHeapUsages("session", 99, 10L, 20L))
-            .thenReturn(List.of(usage(7D), usage(1D), usage(4D)));
+            .thenReturn(List.of(usage(7L), usage(1L), usage(4L)));
 
         try (MockedStatic<CjVmProfilerDao> daoStatic = mockStatic(CjVmProfilerDao.class)) {
             daoStatic.when(CjVmProfilerDao::getInstance).thenReturn(dao);
@@ -166,7 +171,7 @@ class CjHeapUsageServiceBranchTest {
         return request;
     }
 
-    private static HeapUsages usage(double usedSize) {
-        return new HeapUsages(usedSize, usedSize * 2, 1L);
+    private static HeapUsages usage(long usedSize) {
+        return new HeapUsages((double) usedSize, (double) usedSize * 2, 1L);
     }
 }

@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class StructArrayDumpTest {
-
     @Test
     void constructor_setsAllFieldsAndObjectType() {
         List<Integer> refs = Arrays.asList(1, 2, 3);

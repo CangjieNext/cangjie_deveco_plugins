@@ -25,7 +25,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class ObjectArrayDumpTest {
-
     @Test
     void constructor_setsInheritedFieldsAndObjectType() {
         List<Integer> refs = Arrays.asList(1, 2);

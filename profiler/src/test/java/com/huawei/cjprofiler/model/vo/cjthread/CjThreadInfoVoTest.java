@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CjThreadInfoVoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         CjThreadInfoVo vo = new CjThreadInfoVo();

@@ -28,6 +28,11 @@ import org.mockito.MockedStatic;
 
 import java.util.List;
 
+/**
+ * Unit tests for {@code CjConcurrencyMeasureService} concurrency measure queries.
+ *
+ * @since 2026-08-14
+ */
 class CjConcurrencyMeasureServiceTest {
     @Test
     void getInstance_returnsSingleton() {
@@ -35,7 +40,7 @@ class CjConcurrencyMeasureServiceTest {
     }
 
     @Test
-    void queryConcurrencyMeasureList_whenProcessIdsEmpty_returnsEmptyWithoutDaoAccess() {
+    void queryConcurrencyMeasureList_processIdsEmpty_returnsEmpty() {
         QueryConcurrencyMeasureRequest request = request("CJThread", "Running", List.of());
         CjThreadDao dao = mock(CjThreadDao.class);
         try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
@@ -48,7 +53,7 @@ class CjConcurrencyMeasureServiceTest {
     }
 
     @Test
-    void queryConcurrencyMeasureList_whenUnitInvalid_returnsEmptyWithoutDaoAccess() {
+    void queryConcurrencyMeasureList_unitInvalid_returnsEmpty() {
         QueryConcurrencyMeasureRequest request = request("FFRT", "Running", List.of(1L));
         CjThreadDao dao = mock(CjThreadDao.class);
         try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
@@ -61,7 +66,7 @@ class CjConcurrencyMeasureServiceTest {
     }
 
     @Test
-    void queryStateMeasure_whenSlicesEmpty_returnsEmptyAndDelegatesTranslatedState() {
+    void queryStateMeasure_slicesEmpty_returnsEmptyAndDelegatesState() {
         QueryConcurrencyMeasureRequest request = request(CjConcurrencyConstants.CONCURRENCY_CJ_THREAD,
             CjThreadState.RUNNING.getKey(), List.of(7L));
         CjThreadDao dao = mock(CjThreadDao.class);
@@ -78,7 +83,7 @@ class CjConcurrencyMeasureServiceTest {
     }
 
     @Test
-    void queryStateMeasure_aggregatesDurationsByThreadAndBuildsJumpDetails() {
+    void queryStateMeasure_aggregatesDurationsAndBuildsJumpDetails() {
         QueryConcurrencyMeasureRequest request = request(CjConcurrencyConstants.CONCURRENCY_CJ_THREAD,
             CjThreadState.RUNNING.getKey(), List.of(7L));
         CjThreadDao dao = mock(CjThreadDao.class);

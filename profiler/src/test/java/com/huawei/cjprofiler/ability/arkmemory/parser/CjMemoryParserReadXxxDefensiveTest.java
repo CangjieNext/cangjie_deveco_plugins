@@ -36,24 +36,28 @@ import java.nio.charset.StandardCharsets;
  * 数据，本测试仅覆盖其中可由非法输入触发的防御分支。
  */
 class CjMemoryParserReadXxxDefensiveTest {
-
     @AfterEach
     void tearDown() throws Exception {
         // 部分非法输入在抛异常前已写入 static 集合，必须清理，避免跨测试污染
         CjMemoryParserTestSupport.resetStaticState();
     }
 
-    /** 构造指向外部大对象 START_OBJECT 的 parser，交给 handleProperty 分发。 */
+    /**
+     * 构造指向外部大对象 START_OBJECT 的 parser，交给 handleProperty 分发。
+     */
     private static JsonParser parserAtRootObject(String json) throws Exception {
         JsonParser parser = new JsonFactory().createParser(json);
         parser.nextToken(); // 到 START_OBJECT
         return parser;
     }
 
-    /** 断言：handleProperty 分发到目标属性后，因非法值抛出 IllegalStateException。 */
+    /**
+     * 断言：handleProperty 分发到目标属性后，因非法值抛出 IllegalStateException。
+     */
     private static void assertHandlePropertyThrows(String json) {
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "handleProperty", new Class<?>[] {JsonParser.class}, parserAtRootObject(json)))
+            "handleProperty", new Class<?>[] {JsonParser.class},
+            new Object[] {parserAtRootObject(json)}))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -100,7 +104,7 @@ class CjMemoryParserReadXxxDefensiveTest {
         // tag=999 不在 SubRecordType 中，走"未知 tag 跳过"分支，正常返回不抛异常
         assertThatCode(() -> CjMemoryParserTestSupport.invokePrivate(
             "handleProperty", new Class<?>[] {JsonParser.class},
-            parserAtRootObject("{\"VERSION\":[1],\"OBJECTS\": [[999,-128,1,2,3]]}")))
+            new Object[] {parserAtRootObject("{\"VERSION\":[1],\"OBJECTS\": [[999,-128,1,2,3]]]")}))
             .doesNotThrowAnyException();
     }
 
@@ -109,7 +113,7 @@ class CjMemoryParserReadXxxDefensiveTest {
         // 未知 tag 且子数组内嵌套数组，覆盖 depth 递增/递减逻辑
         assertThatCode(() -> CjMemoryParserTestSupport.invokePrivate(
             "handleProperty", new Class<?>[] {JsonParser.class},
-            parserAtRootObject("{\"VERSION\":[1],\"OBJECTS\": [[999,-128,[1,2],3]]}")))
+            new Object[] {parserAtRootObject("{\"VERSION\":[1],\"OBJECTS\": [[999,-128,[1,2],3]]]")}))
             .doesNotThrowAnyException();
     }
 
@@ -118,7 +122,8 @@ class CjMemoryParserReadXxxDefensiveTest {
         // 直接反射调用，currentToken 为 null，命中方法入口的 START_ARRAY 检查
         JsonParser parser = new JsonFactory().createParser("42");
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "readSubRecord", new Class<?>[] {JsonParser.class, boolean.class}, parser, false))
+            "readSubRecord", new Class<?>[] {JsonParser.class, boolean.class},
+            new Object[] {parser, false}))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -132,7 +137,8 @@ class CjMemoryParserReadXxxDefensiveTest {
         // 第二个子数组 [34,-128,100,9999999999,200,[]] 为 OBJECT_ARRAY_DUMP
         assertThatCode(() -> CjMemoryParserTestSupport.invokePrivate(
             "handleProperty", new Class<?>[] {JsonParser.class},
-            parserAtRootObject("{\"VERSION\":[1],\"OBJECTS\": [[1,-128,595],[34,-128,100,9999999999,200,[]]]}")))
+            new Object[] {parserAtRootObject(
+                "{\"VERSION\":[1],\"OBJECTS\": [[1,-128,595],[34,-128,100,9999999999,200,[]]]}")}))
             .doesNotThrowAnyException();
     }
 
@@ -213,7 +219,7 @@ class CjMemoryParserReadXxxDefensiveTest {
         // 顶层不是对象：nextToken 得 START_ARRAY，命中"Expected content to be an object"
         JsonParser parser = new JsonFactory().createParser("[1]");
         assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
-            "readRawCjHeapSnapshot", new Class<?>[] {JsonParser.class}, parser))
+            "readRawCjHeapSnapshot", new Class<?>[] {JsonParser.class}, new Object[] {parser}))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }

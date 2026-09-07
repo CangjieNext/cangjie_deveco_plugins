@@ -26,7 +26,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class ObjectInfoTest {
-
     @Test
     void constructor_setsIdClsAndRefIdList() {
         List<Integer> refs = Arrays.asList(1, 2, 3);

@@ -43,6 +43,11 @@ import org.mockito.MockedStatic;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjHeapTimelineProcessor} heap timeline queries.
+ *
+ * @since 2026-08-14
+ */
 class CjHeapTimelineProcessorTest {
     @Test
     void startWhenDeviceMissingReturnsDeviceEmptyWithoutManagerUse() {
@@ -176,6 +181,7 @@ class CjHeapTimelineProcessorTest {
 
             Response<?> response = CjHeapTimelineProcessor.queryHeapStats(params);
 
+            assertThat(response.getBody()).isInstanceOf(ArkHeapStatsLane.class);
             assertThat(((ArkHeapStatsLane) response.getBody()).getHeapStatsList()).isSameAs(stats);
             verify(dao).selectCjHeapStats("session", 4, 10L, 20L);
             validate.verify(() -> ValidateUtil.validate(request));
@@ -216,6 +222,7 @@ class CjHeapTimelineProcessorTest {
 
             Response<?> response = CjHeapTimelineProcessor.queryInstanceMetadata(params);
 
+            assertThat(response.getBody()).isInstanceOf(ArkInstanceMetadata.class);
             assertThat(((ArkInstanceMetadata) response.getBody()).getTidList()).containsExactly(99);
             validate.verify(() -> ValidateUtil.validate(request));
         }

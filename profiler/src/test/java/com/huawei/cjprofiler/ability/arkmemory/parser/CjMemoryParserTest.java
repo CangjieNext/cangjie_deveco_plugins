@@ -24,17 +24,16 @@ import java.util.List;
  * Tests for {@link CjMemoryParser} focusing on pure logic methods.
  */
 class CjMemoryParserTest {
-
     private static final Class<?>[] PARSER_ARG = {JsonParser.class};
 
     @Test
     void convertToMilliseconds_correctlyCombinesHighAndLowBits() throws Exception {
         long result = (long) CjMemoryParserTestSupport.invokePrivate(
-            "convertToMilliseconds", new Class<?>[] {int.class, int.class}, 0, 1000);
+            "convertToMilliseconds", new Class<?>[] {int.class, int.class}, new Object[] {0, 1000});
         assertThat(result).isEqualTo(1L);
 
         result = (long) CjMemoryParserTestSupport.invokePrivate(
-            "convertToMilliseconds", new Class<?>[] {int.class, int.class}, 1, 0);
+            "convertToMilliseconds", new Class<?>[] {int.class, int.class}, new Object[] {1, 0});
         assertThat(result).isEqualTo(4_294_967L);
     }
 
@@ -46,7 +45,7 @@ class CjMemoryParserTest {
 
         @SuppressWarnings("unchecked")
         List<Integer> result = (List<Integer>) CjMemoryParserTestSupport.invokePrivate(
-            "getList", PARSER_ARG, parser);
+            "getList", PARSER_ARG, new Object[] {parser});
         assertThat(result).containsExactly(1, 2, 3, 42);
     }
 
@@ -55,7 +54,8 @@ class CjMemoryParserTest {
         JsonParser parser = new JsonFactory().createParser("42");
         // getList calls nextToken() -> VALUE_NUMBER, then checks != START_ARRAY -> throws
 
-        assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate("getList", PARSER_ARG, parser))
+        assertThatThrownBy(() -> CjMemoryParserTestSupport.invokePrivate(
+            "getList", PARSER_ARG, new Object[] {parser}))
             .isInstanceOf(InvocationTargetException.class)
             .hasRootCauseInstanceOf(IllegalStateException.class);
     }
@@ -63,7 +63,7 @@ class CjMemoryParserTest {
     @Test
     void convertListToIntArray_returnsEmptyArrayForEmptyList() throws Exception {
         int[] result = (int[]) CjMemoryParserTestSupport.invokePrivate(
-            "convertListToIntArray", new Class<?>[] {List.class}, Collections.emptyList());
+            "convertListToIntArray", new Class<?>[] {List.class}, new Object[] {Collections.emptyList()});
         assertThat(result).isEmpty();
     }
 }

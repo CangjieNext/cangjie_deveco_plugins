@@ -28,6 +28,11 @@ import org.mockito.MockedStatic;
 
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code AbstractDao} sql session and mapper handling.
+ *
+ * @since 2026-08-14
+ */
 class AbstractDaoTest {
     private static final String SESSION_ID = "session-1";
 
@@ -81,7 +86,7 @@ class AbstractDaoTest {
     }
 
     @Test
-    void obtainSqlSession_whenMapperUnregistered_throwsProfilerExceptionWithoutDatabaseLookup() {
+    void obtainSqlSession_whenMapperUnregistered_throwsProfilerExceptionW() {
         CjMapperManager mapperManager = mock(CjMapperManager.class);
         when(mapperManager.getDatabaseTypeByMapper(String.class)).thenReturn(null);
         try (MockedStatic<CjMapperManager> mapperStatic = mockStatic(CjMapperManager.class)) {
@@ -94,7 +99,7 @@ class AbstractDaoTest {
     }
 
     @Test
-    void obtainSqlSession_whenDatabaseHasNoSession_throwsProfilerException() {
+    void obtainSqlSession_whenDatabaseHasNoSession_throwsProfilerExceptio() {
         CjMapperManager mapperManager = mock(CjMapperManager.class);
         DatabaseManager databaseManager = mock(DatabaseManager.class);
         when(mapperManager.getDatabaseTypeByMapper(CjThreadMapper.class)).thenReturn(DatabaseType.TRACE);

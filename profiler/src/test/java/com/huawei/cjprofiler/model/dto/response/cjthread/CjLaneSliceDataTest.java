@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjLaneSliceDataTest {
-
     @Test
     void accessor_returnsCjLaneSliceInfo() {
         List<CjLaneSliceVo> slices = new ArrayList<>();

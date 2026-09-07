@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CjProfilerExceptionTest {
-
     @Test
     void constructor_setsMessageOnRuntimeException() {
         CjProfilerException ex = new CjProfilerException("something went wrong");
@@ -40,7 +39,9 @@ class CjProfilerExceptionTest {
     @Test
     void constructor_canBeThrownAndCaught() {
         CjProfilerException thrown = assertThrows(CjProfilerException.class,
-            () -> { throw new CjProfilerException("boom"); });
+            () -> {
+                throw new CjProfilerException("boom");
+            });
 
         assertEquals("boom", thrown.getMessage());
     }

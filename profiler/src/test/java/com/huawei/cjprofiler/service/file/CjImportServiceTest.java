@@ -33,11 +33,16 @@ import org.mockito.MockedStatic;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Unit tests for {@code CjImportService} covering timeline and snapshot import flows.
+ *
+ * @since 2026-08-14
+ */
 class CjImportServiceTest {
     private static final String SESSION_ID = "import-session";
 
     @Test
-    void importTimeline_whenDataStructureIsNull_returnsTrueWithoutParsingOrSizeCalculation() {
+    void importTimeline_whenDataStructureIsNull_returnsTrueWithoutParsing() {
         Fixture fixture = new Fixture(Collections.singletonList(null));
 
         try (MockedStatic<CjRecordManager> managerStatic = fixture.mockRecordManager()) {
@@ -49,7 +54,7 @@ class CjImportServiceTest {
     }
 
     @Test
-    void importTimeline_whenFileTypeDoesNotMatch_skipsFileAndCalculatesTotalSize() {
+    void importTimeline_whenFileTypeDoesNotMatch_skipsFileAndCalculatesTo() {
         DataStructure data = dataWithFile("trace.json");
         Fixture fixture = new Fixture(List.of(data));
 
@@ -62,7 +67,7 @@ class CjImportServiceTest {
     }
 
     @Test
-    void importTimeline_whenTraceParsingFails_returnsFalseWithoutSavingOrCalculating() {
+    void importTimeline_whenTraceParsingFails_returnsFalseWithoutSavingOr() {
         String path = "bad.cjheaptimeline";
         Fixture fixture = new Fixture(List.of(dataWithFile(path)));
         when(fixture.memoryService.handlerTraceFile(path)).thenReturn(null);
@@ -82,7 +87,7 @@ class CjImportServiceTest {
     }
 
     @Test
-    void importTimeline_whenTidMissing_usesPidSavesParsesAndCalculatesSize() {
+    void importTimeline_whenTidMissing_usesPidSavesParsesAndCalculatesSiz() {
         String path = "heap.cjheaptimeline";
         Fixture fixture = new Fixture(List.of(dataWithFile(path)));
         RawHeapSnapshot snapshot = mock(RawHeapSnapshot.class);
@@ -146,7 +151,7 @@ class CjImportServiceTest {
     }
 
     @Test
-    void importSnapshot_whenTraceParsingFails_returnsFalseWithoutSavingRoot() {
+    void importSnapshot_whenTraceParsingFails_returnsFalseWithoutSavingRo() {
         String path = "broken.cjheapsnapshot";
         Fixture fixture = new Fixture(List.of(dataWithFile(path)));
         when(fixture.memoryService.handlerTraceFile(path)).thenReturn(null);

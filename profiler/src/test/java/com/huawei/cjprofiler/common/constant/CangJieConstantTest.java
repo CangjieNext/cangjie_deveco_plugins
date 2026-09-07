@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CangJieConstantTest {
-
     @Test
     void cangjieProfilerDispatchKeyConstant_isExpectedValue() {
         assertEquals("cangjieProfiler", CangJieConstant.CANGJIE_PROFILER_DISPATCH_KEY);

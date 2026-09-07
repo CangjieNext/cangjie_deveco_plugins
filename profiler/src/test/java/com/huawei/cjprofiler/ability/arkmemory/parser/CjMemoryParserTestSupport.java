@@ -34,14 +34,19 @@ import java.util.Set;
  * </ul>
  */
 final class CjMemoryParserTestSupport {
-
     private CjMemoryParserTestSupport() {
     }
 
     /**
      * 反射调用 CjMemoryParser 的 private 方法并返回结果。
+     *
+     * @param methodName 目标 private 方法名
+     * @param paramTypes 目标方法的参数类型数组
+     * @param args       传给目标方法的实参
+     * @return 目标方法的返回值
+     * @throws Exception 反射调用或目标方法执行失败时抛出
      */
-    static Object invokePrivate(String methodName, Class<?>[] paramTypes, Object... args) throws Exception {
+    static Object invokePrivate(String methodName, Class<?>[] paramTypes, Object[] args) throws Exception {
         Method method = CjMemoryParser.class.getDeclaredMethod(methodName, paramTypes);
         method.setAccessible(true);
         CjMemoryParser parser = new CjMemoryParser();
@@ -59,6 +64,8 @@ final class CjMemoryParserTestSupport {
     /**
      * CjMemoryParser 的解析集合大多为 static，跨解析会累积脏数据；
      * 反射调用 private 的 clearAllCollections 并额外清空 ROOT_SET。
+     *
+     * @throws Exception 反射调用或字段访问失败时抛出
      */
     @SuppressWarnings("unchecked")
     static void resetStaticState() throws Exception {
@@ -82,6 +89,10 @@ final class CjMemoryParserTestSupport {
      * 1) 遍历外层 JSON 对象流（{@code {"method":...,"params":{"chunk":"<json片段>"}}}），
      *    按顺序拼接所有 chunk 字符串；
      * 2) 用拼接后的完整 JSON 创建 parser，交给 CjMemoryParser 解析。
+     *
+     * @param filePath raw heap snapshot 文件路径
+     * @return 解析得到的 RawHeapSnapshot
+     * @throws Exception 文件读取或解析失败时抛出
      */
     static RawHeapSnapshot processRawChunkFile(String filePath) throws Exception {
         resetStaticState();
@@ -106,14 +117,20 @@ final class CjMemoryParserTestSupport {
             .endsWith("}");
 
         try (JsonParser chunkParser = factory.createParser(fullJson)) {
-            return (RawHeapSnapshot) invokePrivate(
-                "readRawCjHeapSnapshot", new Class<?>[] {JsonParser.class}, chunkParser);
+            Object rawResult = invokePrivate(
+                "readRawCjHeapSnapshot", new Class<?>[] {JsonParser.class}, new Object[] {chunkParser});
+            org.assertj.core.api.Assertions.assertThat(rawResult).isInstanceOf(RawHeapSnapshot.class);
+            return (RawHeapSnapshot) rawResult;
         }
     }
 
     /**
      * 将文件内容通过管道写入 ParserStreamContext，喂给 {@link CjMemoryParser#parseJson}，
      * 模拟真实场景下的流式输入。
+     *
+     * @param filePath heap snapshot 文件路径
+     * @return 解析得到的 RawHeapSnapshot
+     * @throws Exception 文件读取或解析失败时抛出
      */
     static RawHeapSnapshot parseThroughPipe(Path filePath) throws Exception {
         resetStaticState(); // 与 processRawChunkFile 保持一致，避免跨测试 static 污染

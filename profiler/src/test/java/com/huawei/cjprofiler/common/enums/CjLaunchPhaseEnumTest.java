@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.EnumSource;
  * @since 2026-08-14
  */
 class CjLaunchPhaseEnumTest {
-
     @Test
     void getValue_returnsExpectedLifecycleNameForEachConstant() {
         assertEquals("Process Creating", CjLaunchPhaseEnum.LIFE_CYCLE_NAME_PROCESS_CREATING.getValue());

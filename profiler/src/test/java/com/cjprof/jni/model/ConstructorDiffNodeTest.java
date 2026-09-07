@@ -21,7 +21,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class ConstructorDiffNodeTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         ConstructorDiffNode node = new ConstructorDiffNode();

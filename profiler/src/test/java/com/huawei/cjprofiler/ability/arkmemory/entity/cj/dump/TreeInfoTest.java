@@ -26,7 +26,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class TreeInfoTest {
-
     @Test
     void noArgConstructor_initializesEmptyLists() {
         TreeInfo info = new TreeInfo();

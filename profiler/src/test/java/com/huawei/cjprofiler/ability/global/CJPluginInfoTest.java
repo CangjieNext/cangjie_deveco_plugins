@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CJPluginInfoTest {
-
     @Test
     void constructor_setsHasCJPluginApplied() {
         CJPluginInfo info = new CJPluginInfo(true);

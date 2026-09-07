@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class EventKeyTest {
-
     @Test
     void cjHeapUsageConstant_isExpectedValue() {
         assertEquals("cj.heap.usage", EventKey.CJ_HEAP_USAGE);

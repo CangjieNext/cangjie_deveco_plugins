@@ -9,6 +9,7 @@
 package com.huawei.cjprofiler.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -36,6 +37,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjMemoryService} branch behaviors.
+ *
+ * @since 2026-08-14
+ */
 class CjMemoryServiceBranchTest {
     @Test
     void getDataTypeBySuffix_whenSnapshotSuffix_returnsSnapshotUnitType() {
@@ -103,7 +109,7 @@ class CjMemoryServiceBranchTest {
     }
 
     @Test
-    void parseCjprofHeapSnapshotFiles_whenFileListEmpty_marksCjprofAndThrowsParameterError() {
+    void parseCjprofHeapSnapshotFiles_whenFileListEmpty_marksCjprofAndThr() {
         TestMemoryService service = new TestMemoryService();
 
         assertThatThrownBy(() -> service.parseCjprofHeapSnapshotFiles("session", 1L, Collections.emptyList(), false))
@@ -152,7 +158,7 @@ class CjMemoryServiceBranchTest {
     }
 
     @Test
-    void cjprofExpandGcRootPath_whenComparisonPositiveDelta_rewritesBaseRawIdAndReturnsEmpty() {
+    void cjprofExpandGcRootPath_whenComparisonPositiveDelta_rewritesBaseR() {
         TestMemoryService service = cjprofModeService();
         ArkGcRootPathExpandRequest request = mock(ArkGcRootPathExpandRequest.class);
         when(request.getType()).thenReturn(ArkMemoryTypeEnum.COMPARISON.getValue());
@@ -191,23 +197,19 @@ class CjMemoryServiceBranchTest {
 
         // isCjprof=false -> super.getDiffView(request); super may return null or empty
         // We just verify no exception and isCjprof stays false
-        try {
-            service.getDiffView(request);
-        } catch (Exception ignored) {
-            // super may need more context; we only assert it didn't enter cjprof path
-        }
+        assertThatCode(() -> service.getDiffView(request)).doesNotThrowAnyException();
         assertThat(service.isCjprof()).isFalse();
     }
 
     @Test
-    void getHeapThreadInfo_whenSnapshotIdPresentButMapEmpty_returnsEmptyList() {
+    void getHeapThreadInfo_whenSnapshotIdPresentButMapEmpty_returnsEmptyL() {
         TestMemoryService service = new TestMemoryService();
         List<HeapThreadInfo> result = service.getHeapThreadInfo("session", "999999");
         assertThat(result).isEmpty();
     }
 
     @Test
-    void cleanCjHeapSnapshotFiles_whenCjprofButNoSnapshots_returnsGracefully() {
+    void cleanCjHeapSnapshotFiles_whenCjprofButNoSnapshots_returnsGracefu() {
         TestMemoryService service = cjprofModeService();
         // snapshotIdMap is empty, getAllCjprofSnapshotIds returns empty list
         // Cjprof.cleanHeapSnapshotFiles would be called with empty list
@@ -222,17 +224,14 @@ class CjMemoryServiceBranchTest {
         TestMemoryService service = new TestMemoryService();
         // releaseResources calls cleanTemporaryFiles then cleanCjHeapSnapshotFiles
         // isCjprof=false so cleanCjHeapSnapshotFiles returns immediately
-        try {
-            service.releaseResources();
-        } catch (Exception ignored) {
-            // cleanTemporaryFiles may need context; we verify no native call
-        }
+        assertThatCode(() -> service.releaseResources()).doesNotThrowAnyException();
         assertThat(service.isCjprof()).isFalse();
     }
 
     @Test
     void isSamePath_normalizesBothPathsBeforeComparing() throws Exception {
-        java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod("isSamePath", String.class, String.class);
+        java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod(
+            "isSamePath", String.class, String.class);
         method.setAccessible(true);
 
         assertThat(method.invoke(null, "C:/test/file.txt", "C:/test/file.txt")).isEqualTo(true);
@@ -246,9 +245,16 @@ class CjMemoryServiceBranchTest {
         method.setAccessible(true);
 
         StackFrame frameWithName = StackFrame.builder().methodName("main").build();
-        StackFrame emptyFrameNoObj = StackFrame.builder().methodName("").localObjectList(java.util.Collections.emptyList()).build();
-        StackFrame emptyFrameWithObj = StackFrame.builder().methodName("").localObjectList(List.of(new com.huawei.cjprofiler.ability.arkmemory.entity.cj.LocalObject())).build();
-        HeapThreadInfo info = new HeapThreadInfo(1, "main", new java.util.ArrayList<>(List.of(frameWithName, emptyFrameNoObj, emptyFrameWithObj)));
+        StackFrame emptyFrameNoObj = StackFrame.builder()
+            .methodName("")
+            .localObjectList(java.util.Collections.emptyList())
+            .build();
+        StackFrame emptyFrameWithObj = StackFrame.builder()
+            .methodName("")
+            .localObjectList(List.of(new com.huawei.cjprofiler.ability.arkmemory.entity.cj.LocalObject()))
+            .build();
+        HeapThreadInfo info = new HeapThreadInfo(
+            1, "main", new java.util.ArrayList<>(List.of(frameWithName, emptyFrameNoObj, emptyFrameWithObj)));
 
         @SuppressWarnings("unchecked")
         List<HeapThreadInfo> result = (List<HeapThreadInfo>) method.invoke(new TestMemoryService(), List.of(info));
@@ -272,18 +278,34 @@ class CjMemoryServiceBranchTest {
 
     @Test
     void filterStackFrameByCondition_keepsNamedFramesAndFirstObjectFrame() throws Exception {
-        java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod("filterStackFrameByCondition", HeapThreadInfo.class);
+        java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod(
+            "filterStackFrameByCondition", HeapThreadInfo.class);
         method.setAccessible(true);
 
-        StackFrame named1 = StackFrame.builder().methodName("run").localObjectList(java.util.Collections.emptyList()).build();
-        StackFrame emptyNoObj = StackFrame.builder().methodName("").localObjectList(java.util.Collections.emptyList()).build();
-        StackFrame emptyWithObj = StackFrame.builder().methodName("").localObjectList(List.of(new com.huawei.cjprofiler.ability.arkmemory.entity.cj.LocalObject())).build();
-        StackFrame named2 = StackFrame.builder().methodName("init").localObjectList(java.util.Collections.emptyList()).build();
-        HeapThreadInfo info = new HeapThreadInfo(1, "thread", new java.util.ArrayList<>(List.of(named1, emptyNoObj, emptyWithObj, named2)));
+        StackFrame named1 = StackFrame.builder()
+            .methodName("run")
+            .localObjectList(java.util.Collections.emptyList())
+            .build();
+        StackFrame emptyNoObj = StackFrame.builder()
+            .methodName("")
+            .localObjectList(java.util.Collections.emptyList())
+            .build();
+        StackFrame emptyWithObj = StackFrame.builder()
+            .methodName("")
+            .localObjectList(List.of(new com.huawei.cjprofiler.ability.arkmemory.entity.cj.LocalObject()))
+            .build();
+        StackFrame named2 = StackFrame.builder()
+            .methodName("init")
+            .localObjectList(java.util.Collections.emptyList())
+            .build();
+        HeapThreadInfo info = new HeapThreadInfo(
+            1, "thread", new java.util.ArrayList<>(List.of(named1, emptyNoObj, emptyWithObj, named2)));
 
         method.invoke(new TestMemoryService(), info);
 
-        // named1 kept, emptyNoObj skipped (no object, before hasObject), emptyWithObj kept (has object, no prior object), named2 kept
+        //  named1 kept,
+        // emptyNoObj skipped (no object, before hasObject),
+        // emptyWithObj kept (has object, no prior object), named2 kept
         assertThat(info.getStackFrameInfoList()).hasSize(3);
         assertThat(info.getStackFrameInfoList().get(0).getMethodName()).isEqualTo("run");
         assertThat(info.getStackFrameInfoList().get(1).getMethodName()).isEmpty();
@@ -292,7 +314,8 @@ class CjMemoryServiceBranchTest {
 
     @Test
     void filterStackFrameByCondition_whenStackFrameListEmpty_doesNotThrow() throws Exception {
-        java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod("filterStackFrameByCondition", HeapThreadInfo.class);
+        java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod(
+            "filterStackFrameByCondition", HeapThreadInfo.class);
         method.setAccessible(true);
 
         HeapThreadInfo info = new HeapThreadInfo(1, "thread", java.util.Collections.emptyList());
@@ -310,7 +333,9 @@ class CjMemoryServiceBranchTest {
             ArkHeapNodeSearchRequest.class);
         method.setAccessible(true);
 
-        String result = (String) method.invoke(service, request);
+        Object snapshotResult = method.invoke(service, request);
+        assertThat(snapshotResult).isInstanceOf(String.class);
+        String result = (String) snapshotResult;
         assertThat(result).isEqualTo("snap-42");
     }
 
@@ -324,7 +349,9 @@ class CjMemoryServiceBranchTest {
             ArkHeapNodeSearchRequest.class);
         method.setAccessible(true);
 
-        String result = (String) method.invoke(service, request);
+        Object snapshotResult = method.invoke(service, request);
+        assertThat(snapshotResult).isInstanceOf(String.class);
+        String result = (String) snapshotResult;
         assertThat(result).isEmpty();
     }
 
@@ -340,7 +367,9 @@ class CjMemoryServiceBranchTest {
             ArkHeapNodeSearchRequest.class);
         method.setAccessible(true);
 
-        String result = (String) method.invoke(service, request);
+        Object snapshotResult = method.invoke(service, request);
+        assertThat(snapshotResult).isInstanceOf(String.class);
+        String result = (String) snapshotResult;
         assertThat(result).isEmpty();
     }
 
@@ -350,7 +379,9 @@ class CjMemoryServiceBranchTest {
         java.lang.reflect.Method method = CjMemoryService.class.getDeclaredMethod("getCjprofSnapshotId", String.class);
         method.setAccessible(true);
 
-        Long result = (Long) method.invoke(service, "nonexistent");
+        Object snapshotIdResult = method.invoke(service, "nonexistent");
+        assertThat(snapshotIdResult).isInstanceOf(Long.class);
+        Long result = (Long) snapshotIdResult;
         assertThat(result).isNull();
     }
 

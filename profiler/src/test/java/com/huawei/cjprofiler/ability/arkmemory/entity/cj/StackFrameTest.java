@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class StackFrameTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         StackFrame frame = new StackFrame();

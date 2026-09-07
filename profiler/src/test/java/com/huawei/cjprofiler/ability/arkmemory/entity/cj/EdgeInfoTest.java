@@ -8,8 +8,9 @@
 
 package com.huawei.cjprofiler.ability.arkmemory.entity.cj;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.huawei.cjprofiler.ability.arkmemory.entity.cj.dump.BaseTreeInfo;
 
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class EdgeInfoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         EdgeInfo edge = new EdgeInfo();
@@ -88,7 +88,8 @@ class EdgeInfoTest {
     void toIntArray_viaBaseTreeInfoContract() {
         EdgeInfo edge = EdgeInfo.builder().type(1).index(2).toNode(3).build();
 
-        int[] array = ((BaseTreeInfo) edge).toIntArray();
+        assertTrue(edge instanceof BaseTreeInfo);
+        int[] array = edge.toIntArray();
 
         assertArrayEquals(new int[] {1, 2, 3}, array);
     }

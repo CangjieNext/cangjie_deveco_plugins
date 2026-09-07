@@ -30,6 +30,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code RequestDispatcher} request mapping and dispatch.
+ *
+ * @since 2026-08-14
+ */
 class RequestDispatcherTest {
     private static final JSONObject PARAMS = new JSONObject();
 
@@ -43,7 +48,8 @@ class RequestDispatcherTest {
         CangjieMappingRegistyManager manager = mock(CangjieMappingRegistyManager.class);
         when(manager.getHandlerMethod(List.of("memory", "missing"))).thenReturn(Optional.empty());
 
-        try (MockedStatic<CangjieMappingRegistyManager> managerStatic = mockStatic(CangjieMappingRegistyManager.class)) {
+        try (MockedStatic<CangjieMappingRegistyManager> managerStatic =
+                 mockStatic(CangjieMappingRegistyManager.class)) {
             managerStatic.when(CangjieMappingRegistyManager::getInstance).thenReturn(manager);
 
             Response<?> response = RequestDispatcher.getInstance().dispatch("memory", "missing", PARAMS);
@@ -71,22 +77,24 @@ class RequestDispatcherTest {
 
     @Test
     void dispatch_whenArgumentTypeDoesNotMatch_returnsInternalServerError() throws Exception {
-        Response<?> response = dispatchTo("wrongArgument", HandlerTargets.class.getMethod("wrongArgument", String.class));
+        Response<?> response = dispatchTo("wrongArgument",
+            HandlerTargets.class.getMethod("wrongArgument", String.class));
 
         assertThat(response.getIsSuccess()).isFalse();
         assertThat(response.getProfilerError()).isEqualTo(ProfilerError.SERVER_INTERNAL_ERROR);
     }
 
     @Test
-    void dispatch_whenHandlerThrowsPersistenceException_returnsPersistenceError() throws Exception {
-        Response<?> response = dispatchTo("persistence", HandlerTargets.class.getMethod("persistence", JSONObject.class));
+    void dispatch_whenHandlerThrowsPersistenceException_returnsPersistenc() throws Exception {
+        Response<?> response = dispatchTo("persistence",
+            HandlerTargets.class.getMethod("persistence", JSONObject.class));
 
         assertThat(response.getIsSuccess()).isFalse();
         assertThat(response.getProfilerError()).isEqualTo(ProfilerError.PERSISTENCE_ERROR);
     }
 
     @Test
-    void dispatch_whenHandlerThrowsRuntimeException_returnsInternalServerError() throws Exception {
+    void dispatch_whenHandlerThrowsRuntimeException_returnsInternalServer() throws Exception {
         Response<?> response = dispatchTo("runtime", HandlerTargets.class.getMethod("runtime", JSONObject.class));
 
         assertThat(response.getIsSuccess()).isFalse();
@@ -108,6 +116,9 @@ class RequestDispatcherTest {
         }
     }
 
+    /**
+     * Test handler targets used by the dispatcher to resolve method mapping.
+     */
     public static final class HandlerTargets {
         private static Response<?> response;
 
@@ -126,10 +137,22 @@ class RequestDispatcherTest {
             return params;
         }
 
+        /**
+         * Throws a persistence exception to simulate database failures.
+         *
+         * @param params request parameters
+         * @return never returns
+         */
         public static Response<?> persistence(JSONObject params) {
             throw new PersistenceException("database unavailable");
         }
 
+        /**
+         * Throws a runtime exception to simulate unexpected failures.
+         *
+         * @param params request parameters
+         * @return never returns
+         */
         public static Response<?> runtime(JSONObject params) {
             throw new IllegalStateException("unexpected");
         }

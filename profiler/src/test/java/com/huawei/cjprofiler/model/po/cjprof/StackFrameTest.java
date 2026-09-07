@@ -25,7 +25,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class StackFrameTest {
-
     @Test
     void builder_setsAllFields() {
         List<LocalObject> locals = new ArrayList<>();

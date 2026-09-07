@@ -23,7 +23,6 @@ import java.util.Optional;
  * @since 2026-08-14
  */
 class SubRecordTypeTest {
-
     @Test
     void getTypeAndGetSize_returnConfiguredValues() {
         assertEquals(255, SubRecordType.ROOT_UNKNOWN.getType());

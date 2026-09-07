@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjThreadSliceInfoListDataTest {
-
     @Test
     void accessor_returnsCjThreadStateList() {
         List<CjThreadSliceInfoVo> states = new ArrayList<>();

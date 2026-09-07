@@ -35,6 +35,11 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
+/**
+ * Unit tests for {@code CjVmProfilerDao} heap stats and usages persistence.
+ *
+ * @since 2026-08-14
+ */
 class CjVmProfilerDaoTest {
     private static final String SESSION_ID = "vm-session";
 
@@ -66,11 +71,12 @@ class CjVmProfilerDaoTest {
     }
 
     @Test
-    void insertEmptyCollections_returnsTrueWithoutDatabaseOrLockInteraction() {
+    void insertEmptyCollections_returnsTrueWithoutDatabaseOrLockInteracti() {
         ReadWriteLock lock = mock(ReadWriteLock.class);
 
         assertThat(CjVmProfilerDao.getInstance().insertCjHeapUsages(SESSION_ID, 1, List.of(), lock)).isTrue();
-        assertThat(CjVmProfilerDao.getInstance().insertCjHeapStats(SESSION_ID, 1, new LinkedHashMap<>(), lock)).isTrue();
+        assertThat(CjVmProfilerDao.getInstance().insertCjHeapStats(
+            SESSION_ID, 1, new LinkedHashMap<>(), lock)).isTrue();
         assertThat(CjVmProfilerDao.getInstance().insertCjHeapDumps(SESSION_ID, List.of())).isTrue();
 
         verify(lock, never()).readLock();
@@ -78,7 +84,7 @@ class CjVmProfilerDaoTest {
     }
 
     @Test
-    void insertHeapUsages_aggregatesBatchResultsCommitsClearsCacheAndUnlocks() {
+    void insertHeapUsages_aggregatesBatchResultsCommitsClearsCacheAndUnlo() {
         Fixture fixture = new Fixture();
         ReadWriteLock readWriteLock = mock(ReadWriteLock.class);
         Lock writeLock = mock(Lock.class);
@@ -91,7 +97,8 @@ class CjVmProfilerDaoTest {
 
         try (MockedStatic<CjMapperManager> mapperStatic = fixture.mockMapperManager();
              MockedStatic<DatabaseManager> databaseStatic = fixture.mockDatabaseManager()) {
-            assertThat(CjVmProfilerDao.getInstance().insertCjHeapUsages(SESSION_ID, 5, usages, readWriteLock)).isFalse();
+            assertThat(CjVmProfilerDao.getInstance().insertCjHeapUsages(
+                SESSION_ID, 5, usages, readWriteLock)).isFalse();
         }
 
         verify(fixture.mapper).insertCjHeapUsages(5, usages.subList(0, 10_000));

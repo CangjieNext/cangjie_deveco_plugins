@@ -25,7 +25,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class ConcurrencyMeasureInfoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         ConcurrencyMeasureInfo info = new ConcurrencyMeasureInfo();

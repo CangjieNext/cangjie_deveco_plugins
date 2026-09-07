@@ -43,9 +43,14 @@ import org.mockito.MockedStatic;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjHeapUsageProcessor} heap usage queries.
+ *
+ * @since 2026-08-14
+ */
 class CjHeapUsageProcessorTest {
     @Test
-    void startWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsRecordManager() {
+    void startWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsRecordMan() {
         JSONObject params = new JSONObject();
         ArkExecuteRequest request = executeRequest();
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
@@ -216,6 +221,7 @@ class CjHeapUsageProcessorTest {
             Response<?> response = CjHeapUsageProcessor.queryHeapUsage(params);
 
             assertThat(response.getIsSuccess()).isTrue();
+            assertThat(response.getBody()).isInstanceOf(ArkHeapUsagesLane.class);
             assertThat(((ArkHeapUsagesLane) response.getBody()).getHeapUsagesList()).isSameAs(usages);
             validate.verify(() -> ValidateUtil.validate(request));
             verify(service).queryHeapUsage(request);
@@ -223,7 +229,7 @@ class CjHeapUsageProcessorTest {
     }
 
     @Test
-    void queryAllWhenMapperRegistrationFailsReturnsSqlErrorWithoutValidationOrServiceCall() {
+    void queryAllWhenMapperRegistrationFailsReturnsSqlErrorWithoutValidat() {
         JSONObject params = new JSONObject();
         ArkAllHeapUsageRequest request = mock(ArkAllHeapUsageRequest.class);
         when(request.getSessionId()).thenReturn("session");
@@ -288,6 +294,7 @@ class CjHeapUsageProcessorTest {
             Response<?> response = CjHeapUsageProcessor.queryAllHeapUsagesDetail(params);
 
             assertThat(response.getIsSuccess()).isTrue();
+            assertThat(response.getBody()).isInstanceOf(ArkHeapUsagesDetail.class);
             assertThat(((ArkHeapUsagesDetail) response.getBody()).getHeapUsagesSummaryList()).isSameAs(values);
             verify(service).queryAllHeapUsagesDetail(request);
         }

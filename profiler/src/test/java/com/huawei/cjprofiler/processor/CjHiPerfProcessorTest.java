@@ -34,6 +34,11 @@ import org.mockito.MockedStatic;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjHiPerfProcessor} high-performance processor queries.
+ *
+ * @since 2026-08-14
+ */
 class CjHiPerfProcessorTest {
     @Test
     void queryNodeStateWhenServiceMissingReturnsParseError() {
@@ -127,7 +132,7 @@ class CjHiPerfProcessorTest {
     }
 
     @Test
-    void queryThreadCallStackWithMissingSessionReturnsParameterErrorWithoutProcessorLookup() {
+    void queryThreadCallStackWithMissingSessionReturnsParameterErrorWitho() {
         JSONObject params = new JSONObject();
         params.put("tidList", "[1]");
         try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);

@@ -34,9 +34,14 @@ import org.mockito.MockedStatic;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Unit tests for {@code CjHeapSnapshotProcessor} snapshot start flows.
+ *
+ * @since 2026-08-14
+ */
 class CjHeapSnapshotProcessorTest {
     @Test
-    void startWhenMapperRegistrationFailsReturnsSqlErrorWithoutCreatingMemoryService() {
+    void startWhenMapperRegistrationFailsReturnsSqlErrorWithoutCreatingMe() {
         CommonExecuteRequest request = executeRequest();
         CjVmProfilerDao dao = mock(CjVmProfilerDao.class);
         CjRecordManager manager = mock(CjRecordManager.class);

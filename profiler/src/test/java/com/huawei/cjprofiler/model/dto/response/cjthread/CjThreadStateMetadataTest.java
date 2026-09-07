@@ -22,7 +22,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjThreadStateMetadataTest {
-
     @Test
     void accessor_returnsMetadataList() {
         List<String> metadata = new ArrayList<>();

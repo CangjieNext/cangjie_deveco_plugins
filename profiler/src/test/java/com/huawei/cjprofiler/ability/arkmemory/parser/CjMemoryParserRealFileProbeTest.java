@@ -27,7 +27,6 @@ import java.nio.file.Paths;
  * be tolerated without exception.
  */
 class CjMemoryParserRealFileProbeTest {
-
     private static final Path FI = Paths.get(
         "src/test/resources/fixtures/real-cangjie-heap-snapshot.cjheapsnapshot");
 

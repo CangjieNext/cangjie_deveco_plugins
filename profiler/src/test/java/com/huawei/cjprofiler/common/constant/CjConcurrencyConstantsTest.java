@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CjConcurrencyConstantsTest {
-
     @Test
     void concurrencyCjThreadConstant_isCjThread() {
         assertEquals("CJThread", CjConcurrencyConstants.CONCURRENCY_CJ_THREAD);

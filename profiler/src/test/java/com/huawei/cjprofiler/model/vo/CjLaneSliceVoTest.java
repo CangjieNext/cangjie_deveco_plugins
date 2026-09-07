@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CjLaneSliceVoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         CjLaneSliceVo vo = new CjLaneSliceVo();

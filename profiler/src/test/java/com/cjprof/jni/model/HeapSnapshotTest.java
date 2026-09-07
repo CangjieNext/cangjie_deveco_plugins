@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class HeapSnapshotTest {
-
     @Test
     void allArgConstructor_setsAllFields() {
         HeapSnapshot snapshot = new HeapSnapshot(1L, 1024L, "/tmp/snapshot.heapsnapshot");

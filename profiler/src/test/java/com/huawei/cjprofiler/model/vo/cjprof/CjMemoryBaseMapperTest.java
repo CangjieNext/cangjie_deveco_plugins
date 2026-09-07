@@ -456,7 +456,6 @@ class CjMemoryBaseMapperTest {
         assertEquals(0, child4.getAddedCount());
         assertEquals(1, child4.getRemovedCount());
         assertEquals(-1, child4.getCountDelta());
-
     }
 
     @Test
@@ -606,7 +605,7 @@ class CjMemoryBaseMapperTest {
         node.setShallowSize(shallowSize);
         node.setShallowSizePercent(shallowPercent);
         node.setRetainedSizePercent(retainedPercent);
-        node.setTotalSize((int) (shallowSize * 2.5));
+        node.setTotalSize(shallowSize * 2 + shallowSize / 2);
         node.setId((long) (Math.random() * 1000));
         node.setNodeIndex(distance);
         node.setType("[object]");

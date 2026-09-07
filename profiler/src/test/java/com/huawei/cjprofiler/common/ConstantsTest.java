@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class ConstantsTest {
-
     @Test
     void packageRootNameConstant_isExpectedValue() {
         assertEquals("com.huawei.cjprofiler", Constants.PACKAGE_ROOT_NAME);

@@ -26,6 +26,11 @@ import com.alibaba.fastjson2.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+/**
+ * Unit tests for {@code CjCommonTraceService} trace session deletion logic.
+ *
+ * @since 2026-08-14
+ */
 class CjCommonTraceServiceTest {
     @Test
     void getInstance_returnsSingleton() {
@@ -33,7 +38,7 @@ class CjCommonTraceServiceTest {
     }
 
     @Test
-    void deleteTraceSession_whenSessionIdMissing_returnsParameterErrorWithoutDatabaseAccess() {
+    void deleteTraceSession_sessionIdMissing_returnsParameterError() {
         TraceDatabase database = mock(TraceDatabase.class);
         try (MockedStatic<TraceDatabase> databaseStatic = mockStatic(TraceDatabase.class)) {
             databaseStatic.when(TraceDatabase::getInstance).thenReturn(database);
@@ -47,7 +52,7 @@ class CjCommonTraceServiceTest {
     }
 
     @Test
-    void deleteTraceSession_whenSessionIdBlank_returnsParameterErrorWithoutDatabaseAccess() {
+    void deleteTraceSession_sessionIdBlank_returnsParameterError() {
         JSONObject params = new JSONObject();
         params.put("sessionId", "   ");
         TraceDatabase database = mock(TraceDatabase.class);
@@ -63,7 +68,7 @@ class CjCommonTraceServiceTest {
     }
 
     @Test
-    void deleteTraceSession_whenDatabaseReleaseFails_returnsInternalErrorWithoutCacheCleanup() {
+    void deleteTraceSession_releaseFails_returnsInternalError() {
         JSONObject params = new JSONObject();
         params.put("sessionId", "session-failed");
         TraceDatabase database = mock(TraceDatabase.class);
@@ -84,7 +89,7 @@ class CjCommonTraceServiceTest {
     }
 
     @Test
-    void deleteTraceSession_whenDatabaseReleaseSucceeds_cleansCacheAndReturnsSuccess() {
+    void deleteTraceSession_releaseSucceeds_cleansCacheAndReturnsSuccess() {
         JSONObject params = new JSONObject();
         params.put("sessionId", "session-ok");
         TraceDatabase database = mock(TraceDatabase.class);

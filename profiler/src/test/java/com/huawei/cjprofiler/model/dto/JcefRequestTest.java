@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class JcefRequestTest {
-
     @Test
     void dataConstructor_setsParamsAndMethod() {
         JSONObject params = new JSONObject();

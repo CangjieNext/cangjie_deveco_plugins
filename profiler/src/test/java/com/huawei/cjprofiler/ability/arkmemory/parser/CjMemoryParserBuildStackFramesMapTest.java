@@ -37,7 +37,6 @@ import java.util.Map;
  * 规避大 JSON fixture 的构造复杂度与脆弱性。threadSummary 为实例字段，须在同一实例上读取。
  */
 class CjMemoryParserBuildStackFramesMapTest {
-
     private static final long THREAD_ID = 594L;
     private static final int THREAD_NAME_IDX = 92;
     private static final long TRACE_IDX = 1L;
@@ -74,7 +73,9 @@ class CjMemoryParserBuildStackFramesMapTest {
             RootLocalInfo.builder().id(id).threadIdx(threadIdx).frameId(frameId).build());
     }
 
-    /** 在同一实例上调用 buildStackFramesMap，返回 map 与该实例的 threadSummary。 */
+    /**
+     * 在同一实例上调用 buildStackFramesMap，返回 map 与该实例的 threadSummary。
+     */
     private static Map<Integer, int[]> callBuildStackFramesMap(CjMemoryParser parser) throws Exception {
         Method build = CjMemoryParser.class.getDeclaredMethod("buildStackFramesMap");
         build.setAccessible(true);

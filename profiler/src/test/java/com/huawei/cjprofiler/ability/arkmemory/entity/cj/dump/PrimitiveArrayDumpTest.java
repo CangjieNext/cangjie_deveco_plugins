@@ -23,7 +23,6 @@ import java.util.ArrayList;
  * @since 2026-08-14
  */
 class PrimitiveArrayDumpTest {
-
     @Test
     void constructor_setsFieldsAndObjectType() {
         PrimitiveArrayDump dump = new PrimitiveArrayDump(1, 10, 4);

@@ -22,7 +22,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class ConstructorNodeTest {
-
     @Test
     void noArgConstructor_initializesChildrenToEmptyList() {
         ConstructorNode node = new ConstructorNode();

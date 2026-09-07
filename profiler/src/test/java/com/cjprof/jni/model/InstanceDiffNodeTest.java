@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class InstanceDiffNodeTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         InstanceDiffNode node = new InstanceDiffNode();

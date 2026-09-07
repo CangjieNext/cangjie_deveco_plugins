@@ -17,6 +17,11 @@ import com.huawei.deveco.insight.ohos.common.enums.DatabaseType;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for {@code CjMapperManager} mapper type resolution.
+ *
+ * @since 2026-08-14
+ */
 class CjMapperManagerTest {
     @Test
     void getDatabaseTypeByMapper_returnsTraceForThreadMapper() {
@@ -36,7 +41,7 @@ class CjMapperManagerTest {
     }
 
     @Test
-    void getDatabaseTypeByMapper_whenMapperIsNull_throwsNullPointerException() {
+    void getDatabaseTypeByMapper_whenMapperIsNull_throwsNullPointerExcept() {
         assertThatThrownBy(() -> CjMapperManager.getInstance().getDatabaseTypeByMapper(null))
             .isInstanceOf(NullPointerException.class);
     }

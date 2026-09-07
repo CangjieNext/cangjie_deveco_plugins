@@ -28,6 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Unit tests for {@code CjBuildTreeService} memory tree building.
+ *
+ * @since 2026-08-14
+ */
 class CjBuildTreeServiceTest {
     private final CjBuildTreeService service = CjBuildTreeService.getInstance();
 
@@ -43,7 +48,7 @@ class CjBuildTreeServiceTest {
     }
 
     @Test
-    void buildMemTree_buildsReachableAndUnreachableNodesWithSizesNamesAndEdges() {
+    void buildMemTree_buildsReachableAndUnreachableNodesWithSizesNamesAnd() {
         ObjectInfo object = new ObjectInfo(2, 20, List.of(3, 999));
         PrimitiveArrayDump primitiveArray = new PrimitiveArrayDump(3, 3, MemTypeEnum.INT32.getType());
         StructArrayDump unreachableArray = new StructArrayDump(4, 40, List.of(), 2);
@@ -104,7 +109,7 @@ class CjBuildTreeServiceTest {
     }
 
     @Test
-    void clearAllCollection_removesPreviouslyRecordedIndexesAndAllowsFreshBuild() {
+    void clearAllCollection_removesPreviouslyRecordedIndexesAndAllowsFres() {
         service.buildMemTree(Map.of(2, new ObjectInfo(2, 20, List.of())), Map.of(20, 1), Map.of(20, 2), Set.of(2));
         assertThat(service.getNodeIndex(2)).isNotNull();
 

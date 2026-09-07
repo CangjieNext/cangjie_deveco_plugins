@@ -32,7 +32,6 @@ import java.util.Map;
  * 保证 checkHasTag/nodeType 语义与真实快照完全一致。
  */
 class CjMemoryParserExtendedSectionsTest {
-
     private static final String FIXTURE =
         "src/test/resources/fixtures/full-coverage-heap.json";
 

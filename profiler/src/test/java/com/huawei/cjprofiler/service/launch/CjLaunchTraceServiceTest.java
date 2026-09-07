@@ -52,6 +52,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Unit tests for {@code CjLaunchTraceService} launch trace caching and query logic.
+ *
+ * @since 2026-08-14
+ */
 class CjLaunchTraceServiceTest {
     @Test
     void cacheCjLaunchLifeCycleTrace_whenDaoReturnsNull_returnsFalse() {
@@ -88,7 +93,7 @@ class CjLaunchTraceServiceTest {
     }
 
     @Test
-    void cacheCjLaunchLifeCycleTrace_whenDaoThrowsProfilerException_returnsFalse() {
+    void cacheCjLaunchLifeCycleTrace_whenDaoThrowsProfilerException_retur() {
         LaunchLifeCycleRequest request = branchRequest("error-session");
         LaunchTraceDao dao = mock(LaunchTraceDao.class);
         when(dao.queryLaunchTraceList(
@@ -106,7 +111,7 @@ class CjLaunchTraceServiceTest {
     }
 
     @Test
-    void syncCacheLaunchLifeCycle_afterSuccessfulCache_skipsDuplicateSession() {
+    void syncCacheLaunchLifeCycle_afterSuccessfulCache_skipsDuplicateSess() {
         CjLaunchTraceService service = spy(new CjLaunchTraceService());
         LaunchLifeCycleRequest request = branchRequest("cached-session");
         doReturn(Boolean.TRUE).when(service).cacheCjLaunchLifeCycleTrace(request);
@@ -130,7 +135,7 @@ class CjLaunchTraceServiceTest {
     }
 
     @Test
-    void cleanSessionCache_afterSuccessfulCache_allowsSessionToBeCachedAgain() {
+    void cleanSessionCache_afterSuccessfulCache_allowsSessionToBeCachedAg() {
         CjLaunchTraceService service = spy(new CjLaunchTraceService());
         LaunchLifeCycleRequest request = branchRequest("clean-session");
         doReturn(Boolean.TRUE).when(service).cacheCjLaunchLifeCycleTrace(request);
@@ -169,8 +174,7 @@ class CjLaunchTraceServiceTest {
     }
 
     @Test
-    void cacheTrace_startAbilityThenLockedSameThread_preservesInitialProcessStart() {
-        LaunchLifeCycleRequest request = pureLogicRequest();
+    void cacheTrace_startAbilityThenLockedSameThread_preservesInitialProc() {
         LaunchTraceDao dao = mock(LaunchTraceDao.class);
         LaunchTracePo start = trace(LaunchTraceConstants.TRACE_START_ABILITY, "ams", 3, 100L, 100L);
         LaunchTracePo locked = trace(LaunchTraceConstants.TRACE_START_ABILITY_LOCKED + " bundle", "ams", 3,
@@ -190,6 +194,7 @@ class CjLaunchTraceServiceTest {
             cacheStatic.when(LaunchDataCacheManager::getInstance).thenReturn(cacheManager);
             eventStatic.when(LifeCycleEventCacheManager::getInstance).thenReturn(eventManager);
 
+            LaunchLifeCycleRequest request = pureLogicRequest();
             assertThat(new CjLaunchTraceService().cacheCjLaunchLifeCycleTrace(request)).isTrue();
         }
 
@@ -200,7 +205,7 @@ class CjLaunchTraceServiceTest {
     }
 
     @Test
-    void cacheTrace_renderServiceTrace_recordsRenderTidEvenWhenNoPhaseMatches() {
+    void cacheTrace_renderServiceTrace_recordsRenderTidEvenWhenNoPhaseMat() {
         LaunchLifeCycleRequest request = pureLogicRequest();
         LaunchTraceDao dao = mock(LaunchTraceDao.class);
         LaunchTracePo render = trace("unrelated", LaunchTraceConstants.PROCESS_RENDER_SERVICE, 88, 100L, 10L);
@@ -230,7 +235,6 @@ class CjLaunchTraceServiceTest {
 
     @Test
     void cacheTrace_withRealAbilityFixture_appendsMappedAbilityLifeCycles() throws IOException {
-        List<LifeCycleEventVo> fixtureEvents = realAbilityEvents();
         LaunchLifeCycleRequest request = pureLogicRequest();
         when(request.getStartRecordTime()).thenReturn(1_787_729_280_000L);
         when(request.getEndTime()).thenReturn(900_000_000L);
@@ -251,6 +255,7 @@ class CjLaunchTraceServiceTest {
         LifeCycleEventCacheManager eventManager = mock(LifeCycleEventCacheManager.class);
         LifeCycleEventCache eventCache = mock(LifeCycleEventCache.class);
         when(eventManager.getLifeCycleEventCache("session")).thenReturn(Optional.of(eventCache));
+        List<LifeCycleEventVo> fixtureEvents = realAbilityEvents();
         when(eventCache.queryData(eq(1_787_729_280_200L), eq(1_787_729_280_900L), eq("bundle")))
             .thenReturn(fixtureEvents);
 
@@ -278,7 +283,8 @@ class CjLaunchTraceServiceTest {
     @Test
     void frameRelationKey_extractsOnlyBracketedProcessAndIndex() throws Exception {
         CjLaunchTraceService service = new CjLaunchTraceService();
-        java.lang.reflect.Method method = CjLaunchTraceService.class.getDeclaredMethod("getFrameRelateKey", String.class);
+        java.lang.reflect.Method method = CjLaunchTraceService.class.getDeclaredMethod(
+            "getFrameRelateKey", String.class);
         method.setAccessible(true);
 
         assertThat(method.invoke(service, "MarshRSTransactionData [42,7]")).isEqualTo(Optional.of("[42,7]"));
@@ -294,7 +300,8 @@ class CjLaunchTraceServiceTest {
 
         LaunchTracePo data = trace("MarshRSTransactionData [42,7]", "main", 42, 120L, 20L);
         LaunchTracePo matching = trace(LaunchTraceConstants.TRACE_APP_RENDERING_SEND_COMMANDS, "main", 42, 100L, 60L);
-        LaunchTracePo wrongThread = trace(LaunchTraceConstants.TRACE_APP_RENDERING_SEND_COMMANDS, "other", 7, 100L, 60L);
+        LaunchTracePo wrongThread = trace(LaunchTraceConstants.TRACE_APP_RENDERING_SEND_COMMANDS,
+            "other", 7, 100L, 60L);
 
         assertThat(method.invoke(service, data, List.of(wrongThread, matching))).isEqualTo(Optional.of(matching));
         assertThat(method.invoke(service, data, List.of(wrongThread))).isEqualTo(Optional.empty());
@@ -360,7 +367,9 @@ class CjLaunchTraceServiceTest {
         method.setAccessible(true);
 
         LaunchTracePo data = trace("H:startAbility", "ams", 3, 100L, 50L);
-        LaunchData result = (LaunchData) method.invoke(service, "ProcessCreating", data);
+        Object launchResult = method.invoke(service, "ProcessCreating", data);
+        assertThat(launchResult).isInstanceOf(LaunchData.class);
+        LaunchData result = (LaunchData) launchResult;
 
         assertThat(result.getLifeCycleName()).isEqualTo("ProcessCreating");
         assertThat(result.getStartTime()).isEqualTo(100L);

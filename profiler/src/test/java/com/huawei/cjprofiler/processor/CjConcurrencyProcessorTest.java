@@ -32,6 +32,11 @@ import org.mockito.MockedStatic;
 
 import java.util.List;
 
+/**
+ * Unit tests for {@code CjConcurrencyProcessor} concurrency request handling.
+ *
+ * @since 2026-08-14
+ */
 class CjConcurrencyProcessorTest {
     @Test
     void queryMeasureValidatesDelegatesAndWrapsExactResult() {
@@ -43,7 +48,7 @@ class CjConcurrencyProcessorTest {
         try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
              MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
              MockedStatic<CjConcurrencyMeasureService> serviceStatic =
-                 mockStatic(CjConcurrencyMeasureService.class)) {
+                mockStatic(CjConcurrencyMeasureService.class)) {
             json.when(() -> JsonUtil.parseObject(params, QueryConcurrencyMeasureRequest.class)).thenReturn(request);
             serviceStatic.when(CjConcurrencyMeasureService::getInstance).thenReturn(service);
 
@@ -51,6 +56,7 @@ class CjConcurrencyProcessorTest {
 
             assertThat(response.getIsSuccess()).isTrue();
             assertThat(response.getProfilerError()).isNull();
+            assertThat(response.getBody()).isInstanceOf(ConcurrencyMeasureInfo.class);
             assertThat(((ConcurrencyMeasureInfo) response.getBody()).getMeasureInfoDetail()).isSameAs(details);
             validate.verify(() -> ValidateUtil.validate(request));
             verify(service).queryConcurrencyMeasureList(request);
@@ -66,12 +72,13 @@ class CjConcurrencyProcessorTest {
         try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
              MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
              MockedStatic<CjConcurrencyMeasureService> serviceStatic =
-                 mockStatic(CjConcurrencyMeasureService.class)) {
+                mockStatic(CjConcurrencyMeasureService.class)) {
             json.when(() -> JsonUtil.parseObject(params, QueryConcurrencyMeasureRequest.class)).thenReturn(request);
             serviceStatic.when(CjConcurrencyMeasureService::getInstance).thenReturn(service);
 
             Response<?> response = CjConcurrencyProcessor.queryConcurrencyMeasureList(params);
 
+            assertThat(response.getBody()).isInstanceOf(ConcurrencyMeasureInfo.class);
             assertThat(((ConcurrencyMeasureInfo) response.getBody()).getMeasureInfoDetail()).isEmpty();
             verify(service).queryConcurrencyMeasureList(request);
         }

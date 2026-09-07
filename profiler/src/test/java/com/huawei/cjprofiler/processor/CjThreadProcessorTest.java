@@ -36,9 +36,14 @@ import org.mockito.MockedStatic;
 
 import java.util.List;
 
+/**
+ * Unit tests for {@code CjThreadProcessor} thread request handling.
+ *
+ * @since 2026-08-14
+ */
 class CjThreadProcessorTest {
     @Test
-    void queryMetadataWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsService() {
+    void queryMetadataWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsS() {
         CjThreadMetadataRequest request = metadataRequest();
         CjThreadDao dao = mock(CjThreadDao.class);
         CjThreadService service = mock(CjThreadService.class);
@@ -72,6 +77,7 @@ class CjThreadProcessorTest {
             Response<?> response = CjThreadProcessor.queryCjStateMetadata(request);
 
             assertThat(response.getIsSuccess()).isTrue();
+            assertThat(response.getBody()).isInstanceOf(CjThreadStateMetadata.class);
             assertThat(((CjThreadStateMetadata) response.getBody()).metadataList()).isSameAs(values);
             verify(dao).registerMapper("session");
             verify(service).queryCjStateMetadata("session", 10L, 20L);
@@ -93,6 +99,7 @@ class CjThreadProcessorTest {
 
             Response<?> response = CjThreadProcessor.queryCjThreadSliceInfo(request);
 
+            assertThat(response.getBody()).isInstanceOf(CjThreadSliceInfoListData.class);
             assertThat(((CjThreadSliceInfoListData) response.getBody()).cjThreadStateList()).isSameAs(values);
             verify(service).queryCjThreadSliceInfo("session", 7, 11L, 22L);
         }
@@ -112,6 +119,7 @@ class CjThreadProcessorTest {
 
             Response<?> response = CjThreadProcessor.queryCjThreadList(request);
 
+            assertThat(response.getBody()).isInstanceOf(CjThreadInfoData.class);
             assertThat(((CjThreadInfoData) response.getBody()).cjThreadInfoList()).isSameAs(values);
             verify(service).queryCjThreadList("s", 1L, 2L);
         }
@@ -133,6 +141,7 @@ class CjThreadProcessorTest {
 
             Response<?> response = CjThreadProcessor.queryCjThreadLaneList(request);
 
+            assertThat(response.getBody()).isInstanceOf(CjLaneSliceData.class);
             assertThat(((CjLaneSliceData) response.getBody()).cjLaneSliceInfo()).isSameAs(values);
             verify(service).queryCjThreadLaneList("s", "Running", 3L, 9L, List.of(10L, 20L));
         }

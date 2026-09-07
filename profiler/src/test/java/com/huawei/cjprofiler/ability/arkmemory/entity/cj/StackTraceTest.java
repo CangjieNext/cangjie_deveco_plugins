@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class StackTraceTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         StackTrace trace = new StackTrace();

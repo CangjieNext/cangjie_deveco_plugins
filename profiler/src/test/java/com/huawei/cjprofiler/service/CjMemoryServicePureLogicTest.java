@@ -22,6 +22,7 @@ import com.cjprof.jni.model.InstanceNode;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,13 @@ import java.util.List;
  * @since 2026-09-03
  */
 class CjMemoryServicePureLogicTest {
-
     /**
      * 手造一个具备完整映射字段的 {@link InstanceNode}，供 mapper 转换与树组装使用。
+     *
+     * @param className 类名
+     * @param nodeIndex 节点索引
+     * @param id        节点 id
+     * @return 构造完成的 InstanceNode
      */
     private static InstanceNode instanceNode(String className, int nodeIndex, long id) {
         InstanceNode node = new InstanceNode();
@@ -62,7 +67,7 @@ class CjMemoryServicePureLogicTest {
         return node;
     }
 
-    private static Object invoke(Object target, String methodName, Class<?>[] paramTypes, Object... args)
+    private static Object invoke(Object target, String methodName, Class<?>[] paramTypes, Object[] args)
         throws Exception {
         Method method = CjMemoryService.class.getDeclaredMethod(methodName, paramTypes);
         method.setAccessible(true);
@@ -72,6 +77,7 @@ class CjMemoryServicePureLogicTest {
     /**
      * buildSingleTree：单层路径（仅根节点）。
      * 期望：返回的 instanceNode distance == 1，retainerNodes 为空。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void buildSingleTree_singleNodePath_setsDistanceAndNoRetainers() throws Exception {
@@ -80,8 +86,10 @@ class CjMemoryServicePureLogicTest {
         path.add(instanceNode("com.example.Root", 0, 1L));
 
         @SuppressWarnings("unchecked")
-        JsHeapSnapshotInstanceNode result = (JsHeapSnapshotInstanceNode) invoke(service, "buildSingleTree",
-            new Class<?>[] {List.class}, path);
+        Object treeResult = invoke(service, "buildSingleTree",
+            new Class<?>[] {List.class}, new Object[] {path});
+        assertThat(treeResult).isInstanceOf(JsHeapSnapshotInstanceNode.class);
+        JsHeapSnapshotInstanceNode result = (JsHeapSnapshotInstanceNode) treeResult;
 
         assertThat(result).isNotNull();
         assertThat(result.getDistance()).isEqualTo(1);
@@ -92,6 +100,7 @@ class CjMemoryServicePureLogicTest {
     /**
      * buildSingleTree：多层路径（根 + 若干 retainer 层）。
      * 期望：第二层进入 retainerNodes，第三层及以后逐层下挂到 children，distance 逐层递减。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void buildSingleTree_multiNodePath_nestsRetainersByDistance() throws Exception {
@@ -102,8 +111,10 @@ class CjMemoryServicePureLogicTest {
         path.add(instanceNode("Leaf", 2, 3L));
 
         @SuppressWarnings("unchecked")
-        JsHeapSnapshotInstanceNode result = (JsHeapSnapshotInstanceNode) invoke(service, "buildSingleTree",
-            new Class<?>[] {List.class}, path);
+        Object treeResult = invoke(service, "buildSingleTree",
+            new Class<?>[] {List.class}, new Object[] {path});
+        assertThat(treeResult).isInstanceOf(JsHeapSnapshotInstanceNode.class);
+        JsHeapSnapshotInstanceNode result = (JsHeapSnapshotInstanceNode) treeResult;
 
         // 根节点
         assertThat(result.getDistance()).isEqualTo(3);
@@ -125,6 +136,7 @@ class CjMemoryServicePureLogicTest {
 
     /**
      * covertInstanceToTree：空路径列表 → 直接返回空 list（走日志告警分支）。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void covertInstanceToTree_emptyPathList_returnsEmptyList() throws Exception {
@@ -132,16 +144,18 @@ class CjMemoryServicePureLogicTest {
 
         @SuppressWarnings("unchecked")
         List<JsHeapSnapshotInstanceNode> result = (List<JsHeapSnapshotInstanceNode>) invoke(service,
-            "covertInstanceToTree", new Class<?>[] {List.class, int.class}, new ArrayList<>(), 0);
+            "covertInstanceToTree", new Class<?>[] {List.class, int.class},
+            new Object[] {new ArrayList<>(), 0});
 
         assertThat(result).isEmpty();
     }
 
     /**
      * covertInstanceToTree：多条路径 → 每条转成一棵树，并写入 countDelta。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
-    void covertInstanceToTree_multiplePaths_buildsTreePerPathWithCountDelta() throws Exception {
+    void covertInstanceToTree_multiplePaths_buildsTreePerPathWithCountDel() throws Exception {
         CjMemoryService service = new CjMemoryService();
         List<List<InstanceNode>> pathList = new ArrayList<>();
         List<InstanceNode> path1 = new ArrayList<>();
@@ -154,7 +168,8 @@ class CjMemoryServicePureLogicTest {
 
         @SuppressWarnings("unchecked")
         List<JsHeapSnapshotInstanceNode> result = (List<JsHeapSnapshotInstanceNode>) invoke(service,
-            "covertInstanceToTree", new Class<?>[] {List.class, int.class}, pathList, 5);
+            "covertInstanceToTree", new Class<?>[] {List.class, int.class},
+            new Object[] {pathList, 5});
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getName()).isEqualTo("A");
@@ -167,6 +182,7 @@ class CjMemoryServicePureLogicTest {
 
     /**
      * isFind：children 为空 → 返回 false。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void isFind_emptyChildren_returnsFalse() throws Exception {
@@ -175,14 +191,18 @@ class CjMemoryServicePureLogicTest {
         node.setChildren(new ArrayList<>());
         ArkHeapNodeExpandRequest request = org.mockito.Mockito.mock(ArkHeapNodeExpandRequest.class);
 
-        Boolean isFoundEmpty = (Boolean) invoke(service, "isFind",
-            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class}, request, node);
+        Object isFindResult = invoke(service, "isFind",
+            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class},
+            new Object[] {request, node});
+        assertThat(isFindResult).isInstanceOf(Boolean.class);
+        Boolean isFoundEmpty = (Boolean) isFindResult;
 
         assertThat(isFoundEmpty).isFalse();
     }
 
     /**
      * isFind：children 中存在 nodeIndex 匹配节点 → 设置 start 并返回 true。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void isFind_matchingNodeIndex_setsStartAndReturnsTrue() throws Exception {
@@ -197,8 +217,11 @@ class CjMemoryServicePureLogicTest {
         ArkHeapNodeExpandRequest request = org.mockito.Mockito.mock(ArkHeapNodeExpandRequest.class);
         org.mockito.Mockito.when(request.getNodeId()).thenReturn(7);
 
-        Boolean isFoundMatching = (Boolean) invoke(service, "isFind",
-            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class}, request, node);
+        Object isFoundResult = invoke(service, "isFind",
+            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class},
+            new Object[] {request, node});
+        assertThat(isFoundResult).isInstanceOf(Boolean.class);
+        Boolean isFoundMatching = (Boolean) isFoundResult;
 
         assertThat(isFoundMatching).isTrue();
         org.mockito.Mockito.verify(request).setStart(1);
@@ -206,6 +229,7 @@ class CjMemoryServicePureLogicTest {
 
     /**
      * isFind：children 中无匹配节点 → 返回 false，不设置 start。
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void isFind_noMatchingNodeIndex_returnsFalse() throws Exception {
@@ -218,41 +242,38 @@ class CjMemoryServicePureLogicTest {
         ArkHeapNodeExpandRequest request = org.mockito.Mockito.mock(ArkHeapNodeExpandRequest.class);
         org.mockito.Mockito.when(request.getNodeId()).thenReturn(999);
 
-        Boolean isFoundNoMatch = (Boolean) invoke(service, "isFind",
-            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class}, request, node);
+        Object isFoundResult = invoke(service, "isFind",
+            new Class<?>[] {ArkHeapNodeExpandRequest.class, ConstructorNode.class},
+            new Object[] {request, node});
+        assertThat(isFoundResult).isInstanceOf(Boolean.class);
+        Boolean isFoundNone = (Boolean) isFoundResult;
 
-        assertThat(isFoundNoMatch).isFalse();
+        assertThat(isFoundNone).isFalse();
         org.mockito.Mockito.verify(request, org.mockito.Mockito.never()).setStart(org.mockito.Mockito.anyInt());
     }
 
     /**
      * saveSnapshotFileData：文件名无后缀 → 在 native 调用前抛 ProfilerException。
      * <p>该分支位于 saveHeapSnapshotCacheData（native）之前，属于零风险可测分支。</p>
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
-    void saveSnapshotFileData_fileNameWithoutSuffix_throwsBeforeNativeCall() throws Exception {
+    void saveSnapshotFileData_fileNameWithoutSuffix_throwsBeforeNativeCal() throws Exception {
         CjMemoryService service = new CjMemoryService();
         // "noSuffix" 无 '.'，suffixDotIndex == -1 <= 0 -> 抛异常
         File file = new File("noSuffix");
 
         assertThatThrownBy(() -> invoke(service, "saveSnapshotFileData",
             new Class<?>[] {String.class, long.class, long.class, File.class, boolean.class},
-            "session", 100L, 200L, file, false))
+            new Object[] {"session", 100L, 200L, file, false}))
+            .isInstanceOf(InvocationTargetException.class)
             .hasCauseInstanceOf(ProfilerException.class);
-
-        // 确认异常类型
-        try {
-            invoke(service, "saveSnapshotFileData",
-                new Class<?>[] {String.class, long.class, long.class, File.class, boolean.class},
-                "session", 100L, 200L, file, false);
-        } catch (Exception e) {
-            assertThat(e.getCause()).isInstanceOf(ProfilerException.class);
-        }
     }
 
     /**
      * handleCjStackTree：空列表 → 直接返回，不产生任何子节点。
      * <p>该方法是递归入口，传入空列表时 while 条件不成立，属最浅的零风险分支。</p>
+     * @throws Exception 反射调用或被测方法执行失败时抛出
      */
     @Test
     void handleCjStackTree_emptyProps_doesNothing() throws Exception {
@@ -264,7 +285,7 @@ class CjMemoryServicePureLogicTest {
 
         invoke(service, "handleCjStackTree",
             new Class<?>[] {int.class, List.class, com.huawei.cjprofiler.ability.arkmemory.entity.CjStack.class},
-            0, new ArrayList<>(), parent);
+            new Object[] {0, new ArrayList<>(), parent});
 
         assertThat(parent.getChildren()).isEmpty();
     }

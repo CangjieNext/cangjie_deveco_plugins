@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class CjThreadSliceInfoVoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         CjThreadSliceInfoVo vo = new CjThreadSliceInfoVo();

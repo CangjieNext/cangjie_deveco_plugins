@@ -19,6 +19,11 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+/**
+ * Unit tests for profiler annotations metadata.
+ *
+ * @since 2026-08-14
+ */
 class ProfilerAnnotationsTest {
     @Controller
     @RequestMapping("/threads")

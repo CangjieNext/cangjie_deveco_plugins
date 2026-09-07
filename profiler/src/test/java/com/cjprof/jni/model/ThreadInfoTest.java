@@ -24,7 +24,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class ThreadInfoTest {
-
     @Test
     void noArgConstructor_initializesFramesToEmptyList() {
         ThreadInfo info = new ThreadInfo();

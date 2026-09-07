@@ -10,6 +10,7 @@ package com.huawei.cjprofiler.ability.arkmemory.entity.cj;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.huawei.cjprofiler.ability.arkmemory.entity.cj.dump.BaseTreeInfo;
 
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class NodeInfoTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         NodeInfo node = new NodeInfo();
@@ -104,7 +104,8 @@ class NodeInfoTest {
     void toIntArray_viaBaseTreeInfoContract() {
         NodeInfo node = NodeInfo.builder().type(9).build();
 
-        int[] array = ((BaseTreeInfo) node).toIntArray();
+        assertTrue(node instanceof BaseTreeInfo);
+        int[] array = node.toIntArray();
 
         assertEquals(9, array[0]);
     }

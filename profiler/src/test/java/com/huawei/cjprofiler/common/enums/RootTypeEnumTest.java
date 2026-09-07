@@ -21,7 +21,6 @@ import org.junit.jupiter.params.provider.EnumSource;
  * @since 2026-08-14
  */
 class RootTypeEnumTest {
-
     @Test
     void getValueByKey_returnsCorrectValueForKnownKeys() {
         assertEquals("global", RootTypeEnum.getValueByKey((byte) 1));

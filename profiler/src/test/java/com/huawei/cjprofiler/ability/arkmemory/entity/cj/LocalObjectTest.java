@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
  * @since 2026-08-14
  */
 class LocalObjectTest {
-
     @Test
     void noArgConstructor_setsDefaults() {
         LocalObject obj = new LocalObject();
