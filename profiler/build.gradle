@@ -8,11 +8,15 @@ def devEcoJars = rootProject.devEcoJars(project, [
         'plugins/ohos-profiler/lib/instrumented-profiler-foundation-common-*.jar',
         'plugins/openharmony/lib/dap4intellij-*.jar',
         'plugins/openharmony/lib/panda-debug-adapter-*.jar',
-        'plugins/openharmony/lib/ohos-hdclib-*.jar'
+        'plugins/openharmony/lib/ohos-hdclib-*.jar',
+        'plugins/openharmony/lib/sdk-core-*.jar',
+        'plugins/openharmony/lib/sdk-oh-core-*.jar',
+        'plugins/openharmony/lib/sdk-oh-idea-*.jar'
 ])
 
 dependencies {
     compileOnly project(':sdk-mgmt')
+    testImplementation project(':sdk-mgmt')
     compileOnly devEcoJars
     testCompileOnly devEcoJars
     testRuntimeOnly devEcoJars
@@ -61,7 +65,7 @@ jacocoTestReport {
     dependsOn test
     reports {
         xml.required = true
-        html.required = true
+        html.required = false
         csv.required = false
     }
     // IntelliJ 平台插件：exec 记录的是 instrumentCode 插桩后的类 ID，

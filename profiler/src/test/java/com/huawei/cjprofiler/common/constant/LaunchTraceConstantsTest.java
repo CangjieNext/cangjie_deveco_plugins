@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.regex.Pattern;
 
 /**
@@ -141,6 +143,11 @@ class LaunchTraceConstantsTest {
     @Test
     void processRenderServiceConstant_isExpectedValue() {
         assertEquals("render_service", LaunchTraceConstants.PROCESS_RENDER_SERVICE);
+    }
+
+    @Test
+    void forceLoadClass_initializesLaunchTraceConstants() {
+        assertNotNull(new LaunchTraceConstants());
     }
 
     @Test

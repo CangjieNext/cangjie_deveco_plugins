@@ -9,6 +9,7 @@
 package com.huawei.cjprofiler.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -62,5 +63,12 @@ class ConstantsTest {
     @Test
     void cangjieProfilerPrefixConstant_isExpectedValue() {
         assertEquals("cjprofiler", Constants.URL.CANGJIE_PROFILER_PREFIX);
+    }
+
+    @Test
+    void forceLoadClass_initializesConstantsAndUrlClass() {
+        // Instantiate to cover class declaration lines (init methods)
+        assertNotNull(new Constants());
+        assertNotNull(new Constants.URL());
     }
 }

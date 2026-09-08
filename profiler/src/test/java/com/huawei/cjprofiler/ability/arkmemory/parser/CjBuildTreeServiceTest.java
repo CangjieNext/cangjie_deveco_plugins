@@ -109,6 +109,19 @@ class CjBuildTreeServiceTest {
     }
 
     @Test
+    void buildMemTree_skipsUnreachableNodeWhenMapKeyDiffersFromObjectId() {
+        // key=5 但 getId()=7：unreachableNodes 按 getId() 收集，
+        // findUnreachableRoots 与 iterativeUnreachableDfs 都会对 id=7 查 map 得到 null
+        Map<Integer, ObjectInfo> objects = new LinkedHashMap<>();
+        objects.put(5, new ObjectInfo(7, 70, List.of()));
+
+        TreeInfo tree = service.buildMemTree(objects, Map.of(70, 8), Map.of(70, 700), Set.of());
+
+        assertThat(tree.getNodeInfoList()).extracting(NodeInfo::getId).containsExactly(1);
+        assertThat(tree.getEdgeInfoList()).isEmpty();
+    }
+
+    @Test
     void clearAllCollection_removesPreviouslyRecordedIndexesAndAllowsFres() {
         service.buildMemTree(Map.of(2, new ObjectInfo(2, 20, List.of())), Map.of(20, 1), Map.of(20, 2), Set.of(2));
         assertThat(service.getNodeIndex(2)).isNotNull();

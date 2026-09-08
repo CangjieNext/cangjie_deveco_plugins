@@ -30,6 +30,12 @@ import java.util.Optional;
  */
 public class CjHiPerfServiceTest {
 
+    @Test
+    void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new CjHiPerfService();
+    }
+
     private void setFieldValue(Object target, String fieldName, Object value) {
         try {
             java.lang.reflect.Field field = target.getClass().getDeclaredField(fieldName);

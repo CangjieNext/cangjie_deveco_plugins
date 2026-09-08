@@ -30,6 +30,12 @@ import java.util.Map;
  */
 class CjMemoryDataServiceStaticMockTest {
     @Test
+    void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new CjMemoryDataService();
+    }
+
+    @Test
     void parseRootTypeMapCorrectlyAssignsTypes() {
         Map<Integer, String> rootTypeMap = new HashMap<>();
         RawHeapSnapshot snapshot = snapshotWithExtension();

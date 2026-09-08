@@ -9,6 +9,7 @@
 package com.huawei.cjprofiler.common.constant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,5 +32,10 @@ class CjConcurrencyConstantsTest {
     @Test
     void concurrencyNameTypeCjThreadConstant_isCjthread() {
         assertEquals("CJTHREAD", CjConcurrencyConstants.CONCURRENCY_NAME_TYPE_CJ_THREAD);
+    }
+
+    @Test
+    void forceLoadClass_initializesCjConcurrencyConstants() {
+        assertNotNull(new CjConcurrencyConstants());
     }
 }

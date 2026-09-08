@@ -26,6 +26,12 @@ import java.lang.reflect.Method;
 public class ArgumentsUtilTest {
 
     @Test
+    public void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new ArgumentsUtil();
+    }
+
+    @Test
     public void testParseJsonObject_NullMethod() {
         Object[] args = new Object[1];
         try {

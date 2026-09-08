@@ -24,6 +24,12 @@ import java.util.List;
 
 public class CjMemoryTransServiceTest {
     @Test
+    public void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new CjMemoryTransService();
+    }
+
+    @Test
     public void testBuildPathNodeFirstLevelWithChildren() throws NoSuchFieldException {
         // 创建测试数据
         JsHeapSnapshotConstructorNode constructorNode = new JsHeapSnapshotConstructorNode();

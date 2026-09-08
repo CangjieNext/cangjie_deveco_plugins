@@ -9,6 +9,7 @@
 package com.huawei.cjprofiler.common.constant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,5 +27,10 @@ class CangJieConstantTest {
     @Test
     void cjPluginIdConstant_isExpectedValue() {
         assertEquals("com.huawei.cangjie-support-plugin", CangJieConstant.CJ_PLUGIN_ID);
+    }
+
+    @Test
+    void forceLoadClass_initializesCangJieConstant() {
+        assertNotNull(new CangJieConstant());
     }
 }

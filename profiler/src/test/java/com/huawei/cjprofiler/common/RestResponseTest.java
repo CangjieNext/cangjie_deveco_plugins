@@ -67,4 +67,14 @@ class RestResponseTest {
         response.setCode(RestResponse.RestCode.SUCCESS.getCode());
         assertFalse(response.isFailed());
     }
+
+    @Test
+    void setDataAndSetMessage_updateFieldsCorrectly() {
+        RestResponse<String> response = new RestResponse<>();
+        response.setData("test-data");
+        response.setMessage("test-message");
+
+        assertEquals("test-data", response.getData());
+        assertEquals("test-message", response.getMessage());
+    }
 }

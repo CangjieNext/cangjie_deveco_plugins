@@ -42,6 +42,12 @@ class CjImportServiceTest {
     private static final String SESSION_ID = "import-session";
 
     @Test
+    void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new CjImportService();
+    }
+
+    @Test
     void importTimeline_whenDataStructureIsNull_returnsTrueWithoutParsing() {
         Fixture fixture = new Fixture(Collections.singletonList(null));
 
@@ -162,6 +168,31 @@ class CjImportServiceTest {
 
         verify(fixture.memoryService, never()).saveHeapSnapshotToRootMap(
             org.mockito.ArgumentMatchers.any(RawHeapSnapshot.class));
+    }
+
+    @Test
+    void importSnapshot_whenDataStructureIsNull_returnsTrueWithoutImport() {
+        Fixture fixture = new Fixture(Collections.singletonList(null));
+
+        try (MockedStatic<CjRecordManager> managerStatic = fixture.mockRecordManager()) {
+            assertThat(CjImportService.importCjHeapSnapshot(fixture.dto, fixture.unitKey)).isTrue();
+        }
+
+        verify(fixture.memoryService, never()).handlerTraceFile(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    void importSnapshot_whenBothFileAndDatabaseAreNull_warnsAndContinues() {
+        DataStructure data = mock(DataStructure.class, RETURNS_DEEP_STUBS);
+        when(data.getFile()).thenReturn(null);
+        when(data.getDatabase()).thenReturn(null);
+        Fixture fixture = new Fixture(List.of(data));
+
+        try (MockedStatic<CjRecordManager> managerStatic = fixture.mockRecordManager()) {
+            assertThat(CjImportService.importCjHeapSnapshot(fixture.dto, fixture.unitKey)).isTrue();
+        }
+
+        verify(fixture.memoryService, never()).handlerTraceFile(org.mockito.ArgumentMatchers.anyString());
     }
 
     private static DataStructure dataWithFile(String path) {

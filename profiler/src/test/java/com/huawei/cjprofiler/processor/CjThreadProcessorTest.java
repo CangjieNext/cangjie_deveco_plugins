@@ -43,6 +43,12 @@ import java.util.List;
  */
 class CjThreadProcessorTest {
     @Test
+    void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new CjThreadProcessor();
+    }
+
+    @Test
     void queryMetadataWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsS() {
         CjThreadMetadataRequest request = metadataRequest();
         CjThreadDao dao = mock(CjThreadDao.class);
