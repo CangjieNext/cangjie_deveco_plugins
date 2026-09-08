@@ -8,7 +8,11 @@
 
 package com.huawei.ideacj.formatter;
 
-import com.intellij.lang.Commenter;
+import com.huawei.ideacj.language.CangJieTypes;
+
+import com.intellij.lang.CodeDocumentationAwareCommenter;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.tree.IElementType;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
  * @author x30009917
  * @since 2021-06-2
  */
-public class CangjieCommenter implements Commenter {
+public class CangjieCommenter implements CodeDocumentationAwareCommenter {
     @Nullable
     @Override
     public String getLineCommentPrefix() {
@@ -51,5 +55,45 @@ public class CangjieCommenter implements Commenter {
     @Override
     public String getCommentedBlockCommentSuffix() {
         return null;
+    }
+
+    @Override
+    public IElementType getLineCommentTokenType() {
+        return CangJieTypes.LINE_COMMENT;
+    }
+
+    @Override
+    public IElementType getBlockCommentTokenType() {
+        return CangJieTypes.BLOCK_COMMENT;
+    }
+
+    @Override
+    public IElementType getDocumentationCommentTokenType() {
+        return CangJieTypes.BLOCK_COMMENT;
+    }
+
+    @Nullable
+    @Override
+    public String getDocumentationCommentPrefix() {
+        return "/**";
+    }
+
+    @Nullable
+    @Override
+    public String getDocumentationCommentLinePrefix() {
+        return "*";
+    }
+
+    @Nullable
+    @Override
+    public String getDocumentationCommentSuffix() {
+        return " */";
+    }
+
+    @Override
+    public boolean isDocumentationComment(PsiComment element) {
+        return element != null
+                && element.getTokenType() == CangJieTypes.BLOCK_COMMENT
+                && element.getText().startsWith("/**");
     }
 }
