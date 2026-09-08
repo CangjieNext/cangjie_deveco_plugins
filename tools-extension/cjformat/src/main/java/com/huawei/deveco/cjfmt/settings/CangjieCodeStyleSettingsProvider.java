@@ -49,6 +49,7 @@ public class CangjieCodeStyleSettingsProvider extends CodeStyleSettingsProvider 
         @Override
         protected void initTabs(CodeStyleSettings settings) {
             addTab(new CangjieCodeStylePanel(CangJieLanguage.INSTANCE, getCurrentSettings(), settings));
+            addTab(new CangjieCommenterCodeStylePanel(CangJieLanguage.INSTANCE, getCurrentSettings(), settings));
         }
 
         @Override
