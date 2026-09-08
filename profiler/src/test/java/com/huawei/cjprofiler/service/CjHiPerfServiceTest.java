@@ -1,8 +1,17 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2026-2026. All rights reserved.
+ * This source file is part of the Cangjie project, licensed under Apache-2.0
+ * with Runtime Library Exception.
+ *
+ * See https://cangjie-lang.cn/pages/LICENSE for license information.
  */
 
 package com.huawei.cjprofiler.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.huawei.deveco.insight.ohos.common.constant.CangJieConstant;
 import com.huawei.deveco.insight.ohos.model.vo.HiPerfNode;
@@ -14,17 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
  * CjHiPerfServiceTest
  *
  * @since 2026-06-04
  */
 public class CjHiPerfServiceTest {
+    @Test
+    void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new CjHiPerfService();
+    }
 
     private void setFieldValue(Object target, String fieldName, Object value) {
         try {

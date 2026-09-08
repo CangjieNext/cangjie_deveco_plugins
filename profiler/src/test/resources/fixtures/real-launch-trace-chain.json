@@ -1,0 +1,100 @@
+[
+  {
+    "threadId": 1628,
+    "threadName": "ams",
+    "name": "H:virtual int OHOS::AAFwk::AbilityManagerService::StartAbility(const OHOS::AAFwk::Want &, int, int32_t, uint64_t)",
+    "startTime": 1000000,
+    "duration": 500000
+  },
+  {
+    "threadId": 1628,
+    "threadName": "ams",
+    "name": "H:virtual void OHOS::AppExecFwk::AppMgrServiceInner::LoadAbility(std::shared_ptr<AbilityInfo>, std::shared_ptr<ApplicationIn",
+    "startTime": 1500000,
+    "duration": 300000
+  },
+  {
+    "threadId": 1628,
+    "threadName": "ams",
+    "name": "H:virtual void OHOS::AppExecFwk::AppMgrServiceInner::AttachApplication(const pid_t, const std::string &) com.huawei.Cangjie",
+    "startTime": 2000000,
+    "duration": 100000
+  },
+  {
+    "threadId": 42665,
+    "threadName": "com.huawei.Cangjie",
+    "name": "H:Initialize cangjie runtime and namespace",
+    "startTime": 2500000,
+    "duration": 500000
+  },
+  {
+    "threadId": 42665,
+    "threadName": "com.huawei.Cangjie",
+    "name": "H:bool OHOS::AbilityRuntime::CJRuntime::LoadCJAppLibrary(const AppLibPathVec &)",
+    "startTime": 3100000,
+    "duration": 400000
+  },
+  {
+    "threadId": 42665,
+    "threadName": "com.huawei.Cangjie",
+    "name": "H:void OHOS::AppExecFwk::MainThread::LoadAllExtensions()",
+    "startTime": 3600000,
+    "duration": 300000
+  },
+  {
+    "threadId": 42665,
+    "threadName": "com.huawei.Cangjie",
+    "name": "H:void OHOS::AppExecFwk::MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &, std::shared_pt",
+    "startTime": 4000000,
+    "duration": 500000
+  },
+  {
+    "threadId": 42665,
+    "threadName": "com.huawei.Cangjie",
+    "name": "H:void OHOS::AbilityRuntime::UIAbilityImpl::Start(const AAFwk::Want &, sptr<AAFwk::SessionInfo>)",
+    "startTime": 4600000,
+    "duration": 300000
+  },
+  {
+    "threadId": 42665,
+    "threadName": "com.huawei.Cangjie",
+    "name": "H:bool OHOS::AbilityRuntime::UIAbilityImpl::AbilityTransaction(const OHOS::AbilityRuntime::Want &, const OHOS::AbilityRuntime::LifeCycleStateInf",
+    "startTime": 5000000,
+    "duration": 200000
+  },
+  {
+    "threadId": 4117,
+    "threadName": "app",
+    "name": "H:ReceiveVsync name:WM_4117 dataCount: 24bytes now:998687154797392 expectedEnd: 998687171270949",
+    "startTime": 5300000,
+    "duration": 100000
+  },
+  {
+    "threadId": 4117,
+    "threadName": "app",
+    "name": "H:MarshRSTransactionData cmdCount: 1, transactionFlag:[4117,78164], tid:4117, timestamp:998687154797392",
+    "startTime": 5400000,
+    "duration": 100000
+  },
+  {
+    "threadId": 4117,
+    "threadName": "app",
+    "name": "H:SendCommands, rsUIContext_:17682380357633",
+    "startTime": 5350000,
+    "duration": 200000
+  },
+  {
+    "threadId": 1626,
+    "threadName": "render_service",
+    "name": "H:ReceiveVsync name:rs dataCount: 24bytes now:998687171270949 expectedEnd: 998687171350949",
+    "startTime": 5600000,
+    "duration": 100000
+  },
+  {
+    "threadId": 1626,
+    "threadName": "render_service",
+    "name": "H:RSMainThread::ProcessCommandUni [4117,78164]",
+    "startTime": 5700000,
+    "duration": 150000
+  }
+]

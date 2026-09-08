@@ -48,7 +48,6 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToJsHeapSnapshotConstructorNodeWithoutChildren() {
-        // 创建一个 ConstructorNode 对象并设置其属性
         ConstructorNode constructorNode = new ConstructorNode();
         constructorNode.setClassName("TestClass");
         constructorNode.setTotalSize(100);
@@ -64,10 +63,8 @@ class CjMemoryBaseMapperTest {
         constructorNode.setStartPosition(0);
         constructorNode.setEndPosition(10);
 
-        // 执行映射方法
         JsHeapSnapshotConstructorNode result = mapper.toJsHeapSnapshotConstructorNode(constructorNode, indexToIdMap);
 
-        // 验证映射结果
         assertNotNull(result);
         assertEquals(constructorNode.getNodeIndex(), result.getId());
         assertEquals(constructorNode.getClassName(), result.getName());
@@ -86,7 +83,6 @@ class CjMemoryBaseMapperTest {
     }
     @Test
     public void testToJsHeapSnapshotConstructorNodeWithChildren() {
-        // 创建一个 ConstructorNode 对象并设置其属性
         ConstructorNode constructorNode = new ConstructorNode();
         constructorNode.setClassName("TestClass");
         constructorNode.setTotalSize(100);
@@ -101,7 +97,6 @@ class CjMemoryBaseMapperTest {
         constructorNode.setStartPosition(0);
         constructorNode.setEndPosition(10);
 
-        // 创建并添加子节点
         List<InstanceNode> children = new ArrayList<>();
         InstanceNode child1 = new InstanceNode();
         child1.setClassName("ChildClass1");
@@ -145,10 +140,8 @@ class CjMemoryBaseMapperTest {
 
         constructorNode.setChildren(children);
 
-        // 执行映射方法
         JsHeapSnapshotConstructorNode result = mapper.toJsHeapSnapshotConstructorNode(constructorNode, indexToIdMap);
 
-        // 验证映射结果
         assertNotNull(result);
         assertEquals(constructorNode.getClassName(), result.getName());
         assertEquals(constructorNode.getClassName(), result.getClassName());
@@ -162,11 +155,9 @@ class CjMemoryBaseMapperTest {
         assertEquals(constructorNode.getStartPosition(), result.getStartPosition());
         assertEquals(constructorNode.getEndPosition(), result.getEndPosition());
 
-        // 验证 children 列表的映射
         assertNotNull(result.getChildren());
         assertEquals(constructorNode.getChildren().size(), result.getChildren().size());
 
-        // 验证第一个子节点的映射
         JsHeapSnapshotInstanceNode mappedChild1 = result.getChildren().get(0);
         assertEquals(child1.getClassName(), mappedChild1.getClassName());
         assertEquals(child1.getDistance(), mappedChild1.getDistance());
@@ -184,7 +175,6 @@ class CjMemoryBaseMapperTest {
         assertEquals(child1.getStartPosition(), mappedChild1.getStartPosition());
         assertEquals(child1.getEndPosition(), mappedChild1.getEndPosition());
 
-        // 验证第二个子节点的映射
         JsHeapSnapshotInstanceNode mappedChild2 = result.getChildren().get(1);
         assertEquals(child2.getClassName(), mappedChild2.getClassName());
         assertEquals(child2.getDistance(), mappedChild2.getDistance());
@@ -205,19 +195,14 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToJsHeapSnapshotInstanceNodeWithChildrenAndRetainerNodes() {
-        // 准备测试数据
         InstanceNode instanceNode = createInstanceNodeWithChildrenAndRetainerNodes();
 
-        // 执行映射
         JsHeapSnapshotInstanceNode result = mapper.toJsHeapSnapshotInstanceNode(instanceNode, indexToIdMap);
 
-        // 验证基本属性映射
         assertBasicPropertiesMappedCorrectly(instanceNode, result);
 
-        // 验证children列表映射
         assertChildrenMappedCorrectly(instanceNode.getChildren(), result.getChildren());
 
-        // 验证retainerNodes列表映射
         assertRetainerNodesMappedCorrectly(instanceNode.getRetainerNodes(), result.getRetainerNodes());
     }
 
@@ -239,7 +224,6 @@ class CjMemoryBaseMapperTest {
         instanceNode.setEndPosition(10);
         instanceNode.setRootType("[-]");
 
-        // 添加子节点
         List<InstanceNode> children = new ArrayList<>();
         InstanceNode child1 = createChildNode("Child1", 1, 20, 10, 50.1, 30.3, 30);
         InstanceNode child2 = createChildNode("Child2", 2, 30, 15, 60.2, 40.4, 45);
@@ -247,7 +231,6 @@ class CjMemoryBaseMapperTest {
         children.add(child2);
         instanceNode.setChildren(children);
 
-        // 添加保留节点
         List<InstanceNode> retainerNodes = new ArrayList<>();
         InstanceNode retainer1 = createRetainerNode("Retainer1", 1, 10, 5, 20.1, 10.3, 15);
         InstanceNode retainer2 = createRetainerNode("Retainer2", 2, 25, 12, 48.2, 32.4, 50);
@@ -332,8 +315,6 @@ class CjMemoryBaseMapperTest {
             assertEquals((int) sourceChild.getRetainedSizePercent(), targetChild.getTotalRetainedSizePercent());
             assertEquals(sourceChild.getId(), targetChild.getId());
             assertEquals(sourceChild.getNodeIndex(), targetChild.getNodeIndex());
-            // assertEquals(sourceChild.getChildrenCount(), targetChild.getChildrenCount());
-            // assertEquals(sourceChild.getRetainerCount(), targetChild.getRetainerCount());
             assertEquals(sourceChild.getStartPosition(), targetChild.getStartPosition());
             assertEquals(sourceChild.getEndPosition(), targetChild.getEndPosition());
         }
@@ -358,8 +339,6 @@ class CjMemoryBaseMapperTest {
             assertEquals((int) sourceRetainer.getRetainedSizePercent(), targetRetainer.getTotalRetainedSizePercent());
             assertEquals(sourceRetainer.getId(), targetRetainer.getId());
             assertEquals(sourceRetainer.getNodeIndex(), targetRetainer.getNodeIndex());
-            // assertEquals(sourceRetainer.getChildrenCount(), targetRetainer.getChildrenCount());
-            // assertEquals(sourceRetainer.getRetainerCount(), targetRetainer.getRetainerCount());
             assertEquals(sourceRetainer.getStartPosition(), targetRetainer.getStartPosition());
             assertEquals(sourceRetainer.getEndPosition(), targetRetainer.getEndPosition());
         }
@@ -367,7 +346,6 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToJsHeapSnapshotDiffNode() {
-        // 准备测试数据
         ConstructorDiffNode diffNode = new ConstructorDiffNode();
         diffNode.setClassName("TestClass");
         diffNode.setTotalSize(1000);
@@ -382,7 +360,6 @@ class CjMemoryBaseMapperTest {
         diffNode.setStartPosition(0);
         diffNode.setEndPosition(10);
 
-        // 设置DiffNode特有的属性
         diffNode.setAddedCount(2);
         diffNode.setRemovedCount(1);
         diffNode.setCountDelta(1);
@@ -392,7 +369,6 @@ class CjMemoryBaseMapperTest {
         diffNode.setBaseTotalSize(800);
         diffNode.setTargetTotalSize(1200);
 
-        // 设置children列表
         List<InstanceNode> children = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             InstanceNode child = new InstanceNode();
@@ -417,7 +393,6 @@ class CjMemoryBaseMapperTest {
         }
         diffNode.setChildren(children);
 
-        // 设置childAddedStates列表：前2个为added，后3个为removed
         List<Boolean> childAddedStates = new ArrayList<>();
         childAddedStates.add(true);   // child[0] is added
         childAddedStates.add(true);   // child[1] is added
@@ -426,14 +401,11 @@ class CjMemoryBaseMapperTest {
         childAddedStates.add(false);  // child[4] is removed
         diffNode.setChildAddedStates(childAddedStates);
 
-        // 执行映射
         JsHeapSnapshotDiffNode result = mapper.toJsHeapSnapshotDiffNode(diffNode, indexToIdMap);
 
-        // 验证基本属性映射
         assertEquals(diffNode.getClassName(), result.getName());
         assertEquals(diffNode.getClassName(), result.getClassName());
         assertEquals(diffNode.getNodeIndex(), result.getId());
-        // assertEquals(diffNode.getChildrenCount(), result.getChildrenCount());
         assertEquals(diffNode.getDistance(), result.getDistance());
         assertEquals(diffNode.getShallowSize(), result.getShallowSize());
         assertEquals(diffNode.getRetainedSize(), result.getRetainedSize());
@@ -443,15 +415,12 @@ class CjMemoryBaseMapperTest {
         assertEquals(diffNode.getStartPosition(), result.getStartPosition());
         assertEquals(diffNode.getEndPosition(), result.getEndPosition());
 
-        // 验证DiffNode特有的属性映射
         assertEquals(diffNode.getAddedCount(), result.getAddedCount());
         assertEquals(diffNode.getRemovedCount(), result.getRemovedCount());
         assertEquals(diffNode.getCountDelta(), result.getCountDelta());
         assertEquals(diffNode.getAddedSize(), result.getAddedSize());
         assertEquals(diffNode.getRemovedSize(), result.getRemovedSize());
         assertEquals(diffNode.getSizeDelta(), result.getSizeDelta());
-        // assertEquals(diffNode.getBaseTotalSize(), result.getBaseTotalSize());
-        // assertEquals(diffNode.getTargetTotalSize(), result.getTargetTotalSize());
 
         // 验证updateAddedRemoved逻辑：children[0] is added
         JsHeapSnapshotInstanceNode child0 = result.getChildren().get(0);
@@ -487,13 +456,10 @@ class CjMemoryBaseMapperTest {
         assertEquals(0, child4.getAddedCount());
         assertEquals(1, child4.getRemovedCount());
         assertEquals(-1, child4.getCountDelta());
-
-        // 注意：deletedIndexes在MapStruct映射中被忽略为null，此处不再验证
     }
 
     @Test
     public void testToJsHeapSnapshotInstanceNode() {
-        // 准备测试数据
         InstanceDiffNode instanceDiffNode = new InstanceDiffNode();
         instanceDiffNode.setClassName("TestDiffClass");
         instanceDiffNode.setDistance(3);
@@ -518,7 +484,6 @@ class CjMemoryBaseMapperTest {
         instanceDiffNode.setSizeDelta(50);
         instanceDiffNode.setAdded(true);
 
-        // 添加子节点
         List<InstanceNode> children = new ArrayList<>();
         InstanceNode child1 = createInstanceNode("Child1", 1, 200, 100, 40.5, 20.3);
         InstanceNode child2 = createInstanceNode("Child2", 2, 300, 150, 60.75, 40.8);
@@ -528,7 +493,6 @@ class CjMemoryBaseMapperTest {
         children.add(child3);
         instanceDiffNode.setChildren(children);
 
-        // 添加保留节点
         List<InstanceNode> retainerNodes = new ArrayList<>();
         InstanceNode retainer1 = createInstanceNode("Retainer1", 1, 100, 50, 20.5, 10.3);
         InstanceNode retainer2 = createInstanceNode("Retainer2", 2, 250, 120, 48.75, 32.6);
@@ -536,10 +500,8 @@ class CjMemoryBaseMapperTest {
         retainerNodes.add(retainer2);
         instanceDiffNode.setRetainerNodes(retainerNodes);
 
-        // 执行映射
         JsHeapSnapshotInstanceNode result = mapper.toJsHeapSnapshotInstanceNode(instanceDiffNode, indexToIdMap);
 
-        // 验证基本属性映射
         assertEquals(instanceDiffNode.getClassName(), result.getClassName());
         assertEquals(instanceDiffNode.getDistance(), result.getDistance());
         assertEquals(instanceDiffNode.getRetainedSize(), result.getRetainedSize());
@@ -549,7 +511,6 @@ class CjMemoryBaseMapperTest {
         assertEquals(instanceDiffNode.getNodeIndex(), result.getId());
         assertEquals(instanceDiffNode.getNodeIndex(), result.getNodeIndex());
         assertEquals(result.getType(), instanceDiffNode.getType().replace("[", "").replace("]", ""));
-        // assertEquals(instanceDiffNode.getChildrenCount(), result.getChildrenCount());
         assertEquals(instanceDiffNode.getRetainerCount(), result.getRetainerCount());
         assertEquals(instanceDiffNode.getStartPosition(), result.getStartPosition());
         assertEquals(instanceDiffNode.getEndPosition(), result.getEndPosition());
@@ -561,11 +522,9 @@ class CjMemoryBaseMapperTest {
         assertEquals(instanceDiffNode.getSizeDelta(), result.getSizeDelta());
         assertTrue(result.isAddedRemoved()); // InstanceDiffNode.isAdded映射到JsHeapSnapshotInstanceNode.isAddedRemoved
 
-        // 验证children列表映射
         assertNotNull(result.getChildren());
         assertEquals(instanceDiffNode.getChildren().size(), result.getChildren().size());
 
-        // 验证第一个子节点映射
         JsHeapSnapshotDetailNode mappedChild1 = (JsHeapSnapshotDetailNode) result.getChildren().get(0);
         assertEquals(child1.getClassName(), mappedChild1.getClassName());
         assertEquals(child1.getDistance(), mappedChild1.getDistance());
@@ -576,12 +535,9 @@ class CjMemoryBaseMapperTest {
         assertEquals(child1.getNodeIndex(), mappedChild1.getId());
         assertEquals(child1.getNodeIndex(), mappedChild1.getNodeIndex());
         assertEquals(mappedChild1.getType(), child1.getType().replace("[", "").replace("]", ""));
-        // assertEquals(child1.getChildrenCount(), mappedChild1.getChildrenCount());
-        // assertEquals(child1.getRetainerCount(), mappedChild1.getRetainerCount());
         assertEquals(child1.getStartPosition(), mappedChild1.getStartPosition());
         assertEquals(child1.getEndPosition(), mappedChild1.getEndPosition());
 
-        // 验证第二个子节点映射
         JsHeapSnapshotDetailNode mappedChild2 = (JsHeapSnapshotDetailNode) result.getChildren().get(1);
         assertEquals(child2.getClassName(), mappedChild2.getClassName());
         assertEquals(child2.getDistance(), mappedChild2.getDistance());
@@ -592,12 +548,9 @@ class CjMemoryBaseMapperTest {
         assertEquals(child2.getNodeIndex(), mappedChild2.getId());
         assertEquals(child2.getNodeIndex(), mappedChild2.getNodeIndex());
         assertEquals(mappedChild2.getType(), child2.getType().replace("[", "").replace("]", ""));
-        // assertEquals(child2.getChildrenCount(), mappedChild2.getChildrenCount());
-        // assertEquals(child2.getRetainerCount(), mappedChild2.getRetainerCount());
         assertEquals(child2.getStartPosition(), mappedChild2.getStartPosition());
         assertEquals(child2.getEndPosition(), mappedChild2.getEndPosition());
 
-        // 验证第三个子节点映射
         JsHeapSnapshotDetailNode mappedChild3 = result.getChildren().get(2);
         assertEquals(child3.getClassName(), mappedChild3.getClassName());
         assertEquals(child3.getDistance(), mappedChild3.getDistance());
@@ -613,11 +566,9 @@ class CjMemoryBaseMapperTest {
         assertEquals(child3.getStartPosition(), mappedChild3.getStartPosition());
         assertEquals(child3.getEndPosition(), mappedChild3.getEndPosition());
 
-        // 验证retainerNodes列表映射
         assertNotNull(result.getRetainerNodes());
         assertEquals(instanceDiffNode.getRetainerNodes().size(), result.getRetainerNodes().size());
 
-        // 验证第一个保留节点映射
         JsHeapSnapshotRetainerNode mappedRetainer1 = result.getRetainerNodes().get(0);
         assertEquals(retainer1.getClassName(), mappedRetainer1.getClassName());
         assertEquals(retainer1.getDistance(), mappedRetainer1.getDistance());
@@ -631,7 +582,6 @@ class CjMemoryBaseMapperTest {
         assertEquals(retainer1.getStartPosition(), mappedRetainer1.getStartPosition());
         assertEquals(retainer1.getEndPosition(), mappedRetainer1.getEndPosition());
 
-        // 验证第二个保留节点映射
         JsHeapSnapshotRetainerNode mappedRetainer2 = result.getRetainerNodes().get(1);
         assertEquals(retainer2.getClassName(), mappedRetainer2.getClassName());
         assertEquals(retainer2.getDistance(), mappedRetainer2.getDistance());
@@ -655,7 +605,7 @@ class CjMemoryBaseMapperTest {
         node.setShallowSize(shallowSize);
         node.setShallowSizePercent(shallowPercent);
         node.setRetainedSizePercent(retainedPercent);
-        node.setTotalSize((int) (shallowSize * 2.5)); // 简单计算
+        node.setTotalSize(shallowSize * 2 + shallowSize / 2);
         node.setId((long) (Math.random() * 1000));
         node.setNodeIndex(distance);
         node.setType("[object]");
@@ -671,7 +621,6 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToJsHeapSnapshotRetainerNode() {
-        // 创建测试数据
         InstanceNode source = new InstanceNode();
         source.setClassName("com.example.TestClass");
         source.setDistance(10);
@@ -695,10 +644,8 @@ class CjMemoryBaseMapperTest {
         Map<Integer, Long> indexToIdMap = new HashMap<>();
         indexToIdMap.put(1, 100L);
 
-        // 调用方法
         JsHeapSnapshotRetainerNode result = mapper.toJsHeapSnapshotRetainerNode(source, indexToIdMap);
 
-        // 验证结果
         assertEquals(100, result.getId());
         assertEquals("com.example.TestClass", result.getName());
         assertEquals(10, result.getDistance());
@@ -720,27 +667,22 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToHeapThreadInfo() {
-        // 创建 Frame 对象
         Frame frame = Frame.builder().funcName("testMethod").fileName("test.java").line(100).id(1)
                 .locals(new ArrayList<>()).build();
 
-        // 创建 ThreadInfo 对象
         ThreadInfo threadInfo = new ThreadInfo();
         threadInfo.setId(1);
         threadInfo.setName("TestThread");
         threadInfo.setFrames(List.of(frame));
 
-        // 执行映射
         HeapThreadInfo result = mapper.toHeapThreadInfo(threadInfo, indexToIdMap);
 
-        // 验证结果
         assertNotNull(result);
         assertEquals(1, result.getThreadId());
         assertEquals("TestThread", result.getThreadName());
         assertNotNull(result.getStackFrameInfoList());
         assertEquals(1, result.getStackFrameInfoList().size());
 
-        // 验证 StackFrame 映射
         StackFrame resultFrame = result.getStackFrameInfoList().get(0);
         assertEquals("testMethod", resultFrame.getMethodName());
         assertEquals("test.java", resultFrame.getFileName());
@@ -750,35 +692,29 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToHeapThreadInfoWithMultipleFrames() {
-        // 创建多个 Frame 对象
         Frame frame1 =
             Frame.builder().funcName("method1").fileName("file1.java").line(10).id(1).locals(new ArrayList<>()).build();
 
         Frame frame2 =
             Frame.builder().funcName("method2").fileName("file2.java").line(20).id(2).locals(new ArrayList<>()).build();
 
-        // 创建 ThreadInfo 对象
         ThreadInfo threadInfo = new ThreadInfo();
         threadInfo.setId(2);
         threadInfo.setName("WorkerThread");
         threadInfo.setFrames(List.of(frame1, frame2));
 
-        // 执行映射
         HeapThreadInfo result = mapper.toHeapThreadInfo(threadInfo, indexToIdMap);
 
-        // 验证结果
         assertNotNull(result);
         assertEquals(2, result.getThreadId());
         assertEquals("WorkerThread", result.getThreadName());
         assertEquals(2, result.getStackFrameInfoList().size());
 
-        // 验证第一个帧
         StackFrame resultFrame1 = result.getStackFrameInfoList().get(0);
         assertEquals("method1", resultFrame1.getMethodName());
         assertEquals("file1.java", resultFrame1.getFileName());
         assertEquals(10, resultFrame1.getLineNumber());
 
-        // 验证第二个帧
         StackFrame resultFrame2 = result.getStackFrameInfoList().get(1);
         assertEquals("method2", resultFrame2.getMethodName());
         assertEquals("file2.java", resultFrame2.getFileName());
@@ -787,7 +723,6 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToHeapThreadInfos() {
-        // 创建 ThreadInfo 列表
         ThreadInfo thread1 = new ThreadInfo();
         thread1.setId(1);
         thread1.setName("Thread1");
@@ -800,45 +735,36 @@ class CjMemoryBaseMapperTest {
 
         List<ThreadInfo> sources = List.of(thread1, thread2);
 
-        // 执行映射
         List<HeapThreadInfo> results = mapper.toHeapThreadInfos(sources, indexToIdMap);
 
-        // 验证结果
         assertNotNull(results);
         assertEquals(2, results.size());
 
-        // 验证第一个线程
         assertEquals(1, results.get(0).getThreadId());
         assertEquals("Thread1", results.get(0).getThreadName());
 
-        // 验证第二个线程
         assertEquals(2, results.get(1).getThreadId());
         assertEquals("Thread2", results.get(1).getThreadName());
     }
 
     @Test
     public void testToHeapThreadInfosWithEmptyList() {
-        // 测试空列表
         List<ThreadInfo> sources = new ArrayList<>();
         List<HeapThreadInfo> results = mapper.toHeapThreadInfos(sources, indexToIdMap);
 
-        // 验证结果
         assertNotNull(results);
         assertTrue(results.isEmpty());
     }
 
     @Test
     public void testToHeapThreadInfoWithEmptyFrames() {
-        // 创建没有帧的 ThreadInfo
         ThreadInfo threadInfo = new ThreadInfo();
         threadInfo.setId(3);
         threadInfo.setName("EmptyThread");
         threadInfo.setFrames(new ArrayList<>());
 
-        // 执行映射
         HeapThreadInfo result = mapper.toHeapThreadInfo(threadInfo, indexToIdMap);
 
-        // 验证结果
         assertNotNull(result);
         assertEquals(3, result.getThreadId());
         assertEquals("EmptyThread", result.getThreadName());
@@ -848,7 +774,6 @@ class CjMemoryBaseMapperTest {
 
     @Test
     public void testToHeapThreadInfoWithLocalObjects() {
-        // 创建 InstanceNode 作为 localObject
         InstanceNode local1 = new InstanceNode();
         local1.setClassName("String");
         local1.setId(100L);
@@ -863,7 +788,6 @@ class CjMemoryBaseMapperTest {
         local2.setShallowSize(512);
         local2.setRetainedSize(1024);
 
-        // 创建带 localObject 的 Frame
         Frame frame = Frame.builder().funcName("testMethod").fileName("test.java").line(100).id(1)
                 .locals(List.of(local1, local2)).build();
 
@@ -874,11 +798,9 @@ class CjMemoryBaseMapperTest {
 
         HeapThreadInfo result = mapper.toHeapThreadInfo(threadInfo, indexToIdMap);
 
-        // 验证 frame 基本信息
         StackFrame resultFrame = result.getStackFrameInfoList().get(0);
         assertEquals("testMethod", resultFrame.getMethodName());
 
-        // 验证 localObjectList
         assertEquals(2, resultFrame.getLocalObjectList().size());
 
         // 验证第一个 localObject (已映射字段)
