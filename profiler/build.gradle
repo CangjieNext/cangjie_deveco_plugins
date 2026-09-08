@@ -1,15 +1,25 @@
+plugins {
+    id 'jacoco'
+}
+
 def devEcoJars = rootProject.devEcoJars(project, [
         'lib/hwlib.jar',
         'plugins/ohos-profiler/lib/*ohos-profiler-*.jar',
         'plugins/ohos-profiler/lib/instrumented-profiler-foundation-common-*.jar',
         'plugins/openharmony/lib/dap4intellij-*.jar',
-        'plugins/openharmony/lib/panda-debug-adapter-*.jar'
+        'plugins/openharmony/lib/panda-debug-adapter-*.jar',
+        'plugins/openharmony/lib/ohos-hdclib-*.jar',
+        'plugins/openharmony/lib/sdk-core-*.jar',
+        'plugins/openharmony/lib/sdk-oh-core-*.jar',
+        'plugins/openharmony/lib/sdk-oh-idea-*.jar'
 ])
 
 dependencies {
     compileOnly project(':sdk-mgmt')
+    testImplementation project(':sdk-mgmt')
     compileOnly devEcoJars
     testCompileOnly devEcoJars
+    testRuntimeOnly devEcoJars
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
     compileOnly 'org.projectlombok:lombok:1.18.38'
@@ -17,16 +27,48 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     compileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
     testCompileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
+    testRuntimeOnly 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     compileOnly 'org.mybatis:mybatis:3.5.19'
     testCompileOnly 'org.mybatis:mybatis:3.5.19'
     compileOnly 'com.alibaba.fastjson2:fastjson2:2.0.57'
     testCompileOnly 'com.alibaba.fastjson2:fastjson2:2.0.57'
+    testRuntimeOnly 'com.alibaba.fastjson2:fastjson2:2.0.57'
+    testRuntimeOnly 'org.mybatis:mybatis:3.5.19'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
+    testImplementation 'org.assertj:assertj-core:3.25.3'
 }
 
-// These tests target an older DevEco Profiler model that exposed mutable
-// Cangjie-only fields removed from the current 6.1 platform API. Keep test
-// sources compiling, but do not run the incompatible suite in the root build.
-tasks.named('test') {
-    enabled = false
+// JaCoCo 行覆盖率：运行 Profiler 模块单元测试并生成覆盖率报告。
+// 报告输出：build/reports/jacoco/test/html（HTML）、build/reports/jacoco/test/jacocoTestReport.xml（XML）
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    jacoco {
+        // 关键：IntelliJ 平台测试通过 -Djava.system.class.loader=PathClassLoader 加载
+        // instrumentCode 离线插桩后的类，这些类没有行号 location 信息，
+        // agent 默认 inclnolocationclasses=false 会直接跳过，导致覆盖率恒为 0%。
+        includeNoLocationClasses = true
+        // 排除 JDK 内部类，避免 agent 扫描到无关的内省类
+        excludes = ['jdk.internal.*']
+    }
+}
+
+jacoco {
+    // 0.8.11 最高支持 Java 21（class file major 65）；测试 JVM 运行在 DevEco JBR 25（major 69），
+    // 需升级到 0.8.14（2025-10 发布，官方正式支持 Java 25）
+    toolVersion = '0.8.14'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = false
+        csv.required = false
+    }
+    // IntelliJ 平台插件：exec 记录的是 instrumentCode 插桩后的类 ID，
+    // 报告必须用插桩后的字节码去比对，否则控制流 probes 对不上、覆盖率归零。
+    classDirectories.setFrom(instrumentCode)
 }

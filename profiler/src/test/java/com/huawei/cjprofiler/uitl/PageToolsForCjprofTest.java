@@ -26,11 +26,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PageToolsForCjprofTest {
+    @Test
+    public void instantiateClass_coversConstructor() {
+        // Instantiate to cover class declaration line
+        new PageToolsForCjprof();
+    }
+
     private ArkHeapNodeExpandRequest request;
+
+    private ArkHeapNodeExpandRequest largeStartRequest;
 
     private JsHeapSnapshotConstructorNode constructorNode;
 
     private JsHeapSnapshotInstanceNode instanceNode;
+
+    private JsHeapSnapshotInstanceNode instanceNodeWithFewRetainers;
 
     private JsHeapSnapshotRetainerNode retainerNode;
 
@@ -42,6 +52,11 @@ public class PageToolsForCjprofTest {
         request = new ArkHeapNodeExpandRequest();
         request.setStart(0);
         request.setLength(5);
+
+        // 创建 largeStartRequest — 模拟 start > childrenCount 和 start > retainerCount
+        largeStartRequest = new ArkHeapNodeExpandRequest();
+        largeStartRequest.setStart(20);
+        largeStartRequest.setLength(5);
 
         // 创建 constructorNode 对象
         constructorNode = new JsHeapSnapshotConstructorNode();
@@ -68,6 +83,22 @@ public class PageToolsForCjprofTest {
             detailChildren.add(new JsHeapSnapshotDetailNode());
         }
         instanceNode.setChildren(detailChildren);
+
+        // 创建 instanceNodeWithFewRetainers — retainerCount < start
+        instanceNodeWithFewRetainers = new JsHeapSnapshotInstanceNode();
+        instanceNodeWithFewRetainers.setChildrenCount(10);
+        instanceNodeWithFewRetainers.setRetainerCount(2);
+        instanceNodeWithFewRetainers.setFromCjprof(true);
+        retainerNodes = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            retainerNodes.add(new JsHeapSnapshotRetainerNode());
+        }
+        instanceNodeWithFewRetainers.setRetainerNodes(retainerNodes);
+        detailChildren = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            detailChildren.add(new JsHeapSnapshotDetailNode());
+        }
+        instanceNodeWithFewRetainers.setChildren(detailChildren);
 
         // 创建 retainerNode 对象
         retainerNode = new JsHeapSnapshotRetainerNode();
@@ -112,6 +143,27 @@ public class PageToolsForCjprofTest {
         assertEquals(
             instanceNode.getRetainerNodes().subList(request.getStart(), request.getStart() + request.getLength()),
             result.getRetainerNodes());
+    }
+
+    @Test
+    public void testPageInstanceNode_WhenStartExceedsChildrenCount_usesStartPosition() {
+        // start > childrenCount → 走三元 true 分支，使用 instanceNode.getStartPosition()
+        JsHeapSnapshotInstanceNode result = PageToolsForCjprof.pageInstanceNode(largeStartRequest, instanceNode);
+
+        assertNotNull(result);
+        assertEquals(instanceNode.getStartPosition(), result.getStartPosition());
+        assertEquals(instanceNode.getStartPositionRef(), result.getStartPositionRef());
+    }
+
+    @Test
+    public void testPageInstanceNode_WhenStartExceedsRetainerCount_usesStartPositionRef() {
+        // start > retainerCount → 走三元 true 分支，使用 instanceNode.getStartPositionRef()
+        // 对于 instanceNodeWithFewRetainers, retainerCount=2 < start=20
+        JsHeapSnapshotInstanceNode result = PageToolsForCjprof.pageInstanceNode(largeStartRequest, instanceNodeWithFewRetainers);
+
+        assertNotNull(result);
+        assertEquals(instanceNodeWithFewRetainers.getStartPosition(), result.getStartPosition());
+        assertEquals(instanceNodeWithFewRetainers.getStartPositionRef(), result.getStartPositionRef());
     }
 
     @Test
