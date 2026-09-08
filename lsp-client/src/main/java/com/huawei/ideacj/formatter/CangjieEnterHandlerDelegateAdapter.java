@@ -28,6 +28,8 @@ import com.huawei.ideacj.language.psi.toplevel.classnode.CjForeignMemberDeclarat
 import com.huawei.ideacj.language.psi.toplevel.classnode.CjPropertyMemberDeclaration;
 import com.huawei.ideacj.language.psi.toplevel.expressionnode.CjExpression;
 import com.huawei.ideacj.language.psi.toplevel.extendnode.CjExtendMemberDeclaration;
+import com.huawei.ideacj.language.psi.toplevel.functionnode.CjFunctionDefinition;
+import com.huawei.ideacj.language.psi.toplevel.functionnode.FunctionDefinitionInfo;
 import com.huawei.ideacj.language.psi.toplevel.functionnode.blocknode.CjExpressionOrDeclarations;
 import com.huawei.ideacj.language.psi.toplevel.interfacenode.CjInterfaceMemberDeclaration;
 import com.huawei.ideacj.language.psi.toplevel.macronode.CjMacroExpression;
@@ -39,18 +41,23 @@ import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.progress.ProcessCanceledException;
+import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -104,6 +111,46 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         if (line <= 0) {
             return null;
         }
+
+        PsiDocumentManager.getInstance(file.getProject()).commitDocument(doc);
+
+        String prevTextA = getLineText(doc, line - 1);
+        if ("/**".equals(prevTextA.stripLeading())) {
+            return handleDocCommentStart(file, doc, editor, line - 1, offset);
+        }
+
+        PsiElement atCaret = file.findElementAt(offset);
+        if (atCaret == null && offset > 0) {
+            atCaret = file.findElementAt(offset - 1);
+        }
+        if (atCaret instanceof PsiComment pc
+                && pc.getText().startsWith("/**")
+                && !pc.getText().contains("*/")) {
+            int commentLine = doc.getLineNumber(pc.getTextOffset());
+            int indentI = countLeadingSpaces(getLineText(doc, commentLine), doc, file.getProject());
+            doc.insertString(offset, " ".repeat(indentI) + "* ");
+            editor.getCaretModel().moveToOffset(offset + indentI + 2);
+            return Result.Continue;
+        }
+
+        String currLineC = getLineText(doc, line);
+        if (currLineC.stripLeading().startsWith("//")) {
+            String afterCaret = doc.getText().substring(offset, doc.getLineEndOffset(line));
+            if (!afterCaret.trim().isEmpty()) {
+                return Result.Continue;
+            }
+        }
+
+        String prevTextD = getLineText(doc, line - 1);
+        if (prevTextD.stripLeading().startsWith("//") && getLineText(doc, line).strip().isEmpty()) {
+            int indentI = countLeadingSpaces(prevTextD, doc, file.getProject());
+            doc.replaceString(currLineStartOffset, offset, " ".repeat(indentI));
+            offset = currLineStartOffset + indentI;
+            doc.insertString(offset, "// ");
+            editor.getCaretModel().moveToOffset(offset + 3);
+            return Result.Continue;
+        }
+
         int prevLine = line - 1;
         prevLine = getRealTokenPreLine(file, doc, prevLine);
         if (prevLine < 0) {
@@ -185,6 +232,123 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         // move to proper position
         editor.getCaretModel().moveToOffset(Math.max(currLineStartOffset, offset + increaseIndent));
         return Result.Continue;
+    }
+
+    /**
+     * Handles Enter pressed right after typing the "/**" doc-comment start:
+     * aligns the caret line with the comment start and, when the doc comment is
+     * directly followed by a function declaration, inserts a generated
+     * &#64;param/&#64;return template; otherwise falls back to a plain
+     * " * ... * /" skeleton.
+     *
+     * @param file the PSI file
+     * @param doc the document
+     * @param editor the editor
+     * @param commentLine the zero-based line index of the "/**" start line
+     * @param offset the caret offset
+     * @return Result.Continue
+     */
+    private Result handleDocCommentStart(PsiFile file, Document doc, Editor editor, int commentLine, int offset) {
+        String commentText = getLineText(doc, commentLine);
+        int indentI = countLeadingSpaces(commentText, doc, file.getProject());
+        int currLineStartOffset = doc.getLineStartOffset(commentLine + 1);
+        doc.replaceString(currLineStartOffset, offset, " ".repeat(indentI));
+        int caretOffset = currLineStartOffset + indentI;
+        editor.getCaretModel().moveToOffset(caretOffset);
+
+        Optional<CjFunctionDefinition> funcDef = findFunctionAfterDocComment(file, doc, commentLine);
+        if (funcDef.isPresent()) {
+            FunctionDefinitionInfo info = funcDef.get().getFunctionDefinitionInfo();
+            if (info != null) {
+                String template = buildDocTemplate(info, indentI);
+                doc.insertString(caretOffset, template);
+                removeExtraCommentClose(doc, caretOffset + template.length());
+                editor.getCaretModel().moveToOffset(caretOffset + 3);
+                return Result.Continue;
+            }
+        }
+        // Plain skeleton when no function signature is attached to this comment
+        String skeleton = " * \n" + " ".repeat(indentI) + " */";
+        doc.insertString(caretOffset, skeleton);
+        removeExtraCommentClose(doc, caretOffset + skeleton.length());
+        editor.getCaretModel().moveToOffset(caretOffset + 3);
+        return Result.Continue;
+    }
+
+    /**
+     * Finds the function declaration attached to the doc comment at the given
+     * line.
+     *
+     * @param file the PSI file
+     * @param doc the document
+     * @param commentLine the zero-based line index of the "/**" start line
+     * @return the nearest function definition after the comment, or empty when
+     *         no function follows the comment or the PSI index is temporarily
+     *         unavailable
+     */
+    private Optional<CjFunctionDefinition> findFunctionAfterDocComment(PsiFile file, Document doc, int commentLine) {
+        try {
+            int commentByteOffset = doc.getLineStartOffset(commentLine)
+                    + getLineText(doc, commentLine).indexOf("/**");
+            PsiElement commentEl = file.findElementAt(commentByteOffset);
+            if (commentEl == null) {
+                commentEl = file.findElementAt(commentByteOffset - 1);
+            }
+            if (commentEl instanceof PsiComment docComment) {
+                int commentEnd = docComment.getTextRange().getEndOffset();
+                CjFunctionDefinition nearest = findNearestFunctionAfter(file, commentEnd);
+                // Accept only when nothing but blank / comment-decoration lines sits
+                // between the doc comment and the function — a class/struct/interface
+                // between us and the nearest function must not leak its signature.
+                if (nearest != null && isOnlyCommentDecorationBetween(doc, commentLine,
+                        nearest.getTextRange().getStartOffset())) {
+                    return Optional.of(nearest);
+                }
+            }
+            return Optional.empty();
+        } catch (ProcessCanceledException e) {
+            throw e;
+        } catch (IndexNotReadyException e) {
+            // Index not ready yet — fall back to the plain skeleton
+            return Optional.empty();
+        }
+    }
+
+    private static CjFunctionDefinition findNearestFunctionAfter(PsiFile file, int commentEnd) {
+        // The doc comment and the function may be nested/wrapped differently
+        // depending on the PSI structure, so pick the FIRST function whose
+        // start offset is after the comment instead of walking siblings.
+        CjFunctionDefinition nearest = null;
+        for (CjFunctionDefinition fd : PsiTreeUtil.findChildrenOfType(file, CjFunctionDefinition.class)) {
+            int start = fd.getTextRange().getStartOffset();
+            if (start < commentEnd) {
+                continue;
+            }
+            if (nearest == null || start < nearest.getTextRange().getStartOffset()) {
+                nearest = fd;
+            }
+        }
+        return nearest;
+    }
+
+    private static String buildDocTemplate(FunctionDefinitionInfo info, int indentI) {
+        StringBuilder template = new StringBuilder(" * ");
+        if (info.getUnNamedArgs() != null) {
+            for (String p : info.getUnNamedArgs().keySet()) {
+                template.append("\n").append(" ".repeat(indentI)).append(" * @param ").append(p).append(" ");
+            }
+        }
+        if (info.getNamedArgs() != null) {
+            for (String p : info.getNamedArgs().keySet()) {
+                template.append("\n").append(" ".repeat(indentI)).append(" * @param ").append(p).append(" ");
+            }
+        }
+        String retType = info.getReturnType();
+        if (retType != null && !retType.isEmpty()) {
+            template.append("\n").append(" ".repeat(indentI)).append(" * @return ");
+        }
+        template.append("\n").append(" ".repeat(indentI)).append(" */");
+        return template.toString();
     }
 
     private boolean matchesExcludingStrings(String text, Pattern pattern) {
@@ -526,5 +690,55 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
             index++;
         }
         return count;
+    }
+
+    /**
+     * Check the lines strictly between the doc comment line and the function start
+     * line: blank lines and comment-decoration lines (leading asterisk) are
+     * tolerated, any real code line means the function does not directly follow
+     * the comment.
+     *
+     * @param doc doc
+     * @param commentLine line index of the doc comment
+     * @param funcStartOffset start offset of the candidate function
+     * @return true when only blanks or comment decorations sit in between
+     */
+    private static boolean isOnlyCommentDecorationBetween(Document doc, int commentLine, int funcStartOffset) {
+        int funcLine = doc.getLineNumber(funcStartOffset);
+        for (int l = commentLine + 1; l < funcLine; l++) {
+            String t = getLineText(doc, l).strip();
+            if (!t.isEmpty() && !t.startsWith("*")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Remove an extra block comment close marker that the platform
+     * EnterInBlockCommentHandler may have inserted right after our own
+     * doc-comment template, to avoid a duplicated close.
+     *
+     * @param doc document
+     * @param insertEnd offset right after the text we inserted
+     */
+    private static void removeExtraCommentClose(Document doc, int insertEnd) {
+        CharSequence text = doc.getCharsSequence();
+        int i = insertEnd;
+        // A stray close inserted by other handlers sits on its own line: "\n" + indent + "*/"
+        if (i < text.length() && text.charAt(i) == '\n') {
+            i++;
+        }
+        while (i < text.length() && (text.charAt(i) == ' ' || text.charAt(i) == '\t')) {
+            i++;
+        }
+        if (i + 2 <= text.length() && text.charAt(i) == '*' && text.charAt(i + 1) == '/') {
+            int end = i + 2;
+            // Also swallow one blank line left behind after the stray close
+            if (end + 1 < text.length() && text.charAt(end) == '\n' && text.charAt(end + 1) == '\n') {
+                end++;
+            }
+            doc.deleteString(insertEnd, end);
+        }
     }
 }
