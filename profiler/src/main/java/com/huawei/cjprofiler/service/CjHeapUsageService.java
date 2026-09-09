@@ -57,6 +57,8 @@ public class CjHeapUsageService {
         if (cjRecordService.isPresent()) {
             return cjRecordService.get().queryCjHeapUsages(request);
         }
+
+
         return CjVmProfilerDao.getInstance().selectCjHeapUsages(
                 request.getSessionId(), request.getTid(), request.getStartTime(), request.getEndTime());
     }
