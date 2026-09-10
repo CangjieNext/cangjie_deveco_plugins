@@ -127,8 +127,8 @@ classType
     ;
 
 typeArguments
-    : LT NL* (type|constTypeArguments) (NL* COMMA NL* (type|constTypeArguments))* NL* GT
-    | (LT NL* (type|constTypeArguments) NL*)+ rShift+ NL* GT*
+    : LT NL* (dataType|constTypeArguments) (NL* COMMA NL* (dataType|constTypeArguments))* NL* GT
+    | (LT NL* (dataType|constTypeArguments) NL*)+ rShift+ NL* GT*
     ;
 
 constTypeArguments
@@ -176,7 +176,7 @@ classMemberDeclaration
     ;
 
 classInit
-    : (modifier+ NL*)? INIT NL* functionParameters NL* block
+    : (modifier+ NL*)? (EXCLAVE NL*)? INIT NL* functionParameters NL* block
     ;
 
 classPrimaryInit
@@ -212,7 +212,7 @@ classNamedInitParam
     ;
 
 classFinalizer
-    : TILDE INIT NL* LPAREN NL* RPAREN NL* block
+    : TILDE INIT NL* LPAREN (NL* thisModeSpecifier NL*)? RPAREN NL* block
     ;
 
 associatedTypeDefinition
@@ -253,8 +253,10 @@ associatedTypeDeclaration
 // Function Definitions
 
 functionDefinition
-    :(functionModifierList NL*)? FUNC
-    NL* identifier
+    :(functionModifierList NL*)? (EXCLAVE NL*)? FUNC
+    NL* (functionModeSpecifier NL*)?
+    identifier
+    (NL* functionModeSpecifier NL*)?
     (NL* typeParameters)?
     NL* functionParameters
     (NL* COLON NL* type)?
@@ -263,7 +265,7 @@ functionDefinition
     ;
 
 operatorFunctionDefinition
-    : (functionModifierList NL*)? OPERATOR NL* (CONST | OVERRIDE | CONST OVERRIDE | OVERRIDE CONST)? NL* FUNC
+    : (functionModifierList NL*)? (EXCLAVE NL*)? OPERATOR NL* (CONST | OVERRIDE | CONST OVERRIDE | OVERRIDE CONST)? NL* FUNC
     NL* overloadedOperators
     (NL* typeParameters)?
     NL* functionParameters
@@ -294,7 +296,8 @@ defaultParameter
     ;
 
 unnamedParameterList
-    : unnamedParameter (NL* COMMA NL* unnamedParameter)*
+    : thisModeSpecifier (NL* COMMA NL* unnamedParameter)*
+    | unnamedParameter (NL* COMMA NL* unnamedParameter)*
     ;
 
 unnamedParameter
@@ -308,7 +311,7 @@ functionModifierList
 // Variable Definitions
 
 variableDeclaration
-    : modifier* (LET | VAR | CONST) patternsMaybeIrrefutable
+    : modifier* (DEMODE NL*)? (LET | VAR | CONST) patternsMaybeIrrefutable
     ( (NL* COLON NL* type)? (NL* ASSIGN NL* (loopExpression|expression)) | (NL* COLON NL* type))
     ;
 
@@ -375,7 +378,7 @@ structMemberDeclaration
     ;
 
 structInit
-    : (modifier+ NL*)? INIT NL* functionParameters NL* block
+    : (modifier+ NL*)? (EXCLAVE NL*)? INIT NL* functionParameters NL* block
     ;
 
 structPrimaryInit
@@ -534,15 +537,38 @@ propertyMemberVar
 // Types
 
 type
+    : dataType (NL* AT NL* modeSpecifier)*
+    ;
+
+dataType
     : arrowType
     | tupleType
     | prefixType
     | atomicType
     | varrayType
+    | parenthesizedType
+    ;
+
+modeSpecifier
+    : TILDE NL* modeAxis
+    | modeAxis NL* NOT
+    | modeAxis NL* QUEST
+    ;
+
+modeAxis
+    : identifier
+    ;
+
+functionModeSpecifier
+    : AT NL* modeSpecifier
+    ;
+
+thisModeSpecifier
+    : THIS NL* AT NL* modeSpecifier
     ;
 
 varrayType
-    : VARRAY LT type COMMA DOLLAR IntegerLiteral GT
+    : VARRAY LT dataType COMMA DOLLAR IntegerLiteral GT
     ;
 
 arrowType
@@ -555,12 +581,12 @@ arrowParameters
     ;
 
 tupleType
-    : LPAREN NL* type (NL* COMMA NL* type)+ NL* RPAREN
-    | LPAREN NL* identifier NL* COLON NL* type (NL* COMMA NL* identifier NL* COLON NL* type)+ NL* RPAREN
+    : LPAREN NL* dataType (NL* COMMA NL* dataType)+ NL* RPAREN
+    | LPAREN NL* identifier NL* COLON NL* dataType (NL* COMMA NL* identifier NL* COLON NL* dataType)+ NL* RPAREN
     ;
 
 prefixType
-    : prefixTypeOperator type
+    : prefixTypeOperator dataType
     ;
 
 prefixTypeOperator
@@ -599,7 +625,7 @@ userType
     ;
 
 parenthesizedType
-    : LPAREN NL* type NL* RPAREN
+    : LPAREN NL* dataType NL* RPAREN
     ;
 
 // Expressions Syntax
@@ -729,6 +755,7 @@ itemAfterQuest
 
 callSuffix
     : LPAREN NL* COMMA* (INOUT? valueArgument (NL* COMMA NL* INOUT? valueArgument?)* NL*)? RPAREN
+    (AT NL* modeSpecifier)?
     ;
 
 adCallSuffix
@@ -761,6 +788,7 @@ atomicExpression
     : literalConstant
     | collectionLiteral
     | tupleLiteral
+    | exclaveExpression
     | identifier (typeArguments)?
     | ifExpression
     | matchExpression
@@ -1046,6 +1074,10 @@ spawnExpression
 
 unsafeExpression
     : UNSAFE NL* block
+    ;
+
+exclaveExpression
+    : EXCLAVE NL* block
     ;
 
 synchronizedExpression

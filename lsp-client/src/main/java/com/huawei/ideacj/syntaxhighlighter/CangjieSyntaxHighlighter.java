@@ -215,6 +215,7 @@ public class CangjieSyntaxHighlighter extends SyntaxHighlighterBase {
         CangJieTypes.CONST,
         CangJieTypes.MAIN,
         CangJieTypes.UNSAFE,
+        CangJieTypes.EXCLAVE,
         CangJieTypes.GRAD,
         CangJieTypes.ADJOINTOF,
         CangJieTypes.DIFFERENTIABLE,
@@ -293,6 +294,7 @@ public class CangjieSyntaxHighlighter extends SyntaxHighlighterBase {
         CangJieTypes.MUT,
         CangJieTypes.PROP,
         CangJieTypes.REDEF,
+        CangJieTypes.DEMODE,
         CangJieTypes.AT,
         CangJieTypes.SEALED
     };

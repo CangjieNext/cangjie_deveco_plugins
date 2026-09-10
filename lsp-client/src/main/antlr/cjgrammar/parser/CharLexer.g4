@@ -197,6 +197,8 @@ OPERATOR: 'operator' ;
 FOREIGN: 'foreign';
 REDEF: 'redef';
 UNSAFE: 'unsafe';
+EXCLAVE: 'exclave';
+DEMODE: 'demode';
 
 // ad
 GRAD: '@grad';
@@ -463,6 +465,7 @@ Inside_MOD: MOD  -> type(MOD) ;
 Inside_DIV: DIV -> type(DIV) ;
 Inside_ADD: ADD  -> type(ADD) ;
 Inside_SUB: SUB  -> type(SUB) ;
+Inside_TILDE: TILDE -> type(TILDE) ;
 
 // flow operator
 Inside_PIPELINE: PIPELINE -> type(PIPELINE) ;
@@ -602,6 +605,8 @@ Inside_SEALED: SEALED -> type(SEALED) ;
 Inside_OPERATOR: OPERATOR -> type(OPERATOR) ;
 Inside_FOREIGN: FOREIGN -> type(FOREIGN) ;
 Inside_REDEF: REDEF -> type(REDEF) ;
+Inside_EXCLAVE: EXCLAVE -> type(EXCLAVE) ;
+Inside_DEMODE: DEMODE -> type(DEMODE) ;
 
 Inside_CharacterByteLiteral: CharacterByteLiteral -> type(CharacterByteLiteral);
 Inside_FloatLiteral: FloatLiteral -> type(FloatLiteral) ;

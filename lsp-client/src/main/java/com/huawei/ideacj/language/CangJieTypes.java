@@ -738,6 +738,16 @@ public class CangJieTypes {
     public static final TokenElementType UNSAFE;
 
     /**
+     * The constant EXCLAVE.
+     */
+    public static final TokenElementType EXCLAVE;
+
+    /**
+     * The constant DEMODE.
+     */
+    public static final TokenElementType DEMODE;
+
+    /**
      * The constant FLOAT_LITERAL.
      */
     public static final TokenElementType FLOAT_LITERAL;
@@ -1217,6 +1227,10 @@ public class CangJieTypes {
         REDEF = PSIElementTypeFactory.getTokenIElementTypes(CangJieLanguage.INSTANCE).get(CharLexer.REDEF);
 
         UNSAFE = PSIElementTypeFactory.getTokenIElementTypes(CangJieLanguage.INSTANCE).get(CharLexer.UNSAFE);
+
+        EXCLAVE = PSIElementTypeFactory.getTokenIElementTypes(CangJieLanguage.INSTANCE).get(CharLexer.EXCLAVE);
+
+        DEMODE = PSIElementTypeFactory.getTokenIElementTypes(CangJieLanguage.INSTANCE).get(CharLexer.DEMODE);
 
         FLOAT_LITERAL =
                 PSIElementTypeFactory.getTokenIElementTypes(CangJieLanguage.INSTANCE).get(CharLexer.FloatLiteral);

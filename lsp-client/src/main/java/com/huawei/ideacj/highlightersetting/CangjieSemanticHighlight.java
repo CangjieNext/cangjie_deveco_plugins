@@ -29,6 +29,7 @@ import com.huawei.ideacj.language.psi.othersnode.CjItemAfterQuest;
 import com.huawei.ideacj.language.psi.othersnode.CjLambdaParameter;
 import com.huawei.ideacj.language.psi.othersnode.CjLeftAuxExpression;
 import com.huawei.ideacj.language.psi.othersnode.CjLeftValueExpression;
+import com.huawei.ideacj.language.psi.othersnode.CjModeSpecifier;
 import com.huawei.ideacj.language.psi.othersnode.CjPostfixExpression;
 import com.huawei.ideacj.language.psi.othersnode.CjQuoteToken;
 import com.huawei.ideacj.language.psi.othersnode.CjResourceSpecification;
@@ -201,7 +202,8 @@ public class CangjieSemanticHighlight extends ServerSemanticHighlight {
             Map.entry(CjItemAfterQuest.class.getName(), CjItemAfterQuest.class),
             Map.entry(CjUserType.class.getName(), CjUserType.class),
             Map.entry(CjMacroExpression.class.getName(), CjMacroExpression.class),
-            Map.entry(CjQuoteToken.class.getName(), CjQuoteToken.class)
+            Map.entry(CjQuoteToken.class.getName(), CjQuoteToken.class),
+            Map.entry(CjModeSpecifier.class.getName(), CjModeSpecifier.class)
     ));
 
     static HashMap<String, Class<? extends CangjieGetID>> verifyTypes = new HashMap<>(Map.ofEntries(
