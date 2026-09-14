@@ -152,6 +152,7 @@ public class ApiDocsManager {
         if (parts.length < 2) {
             return "";
         }
+
         String packageName = parts[0];
         // 区分是 CJ 还是 OHOS
         Map<String, String> apiMap = apiToDocMap.get(packageName);
