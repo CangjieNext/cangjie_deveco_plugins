@@ -38,4 +38,26 @@ class CangjieMappingRegistyManagerTest {
         Optional<?> result = manager.getHandlerMethod(List.of());
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void loadRequestMapping_registersProcessorMappings() {
+        CangjieMappingRegistyManager manager = CangjieMappingRegistyManager.getInstance();
+        manager.loadRequestMapping();
+
+        Optional<?> handler =
+            manager.getHandlerMethod(List.of("cangjieProfiler.heapSnapshot", "cj.heap.gc"));
+        assertThat(handler).isPresent();
+    }
+
+    @Test
+    void loadRequestMapping_isIdempotent() {
+        CangjieMappingRegistyManager manager = CangjieMappingRegistyManager.getInstance();
+        manager.loadRequestMapping();
+        // Second call must not duplicate / fail; mapping stays resolvable.
+        manager.loadRequestMapping();
+
+        Optional<?> handler =
+            manager.getHandlerMethod(List.of("cangjieProfiler.heapSnapshot", "cj.heap.gc"));
+        assertThat(handler).isPresent();
+    }
 }

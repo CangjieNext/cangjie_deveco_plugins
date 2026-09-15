@@ -38,11 +38,6 @@ import java.util.List;
  * @since 2026-08-14
  */
 class CjConcurrencyProcessorTest {
-    @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjConcurrencyProcessor();
-    }
 
     @Test
     void queryMeasureValidatesDelegatesAndWrapsExactResult() {

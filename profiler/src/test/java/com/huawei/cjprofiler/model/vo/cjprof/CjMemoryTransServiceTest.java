@@ -28,11 +28,6 @@ import java.util.List;
  * @since 2026-09-08
  */
 public class CjMemoryTransServiceTest {
-    @Test
-    public void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjMemoryTransService();
-    }
 
     @Test
     public void testBuildPathNodeFirstLevelWithChildren() throws NoSuchFieldException {

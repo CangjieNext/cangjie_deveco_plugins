@@ -34,6 +34,8 @@ import com.huawei.deveco.insight.ohos.model.dto.response.ark.ArkHeapTimelineDeta
 import com.huawei.deveco.insight.ohos.model.dto.response.ark.ArkInstanceMetadata;
 import com.huawei.deveco.insight.ohos.processor.sessiondata.SessionDataCacheManager;
 import com.huawei.deveco.insight.ohos.resourcehandler.controller.RequestMapping;
+import com.huawei.cjprofiler.common.TraceConstant;
+import com.huawei.cjprofiler.common.TraceUtils;
 import com.huawei.cjprofiler.service.CjRecordManager;
 import com.huawei.cjprofiler.service.CjMemoryService;
 import com.huawei.deveco.insight.ohos.service.file.JsTraceFileService;
@@ -93,6 +95,7 @@ public class CjHeapTimelineProcessor {
     public static Response<?> stopHeapTimeLine(JSONObject params) {
         ArkExecuteRequest request = JsonUtil.parseObject(params, ArkExecuteRequest.class);
         ValidateUtil.validate(request);
+        TraceUtils.trace("cangjieGetTimeline", new JSONObject());
         Optional<IHarmonyDevice> device = OpenHarmonyDeviceManager.getInstance().getDeviceByKey(request.getDeviceKey());
         if (device.isEmpty() || CommonConstants.OFFLINE.equals(device.get().getStatus().getValue())) {
             LOGGER.warn("Failed to stopHeapTimeLine, cause device is empty or offline.");
@@ -120,6 +123,8 @@ public class CjHeapTimelineProcessor {
         CjRecordManager cjRecordManager = CjRecordManager.getInstance();
         if (!cjRecordManager.executeCJTask(request, HEAP_PROFILER_PARSE, params)) {
             LOGGER.warn("Failed to parse ark heapTimeline, cause cangjie vm is error.");
+            TraceUtils.trace("cangjieImportFailed",
+                new JSONObject().fluentPut(TraceConstant.REASON, "Failed to parse CJ heap timeline."));
             return Response.failure(ProfilerError.FILE_PARSING_ERROR);
         }
         cjRecordManager.getCjMemoryService(request.getSessionId()).calculateTotalSize();

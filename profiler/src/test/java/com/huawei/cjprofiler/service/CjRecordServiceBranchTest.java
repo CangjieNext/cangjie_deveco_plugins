@@ -9,6 +9,7 @@
 package com.huawei.cjprofiler.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import com.huawei.cjprofiler.dao.CjVmProfilerDao;
 import com.huawei.deveco.insight.ohos.ability.arkmemory.entity.HeapUsages;
+import com.huawei.deveco.insight.ohos.ability.arkmemory.entity.RawHeapSnapshot;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonExecuteRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonQueryRequest;
 import com.huawei.deveco.insight.ohos.service.ark.RecordServiceBase;
@@ -26,8 +28,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -128,9 +132,8 @@ class CjRecordServiceBranchTest {
 
     @Test
     void stopCjHeapUsageTimer_whenNoTaskRunning_completesWithoutError() {
-        // No task scheduled yet; should not throw
-        service.stopCjHeapUsageTimer();
-        // just verify no exception
+        // No task scheduled yet; stopping must neither throw nor affect state
+        assertThatCode(service::stopCjHeapUsageTimer).doesNotThrowAnyException();
     }
 
     @Test
@@ -154,9 +157,27 @@ class CjRecordServiceBranchTest {
 
     @Test
     void createHandleSnapshotThread_completesFutureOnParseSuccess() throws Exception {
+        // Prepare a parser context streaming a minimal valid empty heap snapshot
+        RecordServiceBase.ParserStreamContext context = new RecordServiceBase.ParserStreamContext();
+        context.init();
+        try (java.io.PipedOutputStream out = context.getOutputStream()) {
+            out.write(("{\"HEADER\":[8,0,0],\"head\":{\"name\":\"test\"},\"samples\":[]}").getBytes(StandardCharsets.UTF_8));
+            out.flush();
+        }
+        service.setContext(context);
+        service.setFuture(new CompletableFuture<>());
+
         RecordServiceBase.CustomThread thread = service.createHandleSnapshotThread();
         thread.start();
         thread.join(2000);
+        assertThat(thread.isAlive()).isFalse();
+
+        // The future must be completed with a parsed snapshot, not left dangling
+        assertThat(service.getFuture()).isDone();
+        assertThat(service.getFuture()).isNotCompletedExceptionally();
+        assertThat(service.getFuture().getNow(null)).isNotNull();
+        // The parse context must be released after handling
+        assertThat(service.peekContext()).isNull();
     }
 
     private static CommonQueryRequest queryRequest(String sessionId, int tid, long startTime, long endTime,
@@ -178,6 +199,22 @@ class CjRecordServiceBranchTest {
         @Override
         public Optional<PandaDevToolsService> getDevToolsService() {
             return Optional.empty();
+        }
+
+        private RecordServiceBase.ParserStreamContext peekContext() {
+            return context;
+        }
+
+        private void setContext(RecordServiceBase.ParserStreamContext value) {
+            context = value;
+        }
+
+        private CompletableFuture<RawHeapSnapshot> getFuture() {
+            return future;
+        }
+
+        private void setFuture(CompletableFuture<RawHeapSnapshot> value) {
+            future = value;
         }
 
         private void addUsage(HeapUsages usage) {

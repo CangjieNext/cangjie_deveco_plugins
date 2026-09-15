@@ -32,11 +32,6 @@ import java.util.Map;
  * @since 2026-09-08
  */
 public class ConfigUtilTest {
-    @Test
-    public void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new ConfigUtil();
-    }
 
     @Test
     public void testGetCangjieHomePath_fileExists() throws Exception {

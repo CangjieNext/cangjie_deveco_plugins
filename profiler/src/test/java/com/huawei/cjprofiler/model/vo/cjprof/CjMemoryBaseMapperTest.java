@@ -14,6 +14,7 @@ package com.huawei.cjprofiler.model.vo.cjprof;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.huawei.cjprofiler.ability.arkmemory.entity.cj.LocalObject;
@@ -31,6 +32,7 @@ import com.cjprof.jni.model.ConstructorNode;
 import com.cjprof.jni.model.Frame;
 import com.cjprof.jni.model.InstanceDiffNode;
 import com.cjprof.jni.model.InstanceNode;
+import com.cjprof.jni.model.JsHeapSnapshotConstructorDiffNode;
 import com.cjprof.jni.model.ThreadInfo;
 
 import org.junit.jupiter.api.Test;
@@ -816,5 +818,212 @@ class CjMemoryBaseMapperTest {
         assertEquals(2, lo2.getObjectId());
         assertEquals(512, lo2.getShallowSize());
         assertEquals(1024, lo2.getRetainedSize());
+    }
+
+    private ConstructorDiffNode createConstructorDiffNode(int nodeIndex) {
+        ConstructorDiffNode diffNode = new ConstructorDiffNode();
+        diffNode.setClassName("DiffTestClass");
+        diffNode.setTotalSize(1000);
+        diffNode.setId(123L);
+        diffNode.setNodeIndex(nodeIndex);
+        diffNode.setChildrenCount(0);
+        diffNode.setDistance(2);
+        diffNode.setShallowSize(400);
+        diffNode.setRetainedSize(600);
+        diffNode.setShallowSizePercent(40.14);
+        diffNode.setRetainedSizePercent(60.55);
+        diffNode.setTotalInstanceCountPercent(50.75);
+        diffNode.setStartPosition(0);
+        diffNode.setEndPosition(10);
+        diffNode.setAddedCount(2);
+        diffNode.setRemovedCount(1);
+        diffNode.setCountDelta(1);
+        diffNode.setChildren(new ArrayList<>());
+        diffNode.setChildAddedStates(new ArrayList<>());
+        return diffNode;
+    }
+
+    @Test
+    public void testToJsHeapSnapshotConstructorDiffNode() {
+        ConstructorDiffNode diffNode = createConstructorDiffNode(7);
+        CjMemoryBaseMapper.DiffSnapshotId diffSnapshotId = new CjMemoryBaseMapper.DiffSnapshotId("base-1", "target-2");
+
+        JsHeapSnapshotConstructorDiffNode result =
+            mapper.toJsHeapSnapshotConstructorDiffNode(diffNode, diffSnapshotId, indexToIdMap);
+
+        assertNotNull(result);
+        assertEquals("DiffTestClass", result.getName());
+        assertEquals("DiffTestClass", result.getClassName());
+        assertEquals(7, result.getId());
+        assertEquals(40, result.getShallowSizePercent());
+        assertEquals(60, result.getRetainedSizePercent());
+        assertEquals(50, result.getTotalInstanceCountPercent());
+        assertEquals("base-1", result.getJsBaseHeapSnapshotId());
+        assertEquals("target-2", result.getJsTargetHeapSnapshotId());
+    }
+
+    @Test
+    public void testToJsHeapSnapshotConstructorDiffNodeWithNullSourceThrowsNpe() {
+        CjMemoryBaseMapper.DiffSnapshotId diffSnapshotId = new CjMemoryBaseMapper.DiffSnapshotId("base-1", "target-2");
+
+        assertThrows(NullPointerException.class, () ->
+        mapper.toJsHeapSnapshotConstructorDiffNode((ConstructorDiffNode) null, diffSnapshotId, indexToIdMap));
+    }
+
+    @Test
+    public void testToJsHeapSnapshotConstructorDiffNodesWithList() {
+        ConstructorDiffNode node1 = createConstructorDiffNode(1);
+        ConstructorDiffNode node2 = createConstructorDiffNode(2);
+        CjMemoryBaseMapper.DiffSnapshotId diffSnapshotId = new CjMemoryBaseMapper.DiffSnapshotId("b", "t");
+
+        List<JsHeapSnapshotConstructorDiffNode> results =
+            mapper.toJsHeapSnapshotConstructorDiffNode(List.of(node1, node2), diffSnapshotId, indexToIdMap);
+
+        assertNotNull(results);
+        assertEquals(2, results.size());
+        assertEquals(1, results.get(0).getId());
+        assertEquals(2, results.get(1).getId());
+        assertEquals("b", results.get(0).getJsBaseHeapSnapshotId());
+        assertEquals("t", results.get(0).getJsTargetHeapSnapshotId());
+    }
+
+    @Test
+    public void testToJsHeapSnapshotDetailNode() {
+        InstanceNode instanceNode = createInstanceNode("DetailClass", 1, 300, 150, 60.75, 40.8);
+
+        JsHeapSnapshotDetailNode result = mapper.toJsHeapSnapshotDetailNode(instanceNode, indexToIdMap);
+
+        assertNotNull(result);
+        assertEquals("DetailClass", result.getClassName());
+        assertEquals(1, result.getDistance());
+        assertEquals(300, result.getRetainedSize());
+        assertEquals(150, result.getShallowSize());
+        assertEquals(60, result.getShallowSizePercent());
+        assertEquals(40, result.getRetainedSizePercent());
+        assertEquals(60, result.getTotalShallowSizePercent());
+        assertEquals(40, result.getTotalRetainedSizePercent());
+        assertEquals(1, result.getNodeIndex());
+    }
+
+    @Test
+    public void testToJsHeapSnapshotConstructorNodes() {
+        ConstructorNode node1 = new ConstructorNode();
+        node1.setClassName("Class1");
+        node1.setId(1L);
+        node1.setNodeIndex(0);
+        node1.setChildrenCount(0);
+        node1.setChildren(new ArrayList<>());
+        node1.setShallowSizePercent(10.5);
+        node1.setRetainedSizePercent(20.5);
+        node1.setTotalInstanceCountPercent(30.5);
+
+        ConstructorNode node2 = new ConstructorNode();
+        node2.setClassName("Class2");
+        node2.setId(2L);
+        node2.setNodeIndex(1);
+        node2.setChildrenCount(0);
+        node2.setChildren(new ArrayList<>());
+        node2.setShallowSizePercent(11.5);
+        node2.setRetainedSizePercent(21.5);
+        node2.setTotalInstanceCountPercent(31.5);
+
+        List<JsHeapSnapshotConstructorNode> results =
+            mapper.toJsHeapSnapshotConstructorNodes(List.of(node1, node2), indexToIdMap);
+
+        assertNotNull(results);
+        assertEquals(2, results.size());
+        assertEquals("Class1", results.get(0).getName());
+        assertEquals("Class2", results.get(1).getName());
+        assertEquals(0, results.get(0).getId());
+        assertEquals(1, results.get(1).getId());
+    }
+
+    @Test
+    public void testToJsHeapSnapshotConstructorNodesWithEmptyList() {
+        List<JsHeapSnapshotConstructorNode> results =
+            mapper.toJsHeapSnapshotConstructorNodes(new ArrayList<>(), indexToIdMap);
+
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    public void testCopyJsHeapSnapshotConstructorNode() {
+        JsHeapSnapshotConstructorNode source = new JsHeapSnapshotConstructorNode();
+        source.setName("Copied");
+        source.setClassName("Copied");
+        source.setId(5);
+        source.setChildrenCount(3);
+        source.setDistance(2);
+        source.setShallowSize(40);
+        source.setRetainedSize(60);
+
+        JsHeapSnapshotConstructorNode result = mapper.copyJsHeapSnapshotConstructorNode(source);
+
+        assertNotNull(result);
+        assertEquals("Copied", result.getName());
+        assertEquals(5, result.getId());
+        assertEquals(2, result.getDistance());
+        assertEquals(40, result.getShallowSize());
+        assertEquals(60, result.getRetainedSize());
+    }
+
+    @Test
+    public void testCopyJsHeapSnapshotDiffNode() {
+        JsHeapSnapshotDiffNode source = JsHeapSnapshotDiffNode.builder().build();
+        source.setName("DiffCopied");
+        source.setClassName("DiffCopied");
+        source.setId(9);
+        source.setShallowSize(100);
+        source.setRetainedSize(200);
+
+        JsHeapSnapshotConstructorDiffNode result = mapper.copyJsHeapSnapshotDiffNode(source);
+
+        assertNotNull(result);
+        assertEquals("DiffCopied", result.getName());
+        assertEquals(9, result.getId());
+        assertEquals(100, result.getShallowSize());
+        assertEquals(200, result.getRetainedSize());
+    }
+
+    @Test
+    public void testMapStack() {
+        Stack<Integer> source = new Stack<>();
+        source.push(1);
+        source.push(2);
+
+        Stack<Integer> result = mapper.mapStack(source);
+
+        assertEquals(2, result.size());
+        assertEquals(2, result.peek());
+        result.push(3);
+        assertEquals(2, source.size());
+
+        Stack<Integer> nullResult = mapper.mapStack(null);
+        assertNotNull(nullResult);
+        assertTrue(nullResult.isEmpty());
+    }
+
+    @Test
+    public void testDoubleToIntPercent() {
+        assertEquals(85, mapper.doubleToIntPercent(85.11));
+        assertEquals(0, mapper.doubleToIntPercent(0.99));
+        assertEquals(100, mapper.doubleToIntPercent(100.0));
+    }
+
+    @Test
+    public void testParseType() {
+        assertEquals("object", mapper.parseType("[object]"));
+        assertEquals("array", mapper.parseType("prefix [array] suffix"));
+        assertEquals("", mapper.parseType("plain"));
+        assertEquals("", mapper.parseType("[bad"));
+        assertEquals("", mapper.parseType("bad]"));
+    }
+
+    @Test
+    public void testUpdateAddedRemovedWithNullDiffNode() {
+        ConstructorDiffNode source = createConstructorDiffNode(1);
+        mapper.updateAddedRemoved(null, source);
+        mapper.updateAddedRemoved(JsHeapSnapshotDiffNode.builder().build(), source);
     }
 }

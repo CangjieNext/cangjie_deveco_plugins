@@ -9,7 +9,6 @@
 package com.huawei.cjprofiler.ability.arkmemory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,10 +21,5 @@ class EventKeyTest {
     @Test
     void cjHeapUsageConstant_isExpectedValue() {
         assertEquals("cj.heap.usage", EventKey.CJ_HEAP_USAGE);
-    }
-
-    @Test
-    void forceLoadClass_initializesEventKey() {
-        assertNotNull(new EventKey());
     }
 }

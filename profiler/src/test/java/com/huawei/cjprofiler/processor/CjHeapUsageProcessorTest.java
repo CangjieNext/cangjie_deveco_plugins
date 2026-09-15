@@ -49,11 +49,6 @@ import java.util.Optional;
  * @since 2026-08-14
  */
 class CjHeapUsageProcessorTest {
-    @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjHeapUsageProcessor();
-    }
 
     @Test
     void startWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsRecordMan() {

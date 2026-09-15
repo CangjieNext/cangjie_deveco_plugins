@@ -8,50 +8,171 @@
 
 package com.huawei.cjprofiler.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+
+import com.huawei.cjprofiler.dao.CjThreadDao;
+import com.huawei.cjprofiler.model.po.cjthread.CjThreadSliceInfoPo;
+import com.huawei.cjprofiler.model.vo.CjLaneSliceVo;
+import com.huawei.cjprofiler.model.vo.cjthread.CjThreadInfoVo;
+import com.huawei.cjprofiler.model.vo.cjthread.CjThreadSliceInfoVo;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+
+import java.util.List;
 
 /**
- * CjThreadServiceTest - 基础测试
- *
- * 说明：
- * 当前测试环境缺少完整的数据库配置和测试数据源，
- * 无法对业务方法进行真实的功能测试。
- * 完整的业务逻辑测试需要：
- * 1. 建立测试数据库环境
- * 2. 配置MyBatis测试配置
- * 3. 准备测试数据
- * 4. 或者对所有DAO层依赖进行Mock
- *
- * 现在只保留能够可靠测试的基础功能。
+ * Unit tests for {@link CjThreadService} query and lane-slice merge logic.
  *
  * @since 2026-06-04
  */
 public class CjThreadServiceTest {
+    private static final String SESSION_ID = "svc-session";
+    private static final long START = 100L;
+    private static final long END = 200L;
+
+    private CjThreadSliceInfoPo buildSlice(int threadId, int processId, int cjThreadId, String state, long start,
+        long end) {
+        CjThreadSliceInfoPo po = new CjThreadSliceInfoPo();
+        po.setThreadId(threadId);
+        po.setProcessId(processId);
+        po.setCjThreadId(cjThreadId);
+        po.setState(state);
+        po.setStartTime(start);
+        po.setEndTime(end);
+        po.setDuration(end - start);
+        return po;
+    }
+
     @Test
     public void testGetInstanceReturnsSingleton() {
-        // 测试单例模式 - 这是唯一能够可靠测试的部分
-        CjThreadService instance1 = CjThreadService.getInstance();
-        CjThreadService instance2 = CjThreadService.getInstance();
-        assertNotNull(instance1);
-        assertNotNull(instance2);
-        assertEquals(instance1, instance2);
+        assertThat(CjThreadService.getInstance()).isSameAs(CjThreadService.getInstance());
     }
 
     @Test
-    public void testServiceNotNull() {
-        // 验证服务可以被实例化
-        CjThreadService service = CjThreadService.getInstance();
-        assertNotNull(service);
+    public void queryCjStateMetadata_mapsValuesToKeysAndAddsTotal() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadState(SESSION_ID, START, END))
+            .thenReturn(List.of("Execute RUNNING", "Exit IDLE", "Unknown"));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            assertThat(CjThreadService.getInstance().queryCjStateMetadata(SESSION_ID, START, END))
+                .containsExactly("Total", "Running", "Idle");
+        }
     }
 
     @Test
-    public void testServiceType() {
-        // 验证服务类型
-        CjThreadService service = CjThreadService.getInstance();
-        assertTrue(service instanceof CjThreadService);
+    public void queryCjStateMetadata_returnsEmptyWhenNoStateMatched() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadState(SESSION_ID, START, END)).thenReturn(List.of("Unknown"));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            assertThat(CjThreadService.getInstance().queryCjStateMetadata(SESSION_ID, START, END)).isEmpty();
+        }
+    }
+
+    @Test
+    public void queryCjThreadSliceInfo_mapsPoToVoWithThreadDetail() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadSliceInfo(SESSION_ID, 9, START, END))
+            .thenReturn(List.of(buildSlice(11, 22, 9, "Execute RUNNING", START, END)));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            List<CjThreadSliceInfoVo> result = CjThreadService.getInstance()
+                .queryCjThreadSliceInfo(SESSION_ID, 9, START, END);
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).getState()).isEqualTo("Running");
+            assertThat(result.get(0).getRelateThreadDetail().getThreadId()).isEqualTo(11);
+            assertThat(result.get(0).getRelateThreadDetail().getProcessId()).isEqualTo(22);
+        }
+    }
+
+    @Test
+    public void queryCjThreadSliceInfo_returnsEmptyForMissingThread() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadSliceInfo(SESSION_ID, null, START, END)).thenReturn(List.of());
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            assertThat(CjThreadService.getInstance().queryCjThreadSliceInfo(SESSION_ID, null, START, END))
+                .isEmpty();
+        }
+    }
+
+    @Test
+    public void queryCjThreadList_delegatesToDao() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        CjThreadInfoVo vo = mock(CjThreadInfoVo.class);
+        when(dao.queryCjThreadList(SESSION_ID, START, END)).thenReturn(List.of(vo));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            assertThat(CjThreadService.getInstance().queryCjThreadList(SESSION_ID, START, END))
+                .containsExactly(vo);
+        }
+    }
+
+    @Test
+    public void queryCjThreadLaneList_returnsEmptyWhenNoProcessId() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            assertThat(CjThreadService.getInstance()
+                .queryCjThreadLaneList(SESSION_ID, "Running", START, END, List.of())).isEmpty();
+        }
+    }
+
+    @Test
+    public void queryCjThreadLaneList_mergesTotalLaneWithOverlappingSlices() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadTotalLaneList(SESSION_ID, START, END, List.of(1L, 2L))).thenReturn(List.of(
+            buildSlice(1, 1, 1, "Execute RUNNING", 100L, 120L),
+            buildSlice(1, 1, 1, "Park PENDING", 110L, 150L),
+            buildSlice(2, 2, 2, "Exit IDLE", 130L, 140L)));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            List<CjLaneSliceVo> lane = CjThreadService.getInstance()
+                .queryCjThreadLaneList(SESSION_ID, "Total", START, END, List.of(1L, 2L));
+            assertThat(lane).hasSize(6);
+            assertThat(lane.get(0).getValue()).isEqualTo(1);
+            assertThat(lane.get(3).getValue()).isEqualTo(2);
+            assertThat(lane.get(5).getValue()).isEqualTo(0);
+        }
+    }
+
+    @Test
+    public void queryCjThreadLaneList_resolvesStateValueForKey() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadLaneList(SESSION_ID, "New READY", START, END, List.of(3L)))
+            .thenReturn(List.of(buildSlice(1, 1, 1, "New READY", 100L, 110L)));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            List<CjLaneSliceVo> lane = CjThreadService.getInstance()
+                .queryCjThreadLaneList(SESSION_ID, "Ready", START, END, List.of(3L));
+            assertThat(lane).hasSize(2);
+        }
+    }
+
+    @Test
+    public void queryCjThreadLaneList_fallsBackToEmptyValueForUnknownKey() {
+        CjThreadDao dao = mock(CjThreadDao.class);
+        when(dao.queryCjThreadLaneList(SESSION_ID, "", START, END, List.of(3L)))
+            .thenReturn(List.of(buildSlice(1, 1, 1, "Park PENDING", 100L, 110L)));
+        try (MockedStatic<CjThreadDao> daoStatic = mockStatic(CjThreadDao.class)) {
+            daoStatic.when(CjThreadDao::getInstance).thenReturn(dao);
+
+            List<CjLaneSliceVo> lane = CjThreadService.getInstance()
+                .queryCjThreadLaneList(SESSION_ID, "Missing", START, END, List.of(3L));
+            assertThat(lane).hasSize(2);
+        }
     }
 }

@@ -172,8 +172,11 @@ public class CjMemoryTransServiceTest {
         instanceNode.setChildren(new ArrayList<>());
         instanceNode.setRetainerNodes(new ArrayList<>());
 
-        // Should not throw exception
         CjMemoryTransService.buildPathNode(instanceNode);
+
+        // With no children/retainers, the parent's own paths must stay untouched
+        assertEquals(Arrays.asList(50, 100), instanceNode.getPathNode());
+        assertEquals(Arrays.asList(1), instanceNode.getPathIndex());
     }
 
     // ==================== buildPathNodeForRetainer tests ====================
@@ -218,8 +221,11 @@ public class CjMemoryTransServiceTest {
         retainerNode.setPathIndex(new ArrayList<>(Arrays.asList(1)));
         setFieldValue(retainerNode, "children", new ArrayList<>());
 
-        // Should not throw exception
         CjMemoryTransService.buildPathNodeForRetainer(retainerNode);
+
+        // With no children, the retainer's own paths must stay untouched
+        assertEquals(Arrays.asList(50, 100), retainerNode.getPathNode());
+        assertEquals(Arrays.asList(1), retainerNode.getPathIndex());
     }
 
     @Test

@@ -29,11 +29,6 @@ import java.util.Optional;
  * @since 2026-06-04
  */
 public class CjHiPerfServiceTest {
-    @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjHiPerfService();
-    }
 
     private void setFieldValue(Object target, String fieldName, Object value) {
         try {

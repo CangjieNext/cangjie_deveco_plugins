@@ -17,9 +17,13 @@ import static org.mockito.Mockito.when;
 import com.huawei.cjprofiler.service.CjHiPerfService;
 import com.huawei.deveco.insight.ohos.common.ProfilerError;
 import com.huawei.deveco.insight.ohos.common.Response;
+import com.huawei.deveco.insight.ohos.model.dto.request.hiperf.HiPerfCallStackIcicleRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.hiperf.HiPerfMetaDataRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.hiperf.HiPerfNodeStateRequest;
+import com.huawei.deveco.insight.ohos.model.dto.request.hiperf.HiPerfThreadCallStackRequest;
+import com.huawei.deveco.insight.ohos.model.dto.response.hiperf.HiPerfThreadCallStack;
 import com.huawei.deveco.insight.ohos.model.vo.HiPerfMetadata;
+import com.huawei.deveco.insight.ohos.model.vo.HiPerfNode;
 import com.huawei.deveco.insight.ohos.model.vo.hiperf.HiPerfNodeStateVo;
 import com.huawei.deveco.insight.ohos.processor.HiPerfProcessor;
 import com.huawei.deveco.insight.ohos.service.HiPerfService;
@@ -143,6 +147,190 @@ class CjHiPerfProcessorTest {
 
             assertThat(response.getProfilerError()).isEqualTo(ProfilerError.REQUEST_PARAMETER_ERROR);
             processorStatic.verifyNoInteractions();
+        }
+    }
+
+    @Test
+    void queryCallStackWhenServiceMissingReturnsParseError() {
+        JSONObject params = new JSONObject();
+        HiPerfThreadCallStackRequest request = mock(HiPerfThreadCallStackRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        HiPerfProcessor processor = mock(HiPerfProcessor.class);
+        when(processor.getHiPerfService("session")).thenReturn(Optional.empty());
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<HiPerfProcessor> processorStatic = mockStatic(HiPerfProcessor.class)) {
+            json.when(() -> JsonUtil.parseObject(params, HiPerfThreadCallStackRequest.class)).thenReturn(request);
+            processorStatic.when(HiPerfProcessor::getInstance).thenReturn(processor);
+
+            Response<?> response = CjHiPerfProcessor.queryCjHiPerfCallStack(params);
+
+            assertThat(response.getProfilerError()).isEqualTo(ProfilerError.PARSE_HIPERF_ERROR);
+            validate.verify(() -> ValidateUtil.validate(request));
+        }
+    }
+
+    @Test
+    void queryCallStackMapsTidToThreadNodesAndMarksNames() {
+        JSONObject params = new JSONObject();
+        HiPerfThreadCallStackRequest request = mock(HiPerfThreadCallStackRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        when(request.getStartRecordTime()).thenReturn(1L);
+        when(request.getStartTimestamp()).thenReturn(10L);
+        when(request.getEndTimestamp()).thenReturn(20L);
+        HiPerfProcessor processor = mock(HiPerfProcessor.class);
+        HiPerfService service = mock(HiPerfService.class);
+        HiPerfMetadata metadata = mock(HiPerfMetadata.class);
+        when(processor.getHiPerfService("session")).thenReturn(Optional.of(service));
+        when(service.getFileMetadata()).thenReturn(metadata);
+        when(metadata.getTid()).thenReturn(List.of(3));
+        HiPerfNode threadNode = new HiPerfNode();
+        threadNode.setThreadName("main");
+        when(service.searchData(10L + 1_000_000L, 20L + 1_000_000L, 3)).thenReturn(threadNode);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<HiPerfProcessor> processorStatic = mockStatic(HiPerfProcessor.class);
+             MockedStatic<CjHiPerfService> cjService = mockStatic(CjHiPerfService.class)) {
+            json.when(() -> JsonUtil.parseObject(params, HiPerfThreadCallStackRequest.class)).thenReturn(request);
+            processorStatic.when(HiPerfProcessor::getInstance).thenReturn(processor);
+            cjService.when(() -> CjHiPerfService.searchCangJieData(threadNode)).thenReturn(Optional.of(threadNode));
+
+            Response<?> response = CjHiPerfProcessor.queryCjHiPerfCallStack(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            HiPerfThreadCallStack callStack = HiPerfThreadCallStack.class.cast(response.getBody());
+            assertThat(callStack.getData()).containsExactly(threadNode);
+            assertThat(callStack.getTidList()).isEqualTo(metadata.getTid());
+            assertThat(threadNode.getThreadName()).isEqualTo("main [3]");
+            verify(service).searchData(10L + 1_000_000L, 20L + 1_000_000L, 3);
+        }
+    }
+
+    @Test
+    void queryCallStackSkipsNamelessNodesAndAppendsPlaceholder() {
+        JSONObject params = new JSONObject();
+        HiPerfThreadCallStackRequest request = mock(HiPerfThreadCallStackRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        when(request.getStartRecordTime()).thenReturn(0L);
+        when(request.getStartTimestamp()).thenReturn(0L);
+        when(request.getEndTimestamp()).thenReturn(0L);
+        HiPerfProcessor processor = mock(HiPerfProcessor.class);
+        HiPerfService service = mock(HiPerfService.class);
+        HiPerfMetadata metadata = mock(HiPerfMetadata.class);
+        when(processor.getHiPerfService("session")).thenReturn(Optional.of(service));
+        when(service.getFileMetadata()).thenReturn(metadata);
+        when(metadata.getTid()).thenReturn(List.of(1));
+        when(service.searchData(0L, 0L, 1)).thenReturn(new HiPerfNode());
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<HiPerfProcessor> processorStatic = mockStatic(HiPerfProcessor.class)) {
+            json.when(() -> JsonUtil.parseObject(params, HiPerfThreadCallStackRequest.class)).thenReturn(request);
+            processorStatic.when(HiPerfProcessor::getInstance).thenReturn(processor);
+
+            Response<?> response = CjHiPerfProcessor.queryCjHiPerfCallStack(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            HiPerfThreadCallStack callStack = HiPerfThreadCallStack.class.cast(response.getBody());
+            assertThat(callStack.getData()).hasSize(1);
+            assertThat(callStack.getTidList()).isEqualTo(metadata.getTid());
+        }
+    }
+
+    @Test
+    void queryThreadCallStackByTidListReturnsMatchingNodes() {
+        JSONObject params = new JSONObject();
+        params.put("sessionId", "session");
+        params.put("tidList", "[5]");
+        params.put("startTimestamp", 7L);
+        params.put("endTimestamp", 9L);
+        params.put("startRecordTime", 0L);
+        HiPerfProcessor processor = mock(HiPerfProcessor.class);
+        HiPerfService service = mock(HiPerfService.class);
+        when(processor.getHiPerfService("session")).thenReturn(Optional.of(service));
+        HiPerfNode threadNode = new HiPerfNode();
+        when(service.searchData(7L, 9L, 5)).thenReturn(threadNode);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<HiPerfProcessor> processorStatic = mockStatic(HiPerfProcessor.class);
+             MockedStatic<CjHiPerfService> cjService = mockStatic(CjHiPerfService.class)) {
+            json.when(() -> JsonUtil.parseArray("[5]", Integer.class)).thenReturn(List.of(5));
+            processorStatic.when(HiPerfProcessor::getInstance).thenReturn(processor);
+            cjService.when(() -> CjHiPerfService.searchCangJieData(threadNode)).thenReturn(Optional.of(threadNode));
+
+            Response<?> response = CjHiPerfProcessor.queryCjHiPerfThreadCallStack(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            HiPerfThreadCallStack callStack = HiPerfThreadCallStack.class.cast(response.getBody());
+            assertThat(callStack.getData()).containsExactly(threadNode);
+            verify(service).searchData(7L, 9L, 5);
+        }
+    }
+
+    @Test
+    void queryIcicleCallStackFiltersThroughCangjieService() {
+        JSONObject params = new JSONObject();
+        HiPerfCallStackIcicleRequest request = mock(HiPerfCallStackIcicleRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        when(request.getTid()).thenReturn(5);
+        HiPerfProcessor processor = mock(HiPerfProcessor.class);
+        HiPerfService service = mock(HiPerfService.class);
+        when(processor.getHiPerfService("session")).thenReturn(Optional.of(service));
+        List<HiPerfNode> raw = List.of(mock(HiPerfNode.class));
+        List<HiPerfNode> filtered = List.of(mock(HiPerfNode.class));
+        when(service.searchIcicle(request)).thenReturn(raw);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<HiPerfProcessor> processorStatic = mockStatic(HiPerfProcessor.class);
+             MockedStatic<CjHiPerfService> cjService = mockStatic(CjHiPerfService.class)) {
+            json.when(() -> JsonUtil.parseObject(params, HiPerfCallStackIcicleRequest.class)).thenReturn(request);
+            processorStatic.when(HiPerfProcessor::getInstance).thenReturn(processor);
+            cjService.when(() -> CjHiPerfService.searchIcicle(raw)).thenReturn(filtered);
+
+            Response<?> response = CjHiPerfProcessor.queryCjHiPerfIcicleCallStack(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            HiPerfThreadCallStack callStack = HiPerfThreadCallStack.class.cast(response.getBody());
+            assertThat(callStack.getData()).isSameAs(filtered);
+            assertThat(callStack.getTidList()).isEqualTo(List.of(5));
+            cjService.verify(() -> CjHiPerfService.searchIcicle(raw));
+        }
+    }
+
+    @Test
+    void queryMetadataBuildsResponseAndSortsPerfMetadata() {
+        JSONObject params = new JSONObject();
+        HiPerfMetaDataRequest request = mock(HiPerfMetaDataRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        when(request.getProcessId()).thenReturn(1);
+        HiPerfProcessor processor = mock(HiPerfProcessor.class);
+        HiPerfService service = mock(HiPerfService.class);
+        HiPerfMetadata metadata = mock(HiPerfMetadata.class);
+        when(processor.getHiPerfService("session")).thenReturn(Optional.of(service));
+        when(service.getFileMetadata()).thenReturn(metadata);
+        when(metadata.getCangJieTid()).thenReturn(List.of(7));
+        when(metadata.getEndTs()).thenReturn(200L);
+        when(metadata.getStartTs()).thenReturn(100L);
+        when(metadata.getPid()).thenReturn(42);
+        when(metadata.getTid()).thenReturn(List.of(7, 8));
+        when(metadata.getCangJieThreadName()).thenReturn(List.of("m"));
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<HiPerfProcessor> processorStatic = mockStatic(HiPerfProcessor.class);
+             MockedStatic<HiPerfService> serviceStatic = mockStatic(HiPerfService.class)) {
+            json.when(() -> JsonUtil.parseObject(params, HiPerfMetaDataRequest.class)).thenReturn(request);
+            processorStatic.when(HiPerfProcessor::getInstance).thenReturn(processor);
+
+            Response<?> response = CjHiPerfProcessor.queryCjHiPerfMetadata(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            com.huawei.deveco.insight.ohos.model.dto.response.hiperf.HiPerfMetadata body
+                = com.huawei.deveco.insight.ohos.model.dto.response.hiperf.HiPerfMetadata.class
+                    .cast(response.getBody());
+            assertThat(body.getTotalTime()).isEqualTo(100L);
+            assertThat(body.getPid()).isEqualTo(42);
+            assertThat(body.getThreadCount()).isEqualTo(2);
+            assertThat(body.getTidList()).containsExactly(7);
+            assertThat(body.getThreadNameList()).containsExactly("m");
+            serviceStatic.verify(() -> HiPerfService.sortPerfMetadata(body, 1));
         }
     }
 }

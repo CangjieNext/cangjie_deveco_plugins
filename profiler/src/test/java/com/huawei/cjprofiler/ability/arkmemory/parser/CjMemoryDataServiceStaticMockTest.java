@@ -29,11 +29,6 @@ import java.util.Map;
  * @since 2026-08-14
  */
 class CjMemoryDataServiceStaticMockTest {
-    @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjMemoryDataService();
-    }
 
     @Test
     void parseRootTypeMapCorrectlyAssignsTypes() {

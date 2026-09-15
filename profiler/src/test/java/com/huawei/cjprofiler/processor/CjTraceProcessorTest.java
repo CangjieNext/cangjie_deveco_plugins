@@ -29,11 +29,6 @@ import org.mockito.MockedStatic;
  * @since 2026-08-14
  */
 class CjTraceProcessorTest {
-    @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjTraceProcessor();
-    }
 
     @Test
     void deleteTraceSessionDelegatesAndReturnsServiceResponse() {
