@@ -33,12 +33,6 @@ import java.util.Map;
  */
 public class ConfigUtilTest {
     @Test
-    public void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new ConfigUtil();
-    }
-
-    @Test
     public void testGetCangjieHomePath_fileExists() throws Exception {
         Path tempDir = Files.createTempDirectory("cangjie-test-");
         try {

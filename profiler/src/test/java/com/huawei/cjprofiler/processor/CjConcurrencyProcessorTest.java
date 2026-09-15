@@ -39,12 +39,6 @@ import java.util.List;
  */
 class CjConcurrencyProcessorTest {
     @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjConcurrencyProcessor();
-    }
-
-    @Test
     void queryMeasureValidatesDelegatesAndWrapsExactResult() {
         JSONObject params = new JSONObject();
         QueryConcurrencyMeasureRequest request = mock(QueryConcurrencyMeasureRequest.class);

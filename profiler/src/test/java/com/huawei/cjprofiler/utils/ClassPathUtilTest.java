@@ -8,44 +8,96 @@
 
 package com.huawei.cjprofiler.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * ClassPathUtilTest
+ * Unit tests for {@link ClassPathUtil} classpath scanning logic, run against the
+ * real test classpath so directory traversal, jar scanning and filter paths execute.
+ *
+ * @since 2026-09-09
  */
 public class ClassPathUtilTest {
+    /**
+     * Test annotation for scanning.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface TestAnnotation {
+    }
+
+    /**
+     * Second test annotation for multi-annotation matching.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface OtherAnnotation {
+    }
+
+    /**
+     * Annotated holder class picked up by the scanner.
+     */
+    @TestAnnotation
+    static class MarkerHolder {
+    }
+
+    /**
+     * Helper to call the util with vararg-style annotation list.
+     *
+     * @param resource    resource path prefix to scan
+     * @param pkg         package name to scan
+     * @param annotations annotations to match
+     * @return matched classes
+     */
+    private static List<Class<?>> scan(String resource, String pkg, Class<? extends Annotation>[] annotations) {
+        return ClassPathUtil.findClassWithAnyAnnotation(Arrays.asList(annotations), resource, pkg);
+    }
+
+    @Test
+    public void testFindAnnotatedClassesOnClasspath() {
+        List<Class<?>> found = scan("com/huawei/cjprofiler", "com.huawei.cjprofiler",
+            new Class[] {TestAnnotation.class, OtherAnnotation.class});
+        assertNotNull(found);
+        assertThat(found).contains(AnnotatedForScan.class);
+    }
 
     @Test
     public void testFindClassWithAnyAnnotation_EmptyAnnotations() {
         List<Class<?>> result = ClassPathUtil.findClassWithAnyAnnotation(
-            Collections.<Class<? extends Annotation>>emptyList(), "some/resource", "some.package");
-        assertNotNull(result);
-    }
-
-    @Test
-    public void testFindClassWithAnyAnnotation_NullAnnotations() {
-        List<Class<?>> result = ClassPathUtil.findClassWithAnyAnnotation(
-            null, "some/resource", "some.package");
-        assertNotNull(result);
+            Collections.<Class<? extends Annotation>>emptyList(), "com/huawei/cjprofiler/utils",
+            "com.huawei.cjprofiler.utils");
+        assertThat(result).isEmpty();
     }
 
     @Test
     public void testFindClassWithAnyAnnotation_NonExistentPath() {
         List<Class<?>> result = ClassPathUtil.findClassWithAnyAnnotation(
-            Arrays.<Class<? extends Annotation>>asList(TestAnnotation.class), "non/existent/path", "non.existent.package");
-        assertNotNull(result);
+            Arrays.<Class<? extends Annotation>>asList(TestAnnotation.class), "non/existent/path",
+            "non.existent.package");
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void testFindClassWithAnyAnnotation_RealPackageWithoutMatches() {
+        List<Class<?>> result = scan("java/lang", "java.lang", new Class[] {TestAnnotation.class});
+        assertThat(result).isEmpty();
     }
 
     /**
-     * Test annotation
+     * Class annotated to guarantee at least one match exists in this package.
      */
-    @interface TestAnnotation {
+    @TestAnnotation
+    static class SelfReferenceHolder {
     }
 }

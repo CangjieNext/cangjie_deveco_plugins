@@ -426,8 +426,8 @@ class CjMemoryServiceBranchTest {
             com.huawei.deveco.insight.ohos.ability.arkmemory.instancefilters.MemoryObject.class);
         method.setAccessible(true);
 
-        // Pass a non-ConstructorNode object; should not throw
-        method.invoke(service, (Object) null);
+        // Pass a non-ConstructorNode object; must be ignored silently (no throw, no state change)
+        assertThatCode(() -> method.invoke(service, (Object) null)).doesNotThrowAnyException();
     }
 
     private static final class TestMemoryService extends CjMemoryService {

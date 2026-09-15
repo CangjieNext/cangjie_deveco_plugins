@@ -30,12 +30,6 @@ import org.mockito.MockedStatic;
  */
 class CjTraceProcessorTest {
     @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjTraceProcessor();
-    }
-
-    @Test
     void deleteTraceSessionDelegatesAndReturnsServiceResponse() {
         JSONObject params = new JSONObject();
         CjCommonTraceService service = mock(CjCommonTraceService.class);

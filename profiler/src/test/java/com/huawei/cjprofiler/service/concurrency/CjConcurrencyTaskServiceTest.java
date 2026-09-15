@@ -10,7 +10,6 @@ package com.huawei.cjprofiler.service.concurrency;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,19 +39,5 @@ public class CjConcurrencyTaskServiceTest {
         assertNotNull(instance1);
         assertNotNull(instance2);
         assertEquals(instance1, instance2);
-    }
-
-    @Test
-    public void testServiceNotNull() {
-        // 验证服务可以被实例化
-        CjConcurrencyTaskService service = CjConcurrencyTaskService.getInstance();
-        assertNotNull(service);
-    }
-
-    @Test
-    public void testServiceType() {
-        // 验证服务类型
-        CjConcurrencyTaskService service = CjConcurrencyTaskService.getInstance();
-        assertTrue(service instanceof CjConcurrencyTaskService);
     }
 }

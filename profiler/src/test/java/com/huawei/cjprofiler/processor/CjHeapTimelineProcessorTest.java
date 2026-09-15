@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.huawei.cjprofiler.dao.CjVmProfilerDao;
+import com.huawei.cjprofiler.model.dto.response.CjStackList;
 import com.huawei.cjprofiler.service.CjMemoryService;
 import com.huawei.cjprofiler.service.CjRecordManager;
 import com.huawei.deveco.insight.ohos.ability.arkmemory.entity.HeapStats;
@@ -26,12 +27,18 @@ import com.huawei.deveco.insight.ohos.ability.device.OpenHarmonyDeviceManager;
 import com.huawei.deveco.insight.ohos.common.ProfilerError;
 import com.huawei.deveco.insight.ohos.common.Response;
 import com.huawei.deveco.insight.ohos.common.constant.ArkExecuteType;
+import com.huawei.deveco.insight.ohos.common.enums.ArkMemoryTypeEnum;
+import com.huawei.deveco.insight.ohos.common.enums.UnitKey;
 import com.huawei.deveco.insight.ohos.model.dto.request.ark.ArkExecuteRequest;
+import com.huawei.deveco.insight.ohos.model.dto.request.ark.ArkHeapNodeExpandRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.ark.ArkQueryRequest;
+import com.huawei.deveco.insight.ohos.model.dto.request.ark.ArkReleaseDataRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonExecuteRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonQueryRequest;
 import com.huawei.deveco.insight.ohos.model.dto.response.ark.ArkHeapStatsLane;
 import com.huawei.deveco.insight.ohos.model.dto.response.ark.ArkInstanceMetadata;
+import com.huawei.deveco.insight.ohos.processor.sessiondata.SessionDataCacheManager;
+import com.huawei.deveco.insight.ohos.service.file.JsTraceFileService;
 import com.huawei.deveco.insight.ohos.utils.JsonUtil;
 import com.huawei.deveco.insight.ohos.utils.ValidateUtil;
 
@@ -234,5 +241,125 @@ class CjHeapTimelineProcessorTest {
         request.setDeviceKey("device");
         request.setPid(123);
         return request;
+    }
+
+    @Test
+    void startWhenTaskSucceedsReturnsSuccess() {
+        JSONObject params = new JSONObject();
+        ArkExecuteRequest request = executeRequest();
+        OpenHarmonyDeviceManager deviceManager = mock(OpenHarmonyDeviceManager.class);
+        IHarmonyDevice device = mock(IHarmonyDevice.class);
+        CjRecordManager manager = mock(CjRecordManager.class);
+        when(deviceManager.getDeviceByKey("device")).thenReturn(Optional.of(device));
+        when(device.getStatus()).thenReturn(IHarmonyDevice.Status.ONLINE);
+        when(manager.executeCJTask(request, HEAP_PROFILER_START, params)).thenReturn(true);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<OpenHarmonyDeviceManager> devices = mockStatic(OpenHarmonyDeviceManager.class);
+             MockedStatic<CjRecordManager> managers = mockStatic(CjRecordManager.class)) {
+            json.when(() -> JsonUtil.parseObject(params, ArkExecuteRequest.class)).thenReturn(request);
+            devices.when(OpenHarmonyDeviceManager::getInstance).thenReturn(deviceManager);
+            managers.when(CjRecordManager::getInstance).thenReturn(manager);
+
+            Response<?> response = CjHeapTimelineProcessor.startHeapTimeLine(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            verify(manager).initData(ArkExecuteType.HEAP_PROFILER, "session");
+            verify(manager).creatCjRecordService(123);
+            verify(manager).executeCJTask(request, HEAP_PROFILER_START, params);
+        }
+    }
+
+    @Test
+    void stopWhenTaskSucceedsReturnsSuccess() {
+        JSONObject params = new JSONObject();
+        ArkExecuteRequest request = executeRequest();
+        OpenHarmonyDeviceManager deviceManager = mock(OpenHarmonyDeviceManager.class);
+        IHarmonyDevice device = mock(IHarmonyDevice.class);
+        CjRecordManager manager = mock(CjRecordManager.class);
+        when(deviceManager.getDeviceByKey("device")).thenReturn(Optional.of(device));
+        when(device.getStatus()).thenReturn(IHarmonyDevice.Status.ONLINE);
+        when(manager.executeCJTask(request, HEAP_PROFILER_STOP, params)).thenReturn(true);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<OpenHarmonyDeviceManager> devices = mockStatic(OpenHarmonyDeviceManager.class);
+             MockedStatic<CjRecordManager> managers = mockStatic(CjRecordManager.class)) {
+            json.when(() -> JsonUtil.parseObject(params, ArkExecuteRequest.class)).thenReturn(request);
+            devices.when(OpenHarmonyDeviceManager::getInstance).thenReturn(deviceManager);
+            managers.when(CjRecordManager::getInstance).thenReturn(manager);
+
+            Response<?> response = CjHeapTimelineProcessor.stopHeapTimeLine(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            verify(manager).executeCJTask(request, HEAP_PROFILER_STOP, params);
+        }
+    }
+
+    @Test
+    void expandTimelineDetailSetsAllocationTypeAndDelegates() {
+        ArkHeapNodeExpandRequest request = mock(ArkHeapNodeExpandRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        CjRecordManager manager = mock(CjRecordManager.class);
+        CjMemoryService service = mock(CjMemoryService.class);
+        com.huawei.deveco.insight.ohos.ability.arkmemory.instancefilters.MemoryObject memoryObject
+            = mock(com.huawei.deveco.insight.ohos.ability.arkmemory.instancefilters.MemoryObject.class);
+        when(manager.getCjMemoryService("session")).thenReturn(service);
+        when(service.expandHeapNode(request)).thenReturn(memoryObject);
+        try (MockedStatic<CjRecordManager> managerStatic = mockStatic(CjRecordManager.class)) {
+            managerStatic.when(CjRecordManager::getInstance).thenReturn(manager);
+
+            Response<?> response = CjHeapTimelineProcessor.expandHeapTimelineDetail(request);
+
+            assertThat(response.getBody()).isSameAs(memoryObject);
+            verify(request).setType(ArkMemoryTypeEnum.ALLOCATION.getValue());
+            verify(service).expandHeapNode(request);
+        }
+    }
+
+    @Test
+    void queryStackListWrapsStackListFromService() {
+        JSONObject params = new JSONObject();
+        ArkExecuteRequest request = executeRequest();
+        CjRecordManager manager = mock(CjRecordManager.class);
+        CjMemoryService service = mock(CjMemoryService.class);
+        when(manager.getCjMemoryService("session")).thenReturn(service);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<CjRecordManager> managers = mockStatic(CjRecordManager.class)) {
+            json.when(() -> JsonUtil.parseObject(params, ArkExecuteRequest.class)).thenReturn(request);
+            managers.when(CjRecordManager::getInstance).thenReturn(manager);
+
+            Response<?> response = CjHeapTimelineProcessor.queryStackList(params);
+
+            assertThat(response.getBody()).isInstanceOf(CjStackList.class);
+            verify(service).getStackList(123);
+        }
+    }
+
+    @Test
+    void releaseDataForArkMemoryClearsCachesAndReleasesService() {
+        JSONObject params = new JSONObject();
+        ArkReleaseDataRequest request = mock(ArkReleaseDataRequest.class);
+        when(request.getSessionId()).thenReturn("session");
+        CjRecordManager manager = mock(CjRecordManager.class);
+        SessionDataCacheManager cacheManager = mock(SessionDataCacheManager.class);
+        JsTraceFileService traceFileService = mock(JsTraceFileService.class);
+        try (MockedStatic<JsonUtil> json = mockStatic(JsonUtil.class);
+             MockedStatic<ValidateUtil> validate = mockStatic(ValidateUtil.class);
+             MockedStatic<SessionDataCacheManager> cacheStatic = mockStatic(SessionDataCacheManager.class);
+             MockedStatic<JsTraceFileService> traceStatic = mockStatic(JsTraceFileService.class);
+             MockedStatic<CjRecordManager> managers = mockStatic(CjRecordManager.class)) {
+            json.when(() -> JsonUtil.parseObject(params, ArkReleaseDataRequest.class)).thenReturn(request);
+            cacheStatic.when(SessionDataCacheManager::getInstance).thenReturn(cacheManager);
+            traceStatic.when(JsTraceFileService::getInstance).thenReturn(traceFileService);
+            managers.when(CjRecordManager::getInstance).thenReturn(manager);
+
+            Response<?> response = CjHeapTimelineProcessor.releaseDataForArkMemory(params);
+
+            assertThat(response.getIsSuccess()).isTrue();
+            verify(cacheManager).clearCache("session", UnitKey.HEAP_SNAPSHOT);
+            verify(manager).releaseCjMemoryService("session");
+            verify(traceFileService).cleanCache("session");
+        }
     }
 }

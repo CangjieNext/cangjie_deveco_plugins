@@ -55,12 +55,6 @@ public class PageToolsForCjprofTest {
         buildDiffNode();
     }
 
-    @Test
-    public void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new PageToolsForCjprof();
-    }
-
     private void buildDefaultRequest() {
         // 创建 request 对象并设置默认值
         request = new ArkHeapNodeExpandRequest();

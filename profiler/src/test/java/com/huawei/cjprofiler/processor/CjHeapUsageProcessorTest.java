@@ -50,12 +50,6 @@ import java.util.Optional;
  */
 class CjHeapUsageProcessorTest {
     @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjHeapUsageProcessor();
-    }
-
-    @Test
     void startWhenMapperRegistrationFailsReturnsSqlErrorAndSkipsRecordMan() {
         JSONObject params = new JSONObject();
         ArkExecuteRequest request = executeRequest();

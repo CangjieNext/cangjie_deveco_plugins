@@ -10,6 +10,7 @@ package com.huawei.cjprofiler.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.huawei.deveco.insight.ohos.common.NotificationError;
 
@@ -21,36 +22,28 @@ import org.junit.jupiter.api.Test;
  * <p>The {@link NotificationError} base class keeps {@code errorCode} and
  * {@code errorDescriptionKey} as private fields without dedicated getters, so this test only
  * verifies the constant is non-null, has the correct concrete type, and exposes inherited
- * {@code getContent()} behavior.</p>
+ * {@code getContent()} behavior (both with and without an i18n bundle name).</p>
  *
  * @since 2026-08-14
  */
 class CjNotificationErrorTest {
     @Test
-    void cjImportExceedsQuantityLimitErrorConstant_isNonNull() {
+    void cjImportExceedsQuantityLimitError_constantIsWellFormed() {
         NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
 
-        assertNotNull(error);
+        assertTrue(error instanceof CjNotificationError,
+                "constant must be of the concrete CjNotificationError type");
+        assertNotNull(error.getContent(),
+                "getContent() without bundle must return a non-null content");
+        assertNotNull(error.getContent("any.bundle"),
+                "getContent(bundle) must return a non-null content");
     }
 
     @Test
-    void cjImportExceedsLimitError_isInstanceOfCjNotificationError() {
+    void getContent_bundleVariantFallsBackWhenBundleUnknown() {
         NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
 
-        assertEquals(true, error instanceof CjNotificationError);
-    }
-
-    @Test
-    void cjImportExceedsLimitError_getContentReturnsNonNull() {
-        NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
-
-        assertNotNull(error.getContent());
-    }
-
-    @Test
-    void cjImportExceedsLimitError_getContentWithBundleReturnsNonNull() {
-        NotificationError error = CjNotificationError.CJ_IMPORT_EXCEEDS_QUANTITY_LIMIT_ERROR;
-
-        assertNotNull(error.getContent("any.bundle"));
+        assertEquals(error.getContent(), error.getContent("unknown.definitely.missing.bundle"),
+                "unknown bundle should fall back to the default content");
     }
 }

@@ -8,7 +8,10 @@
 
 package com.huawei.cjprofiler.utils;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.huawei.deveco.insight.ohos.common.ProfilerException;
@@ -26,12 +29,6 @@ import java.lang.reflect.Method;
  * @since 2026-08-14
  */
 public class ArgumentsUtilTest {
-    @Test
-    public void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new ArgumentsUtil();
-    }
-
     @Test
     public void testParseJsonObject_NullMethod() {
         Object[] args = new Object[1];
@@ -71,8 +68,9 @@ public class ArgumentsUtilTest {
         Method method = TestClass.class.getMethod("testMethod", JSONObject.class);
         Object[] args = new Object[1];
         args[0] = "not a json object";
-        // Should not throw, just skip parsing
-        ArgumentsUtil.parseJsonObject(method, args);
+        // Non-JSONObject args are skipped untouched
+        assertDoesNotThrow(() -> ArgumentsUtil.parseJsonObject(method, args));
+        assertEquals("not a json object", args[0], "arg must not be modified when not a JSONObject");
     }
 
     @Test
@@ -82,12 +80,9 @@ public class ArgumentsUtilTest {
         jsonObject.put("name", "test");
         Object[] args = new Object[1];
         args[0] = jsonObject;
-        // This will throw because ParsedJson annotation processing requires special handling
-        try {
-            ArgumentsUtil.parseJsonObject(method, args);
-        } catch (Exception e) {
-            // Expected in test environment without full context
-        }
+        // @ParsedJson param is parsed and validated in place; must not throw
+        assertDoesNotThrow(() -> ArgumentsUtil.parseJsonObject(method, args));
+        assertTrue(args[0] instanceof JSONObject, "parsed arg must remain a JSONObject");
     }
 
     /**

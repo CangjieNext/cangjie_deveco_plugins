@@ -26,6 +26,8 @@ import com.huawei.deveco.insight.ohos.model.dto.request.ark.ArkSnapshotParseRequ
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonExecuteRequest;
 import com.huawei.deveco.insight.ohos.model.dto.request.common.CommonQueryRequest;
 import com.huawei.deveco.insight.ohos.resourcehandler.controller.RequestMapping;
+import com.huawei.cjprofiler.common.TraceConstant;
+import com.huawei.cjprofiler.common.TraceUtils;
 import com.huawei.cjprofiler.service.CjRecordManager;
 import com.huawei.cjprofiler.service.CjRecordService;
 import com.huawei.cjprofiler.service.CjMemoryService;
@@ -114,6 +116,7 @@ public class CjHeapSnapshotProcessor {
      */
     @RequestMapping(path = "cj.heap.snapshot")
     public static Response<?> takeHeapSnapshot(@ParsedJson CommonExecuteRequest request) {
+        TraceUtils.trace("cangjieGetArkSnapshot", new JSONObject());
         Optional<CjRecordService> cjRecordService = CjRecordManager.getInstance().getCjRecordService(request.getPid());
         if (cjRecordService.isEmpty()) {
             LOGGER.warn("Failed to task heapSnapshot, cause ark vm is error.");
@@ -225,6 +228,7 @@ public class CjHeapSnapshotProcessor {
      */
     @RequestMapping(path = "cj.heap.gc")
     public static Response<?> executeArkVMGC(JSONObject params) {
+        TraceUtils.trace("cangjieGc", new JSONObject());
         if (!params.containsKey("pid")) {
             LOGGER.warn("Failed to execute ark gc, cause params is error.");
             return Response.failure(ProfilerError.OBJECT_VALIDATE_ERROR);
@@ -271,6 +275,8 @@ public class CjHeapSnapshotProcessor {
         if (service.parseCjprofHeapSnapshotFile(request)) {
             return Response.success();
         }
+        TraceUtils.trace("cangjieImportFailed",
+            new JSONObject().fluentPut(TraceConstant.REASON, "Failed to parse CJ heap snapshot file."));
         return Response.failure(ProfilerError.FILE_PARSING_ERROR);
     }
 

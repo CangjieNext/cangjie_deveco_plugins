@@ -35,12 +35,6 @@ import org.mockito.MockedStatic;
  */
 class CjLaunchProcessorTest {
     @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjLaunchProcessor();
-    }
-
-    @Test
     void queryLifeCycleLaneValidatesDelegatesAndWrapsResult() {
         JSONObject params = new JSONObject();
         LaunchLifeCycleRequest request = mock(LaunchLifeCycleRequest.class);

@@ -42,12 +42,6 @@ class CjImportServiceTest {
     private static final String SESSION_ID = "import-session";
 
     @Test
-    void instantiateClass_coversConstructor() {
-        // Instantiate to cover class declaration line
-        new CjImportService();
-    }
-
-    @Test
     void importTimeline_whenDataStructureIsNull_returnsTrueWithoutParsing() {
         Fixture fixture = new Fixture(Collections.singletonList(null));
 
