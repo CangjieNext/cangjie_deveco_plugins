@@ -12,6 +12,8 @@
         <extensionPoint qualifiedName="com.huawei.cangjie.sdkmanager.compontentProvider" interface="com.huawei.cangjie.sdkmanager.component.CangjieComponentProvider"/>
     </extensionPoints>
     <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="com.huawei.cangjie.sdkmanager.listener.CangjiePluginStateService"
+                            preload="true" />
         <notificationGroup displayType="STICKY_BALLOON" id="Cangjie.Sdk.Manager.Notification" isLogByDefault="true"/>
         <stacktrace.fold substring="[Error Detail]" />
     </extensions>

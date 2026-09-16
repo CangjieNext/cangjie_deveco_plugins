@@ -1,5 +1,5 @@
 {
-  "currentIdeVersion": "7.0",
+  "currentIdeVersion": "26.0.0",
   "demandSrcPackages": [],
   "demandBinPackages": ["stdx", "tpc"],
   "loaderSoLibs": [
@@ -16,8 +16,7 @@
     "libcangjie-std-unittest.mock.internal.so",
     "libcangjie-std-unittest.mock.so",
     "libcangjie-std-unittest.prop_test.so",
-    "libcangjie-std-unittest.so",
-    "libcangjie-std-reflect.so"
+    "libcangjie-std-unittest.so"
   ],
   "binPkgDependLibsMapper": {
     "stdx.crypto.keys": [

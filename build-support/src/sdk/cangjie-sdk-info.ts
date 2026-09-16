@@ -8,7 +8,7 @@
 
 import type {TargetTaskService} from '../../types/hvigor-imports';
 import {isWindows, OhosLogger, OhosSdkLoader, ProjectBuildProfile, SdkComponentType} from '../../types/hvigor-imports';
-import {CANGJIE_NAME, CURRENT_IDE_VERSION} from '../constants/constants';
+import {CANGJIE_NAME, CURRENT_COMPONENT_VERSION} from '../constants/constants';
 import os from 'os';
 import path from 'path';
 import fs from 'fs';
@@ -101,7 +101,7 @@ function getHarmonySdkPath(sdkVersion: ProjectBuildProfile.ApiMeta): boolean {
     defaultPath = isWindows() ? process.env.USERPROFILE : process.env.HOME;
   }
   if (defaultPath !== undefined && defaultPath !== '') {
-    const location = path.join(defaultPath, '.cangjie-sdk', CURRENT_IDE_VERSION, CANGJIE_NAME);
+    const location = path.join(defaultPath, '.cangjie-sdk', CURRENT_COMPONENT_VERSION, CANGJIE_NAME);
     if (fs.existsSync(location)) {
       setCangjieSdk(location, sdkVersion.version);
       return true;

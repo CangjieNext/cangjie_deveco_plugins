@@ -15,7 +15,6 @@
  * - 之后逐行 re-export hvigor 运行时已 export、但官方 .d.ts 未声明的内部符号（来自 hvigor 自带 src 下的 .d.ts）。
  * - `@ohos/hvigor-common` 一行保持模块名写法，由 tsconfig.json 的 paths 兜底解析到 hvigor 嵌套位置。
  */
-
 export * from '../node_modules/@ohos/hvigor/index';
 
 /** @internal */

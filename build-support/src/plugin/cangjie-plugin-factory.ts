@@ -30,11 +30,10 @@ import {GenerateCangjieSchema} from '../task/sync/generate-cangjie-schema';
 import path from 'path';
 import {getHomedir} from '../utils/homedir';
 import fs from 'fs';
-import {CURRENT_IDE_VERSION} from '../constants/constants';
 import {isCangjieModule} from '../utils/common-utils';
 import {CangjieTaskNames} from '../task/cangjie-task-names';
 import {CompileNodeGraphMatch} from '../utils/compile-node-graph-match';
-import CommonHookTask = TaskNames.CommonHookTask;
+import {CURRENT_COMPONENT_VERSION} from '../constants/constants';
 
 export const ideaConfigPath = getIdeaConfigPath();
 const isCangjiePluginEnabled = isPluginEnabled();
@@ -194,10 +193,10 @@ function initGlobalTasks(module: HvigorCoreNode, plugin: AbstractModulePlugin): 
     hasBuiltDependencyTree = true;
     const commandEntryTasks = node.getCommandEntryTask();
     const isNotNeedSmartBuildInit = commandEntryTasks === undefined ||
-      !(commandEntryTasks.includes(CommonHookTask.ASSEMBLE_HAP.name) ||
-        commandEntryTasks.includes(CommonHookTask.ASSEMBLE_HAR.name) ||
-        commandEntryTasks.includes(CommonHookTask.ASSEMBLE_HSP.name) ||
-        commandEntryTasks.includes(CommonHookTask.ASSEMBLE_APP.name));
+      !(commandEntryTasks.includes(TaskNames.CommonHookTask.ASSEMBLE_HAP.name) ||
+        commandEntryTasks.includes(TaskNames.CommonHookTask.ASSEMBLE_HAR.name) ||
+        commandEntryTasks.includes(TaskNames.CommonHookTask.ASSEMBLE_HSP.name) ||
+        commandEntryTasks.includes(TaskNames.CommonHookTask.ASSEMBLE_APP.name));
     if (isNotNeedSmartBuildInit) {
       return;
     }
@@ -243,5 +242,5 @@ function getCjConfigParentPath(): string {
   if (homedir === null) {
     return '';
   }
-  return path.resolve(homedir, '.cangjie', 'build', CURRENT_IDE_VERSION);
+  return path.resolve(homedir, '.cangjie', 'build', CURRENT_COMPONENT_VERSION);
 }

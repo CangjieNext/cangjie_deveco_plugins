@@ -208,8 +208,8 @@ export class DependencyManager {
     const module5File: string = path.resolve(pkgPath, 'src', 'main', CommonConst.MODULE_JSON5);
     const moduleFile: string = path.resolve(pkgPath, 'src', 'main', CommonConst.MODULE_JSON);
     const configFile: string = path.resolve(pkgPath, 'src', 'main', CommonConst.CONFIG_JSON);
-    return this.checkHarOrHspStatus(module5File, false) ||
-      this.checkHarOrHspStatus(moduleFile, false) ||
+    return this.checkHarOrHspStatus(module5File, false) ??
+      this.checkHarOrHspStatus(moduleFile, false) ??
       this.checkHarOrHspStatus(configFile, true);
   }
 

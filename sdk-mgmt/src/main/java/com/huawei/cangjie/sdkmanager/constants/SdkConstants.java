@@ -20,6 +20,11 @@ public class SdkConstants {
     public static final String CANGJIE_PLUGIN_ID = "com.huawei.cangjie-support-plugin";
 
     /**
+     * Fallback version used to isolate SDK files when the plugin version is unavailable.
+     */
+    public static final String UNKNOWN_VERSION = "unknown";
+
+    /**
      * The constant CANGJIE_HARMONY_SDK_KEY.
      */
     public static final String CANGJIE_HARMONY_SDK_KEY = "cangjie.harmony.sdk.location";
@@ -48,4 +53,9 @@ public class SdkConstants {
      * CANGJIE_OPTIONS
      */
     public static final String CANGJIE_OPTIONS = "cangjieOptions";
+
+    /**
+     * PLUGIN_DEFAULT_VERSION
+     */
+    public static final String PLUGIN_DEFAULT_VERSION = "1.0.0";
 }

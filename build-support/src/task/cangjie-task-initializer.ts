@@ -42,7 +42,6 @@ import {CangjieLogger} from '../log/cangjie-logger';
 import {AddApiDependencies} from './systemapi/add-api-dependencies';
 import {GenerateApiDependencies} from './systemapi/generate-api-dependencies';
 import {UnitTestCompileCangjie} from './unitTest/unit-test-compile-cangjie';
-import CommonTask = TaskNames.CommonTask;
 
 const logger: OhosLogger = CangjieLogger.getLogger('cangjie-task-initialzers');
 
@@ -50,7 +49,7 @@ export class CangjiePreBuildCA extends TargetTaskCreator {
   provider = (): CoreTask => new CangjiePreBuild(this.targetService);
 
   declareDepends = (): string[] => hvigorOrToolChainsChanged(this.targetService.getSdkInfo()) ?
-    [CommonTask.CLEAN.name] : [];
+    [TaskNames.CommonTask.CLEAN.name] : [];
 
   declareTaskDetail = (): TaskDetails => CangjieTaskNames.CANGJIE_PRE_BUILD;
 

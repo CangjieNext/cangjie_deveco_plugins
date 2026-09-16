@@ -67,7 +67,20 @@ export const CJPM_TEST_SUCCESS_FLAG = 'cjpm test success';
 export const CJPM_TEST_EXECUTABLE_FILES_PREFIX = 'Executable files at';
 export const CANGJIE_OPTIONS = 'cangjieOptions';
 
+interface ComponentPackageInfo {
+  version: string;
+}
+
+// Resolve package.json
+const componentPackageInfo = require('../../package.json') as ComponentPackageInfo;
+export const CURRENT_COMPONENT_VERSION: string = getShortComponentVersion(componentPackageInfo.version);
+
+function getShortComponentVersion(version: string): string {
+  const versionParts = version.split('.');
+  return versionParts.length > 3 ? versionParts.slice(0, 3).join('.') : version;
+}
+
 function getCurrentIdeVersion(): string {
   const parts = VersionConst.CURRENT_MODEL_VERSION.split('.');
-  return parts.length >= 3 ? parts.slice(0, 2).join('.') : CJ_CONFIG.currentIdeVersion;
+  return parts.length >= 3 ? parts.slice(0, 3).join('.') : CJ_CONFIG.currentIdeVersion;
 }

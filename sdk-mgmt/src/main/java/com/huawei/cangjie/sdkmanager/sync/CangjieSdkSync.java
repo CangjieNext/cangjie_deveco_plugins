@@ -35,13 +35,9 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.system.CpuArch;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.wso2.lsp4intellij.IntellijLanguageClient;
-import org.wso2.lsp4intellij.client.languageserver.ServerStatus;
-import org.wso2.lsp4intellij.client.languageserver.wrapper.LanguageServerWrapper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,7 +49,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -82,7 +77,7 @@ public class CangjieSdkSync implements ProjectInit {
         if (!zipFile.exists()) {
             return;
         }
-        doInstallCangjieSdkSync(pluginPath, zipFile, projectModel, anAction);
+        doInstallCangjieSdkSync(pluginPath, zipFile, projectModel, anAction, plugin.getVersion());
     }
 
     private String getSdkZipFileName() {
@@ -111,6 +106,12 @@ public class CangjieSdkSync implements ProjectInit {
      */
     public static void doInstallCangjieSdkSync(Path pluginPath, File zipFile, ProjectModel projectModel,
         AnAction anAction) {
+        doInstallCangjieSdkSync(pluginPath, zipFile, projectModel, anAction,
+            CangjieSdkUtil.getCangjiePluginShortVersion());
+    }
+
+    private static void doInstallCangjieSdkSync(Path pluginPath, File zipFile, ProjectModel projectModel,
+        AnAction anAction, String pluginVersion) {
         File finishFile = pluginPath.resolve(SDK_FINISH_FILE_NAME).toFile();
         String cangjieSdkPath = CangjieSdkUtil.obtainInstalledSdkPath(CangjieComponentPath.CANGJIE, true,
             projectModel.getFullCompileSdkVersion().getMajor());
@@ -123,7 +124,7 @@ public class CangjieSdkSync implements ProjectInit {
         NotificationUtil.notifyInfo(message("cangjie.plugin.initialize.start"), projectModel.getProject(),
             NotificationType.INFORMATION);
         if (!isSdkFolderExists) {
-            File destCangjieSdkFile = CangjieSdkUtil.getSdkExpectPath().toFile();
+            File destCangjieSdkFile = CangjieSdkUtil.getSdkExpectPath(pluginVersion).toFile();
             deleteTempFolder(destCangjieSdkFile);
             boolean isUnzipSuccess = doUnzipCangjieSdk(zipFile, projectModel, destCangjieSdkFile, anAction);
             if (isUnzipSuccess) {
@@ -319,22 +320,7 @@ public class CangjieSdkSync implements ProjectInit {
      * @param syncRequest the sync request
      */
     public void doRetryInstall(ProjectModel projectModel, SyncRequest syncRequest) {
-        Set<LanguageServerWrapper> lspWrappers = IntellijLanguageClient.getProjectToLanguageWrappers()
-            .get(org.wso2.lsp4intellij.utils.FileUtils.projectToUri(projectModel.getProject()));
-        if (!CollectionUtils.isEmpty(lspWrappers)) {
-            for (LanguageServerWrapper lspWrapper : lspWrappers) {
-                String serverDefinitionName = lspWrapper.serverDefinition.getClass().getName();
-                if (StringUtils.isEmpty(serverDefinitionName) || !(serverDefinitionName.endsWith(
-                    "CangjieCommandsServerDefinition"))) {
-                    continue;
-                }
-                if (!ServerStatus.INITIALIZED.equals(lspWrapper.getStatus())) {
-                    continue;
-                }
-                lspWrapper.stop(true);
-                break;
-            }
-        }
+        CangjieSdkUtil.stopLspServer(projectModel);
         projectInit(projectModel, syncRequest);
         OhosSyncInvoker.getInstance().doSync(projectModel.getProject(), SyncRequest.RELOAD_PROJECT_MODEL);
     }

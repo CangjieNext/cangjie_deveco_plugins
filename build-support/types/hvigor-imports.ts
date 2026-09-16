@@ -9,7 +9,6 @@
 /**
  * 工程内 @ohos/hvigor 与 @ohos/hvigor-ohos-plugin 的唯一导入入口。
  */
-
 export {isWindows, isMac, isLinux} from '../src/utils/system-util';
 export {formatTime} from '../src/utils/time-util';
 export {HvigorBuildConst} from '../src/constants/build-const';

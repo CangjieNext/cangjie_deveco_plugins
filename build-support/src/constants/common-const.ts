@@ -25,6 +25,6 @@ export class DefaultTargetConst {
 
 export class ValidateRegExp {
   static readonly RELATIVE_PATH_REG_EXP = /\.{1,2}\/.*$/;
-  static readonly STARTUP_TASK_SRC_ENTRY_REG_EXP: RegExp = /^.(ets|ts|js)$/;
+  static readonly STARTUP_TASK_SRC_ENTRY_REG_EXP: RegExp = /^\.(?:ets|ts|js)$/;
 }
 

@@ -12,7 +12,7 @@ import static com.huawei.cangjie.sdkmanager.constants.SdkConstants.CANGJIE_COMPA
 import static com.huawei.cangjie.sdkmanager.constants.SdkConstants.CANGJIE_HARMONY_SDK_KEY;
 import static com.huawei.cangjie.sdkmanager.constants.SdkConstants.CANGJIE_OPEN_HARMONY_SDK_KEY;
 import static com.huawei.cangjie.sdkmanager.idea.constants.CangjieIdeConstants.DEVECO_CANGJIE_PATH;
-import static com.huawei.cangjie.sdkmanager.util.CangjieSdkUtil.getDevEcoShortVersion;
+import static com.huawei.cangjie.sdkmanager.util.CangjieSdkUtil.getCangjiePluginShortVersion;
 import static com.huawei.cangjie.sdkmanager.util.CangjieSdkUtil.getSdkDefaultPath;
 import static com.huawei.cangjie.sdkmanager.util.CangjieSdkUtil.isValidSdk;
 
@@ -132,7 +132,7 @@ public class CangjieIdeaSdkInfoHandler {
      * @return the cangejie sdk version path
      */
     public Path getCangejieSdkVersionPath() {
-        return getSdkDefaultPath().resolve(getDevEcoShortVersion());
+        return getSdkDefaultPath().resolve(getCangjiePluginShortVersion());
     }
 
     private void getOpenHarmonyComponentMap(boolean isHarmony, int apiVersion,

@@ -9,22 +9,34 @@
 package com.huawei.cangjie.sdkmanager.util;
 
 import static com.huawei.cangjie.sdkmanager.constants.SdkConstants.CANGJIE_COMPATIBLE_SDK_KEY;
+import static com.huawei.cangjie.sdkmanager.constants.SdkConstants.UNKNOWN_VERSION;
+import static com.huawei.cangjie.sdkmanager.constants.SdkConstants.CANGJIE_PLUGIN_ID;
 
 import com.huawei.cangjie.sdkmanager.idea.api.CangjieComponent;
 import com.huawei.cangjie.sdkmanager.idea.api.CangjieIdeaSdkInfoHandler;
 import com.huawei.cangjie.sdkmanager.idea.constants.CangjieComponentPath;
+import com.huawei.deveco.projectmodel.ohos.model.ProjectModel;
 
-import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.SystemInfo;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.wso2.lsp4intellij.IntellijLanguageClient;
+import org.wso2.lsp4intellij.client.languageserver.ServerStatus;
+import org.wso2.lsp4intellij.client.languageserver.wrapper.LanguageServerWrapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The type Cangjie sdk util.
@@ -100,7 +112,34 @@ public class CangjieSdkUtil {
      * @return the sdk expect path
      */
     public static Path getSdkExpectPath() {
-        return new CangjieIdeaSdkInfoHandler().getCangejieSdkVersionPath();
+        return getSdkDefaultPath().resolve(getCangjiePluginShortVersion()).normalize();
+    }
+
+    /**
+     * Gets the SDK directory for a plugin version.
+     *
+     * @param pluginVersion plugin version
+     * @return SDK directory for the plugin version
+     */
+    public static Path getSdkExpectPath(String pluginVersion) {
+        return getSdkDefaultPath().resolve(getCangjiePluginShortVersion(pluginVersion)).normalize();
+    }
+
+    /**
+     * Gets the first three parts of a plugin version.
+     *
+     * @param pluginVersion plugin version
+     * @return shortened plugin version
+     */
+    public static String getCangjiePluginShortVersion(String pluginVersion) {
+        if (StringUtils.isBlank(pluginVersion)) {
+            return UNKNOWN_VERSION;
+        }
+        String[] versionParts = pluginVersion.trim().split("\\.");
+        if (versionParts.length <= 3) {
+            return pluginVersion.trim();
+        }
+        return String.join(".", versionParts[0], versionParts[1], versionParts[2]);
     }
 
     /**
@@ -157,8 +196,58 @@ public class CangjieSdkUtil {
      *
      * @return the dev eco short version
      */
-    public static String getDevEcoShortVersion() {
-        return ApplicationInfo.getInstance().getShortVersion();
+    public static String getCangjiePluginShortVersion() {
+        return getCangjiePluginShortVersion(getCangjiePluginVersion());
+    }
+
+    /**
+     * Gets the installed Cangjie plugin version.
+     *
+     * @return plugin version, or {@code unknown} when it cannot be obtained
+     */
+    public static String getCangjiePluginVersion() {
+        IdeaPluginDescriptor plugin = PluginManagerCore.getPlugin(PluginId.getId(CANGJIE_PLUGIN_ID));
+        if (plugin == null || StringUtils.isBlank(plugin.getVersion())) {
+            return UNKNOWN_VERSION;
+        }
+        return plugin.getVersion().trim();
+    }
+
+    /**
+     * Stop lsp server.
+     *
+     * @param projectModel the project model
+     */
+    public static void stopLspServer(ProjectModel projectModel) {
+        stopLspServer(projectModel.getProject());
+    }
+
+    /**
+     * Stops Cangjie LSP servers in all open projects.
+     */
+    public static void stopLspServers() {
+        for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+            stopLspServer(project);
+        }
+    }
+
+    private static void stopLspServer(Project project) {
+        Set<LanguageServerWrapper> lspWrappers = IntellijLanguageClient.getProjectToLanguageWrappers()
+                .get(org.wso2.lsp4intellij.utils.FileUtils.projectToUri(project));
+        if (!CollectionUtils.isEmpty(lspWrappers)) {
+            for (LanguageServerWrapper lspWrapper : lspWrappers) {
+                String serverDefinitionName = lspWrapper.serverDefinition.getClass().getName();
+                if (StringUtils.isEmpty(serverDefinitionName) || !(serverDefinitionName.endsWith(
+                        "CangjieCommandsServerDefinition"))) {
+                    continue;
+                }
+                if (!ServerStatus.INITIALIZED.equals(lspWrapper.getStatus())) {
+                    continue;
+                }
+                lspWrapper.stop(true);
+                break;
+            }
+        }
     }
 
     @NotNull

@@ -28,7 +28,6 @@ import {CANGJIE_OPTIONS, CJPM_TOML_NAME, DEPENDENCIES, NAME, PACKAGE, PATH} from
 import {TOML} from './toml/toml-export';
 import {CangjieLogger} from '../log/cangjie-logger';
 import {configOhModulesEnv} from './env-util';
-import CommonHookTask = TaskNames.CommonHookTask;
 
 const PACKAGE_TASKS = [
   TaskNames.Task.PACKAGE_HAR.name,
@@ -98,7 +97,7 @@ export class CompileNodeGraphMatch {
       return;
     }
     this._mode = globalData.cliEnv.configProps.get('mode') ??
-      (hvigor.isCommandEntryTask(CommonHookTask.ASSEMBLE_APP.name) ? 'project' : 'module');
+      (hvigor.isCommandEntryTask(TaskNames.CommonHookTask.ASSEMBLE_APP.name) ? 'project' : 'module');
     this.initTomlDependenciesTree(projectModel, allModules);
     this.initBuildStartTasks(projectModel);
     this.initRootTasks();
