@@ -195,28 +195,59 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         String prev = getLineText(doc, prevLine);
         int indentSize = getCodeStyleIndent(file);
         int baseIndentPrev = countLeadingSpaces(prev, doc, file.getProject());
-        int baseIndentCurr = countLeadingSpaces(curr, doc, file.getProject());
-        int redundantSpaceNum = baseIndentCurr - (caretOffset - currLineStartOffset);
 
         // enter inside empty ()、[]、{}
         if ((matchesExcludingStrings(prev, INCREASE)
                 || !checkIsClose(prev, file, doc.getLineStartOffset(line - 1))) && DECREASE.matcher(curr).find()) {
-            editor.getDocument().insertString(caretOffset,
-                    " ".repeat(baseIndentPrev + indentSize)
-                            + SEPERATOR
-                            + " ".repeat(Math.max(0, baseIndentPrev)));
-
-            editor.getCaretModel().moveToOffset(caretOffset + indentSize);
-            return Result.Continue;
+            return insertSeparatorIndent(editor, caretOffset, indentSize, baseIndentPrev, 0);
         }
 
         // e.g.  evt => xxxxx <enter at this position> }
         if (matchesExcludingStrings(prev, INDENT_NEXT) && DECREASE.matcher(curr).find()) {
-            editor.getDocument().insertString(caretOffset,
-                    " ".repeat(baseIndentPrev + indentSize)
-                            + SEPERATOR
-                            + " ".repeat(Math.max(0, baseIndentPrev - indentSize)));
-            editor.getCaretModel().moveToOffset(caretOffset + indentSize);
+            return insertSeparatorIndent(editor, caretOffset, indentSize, baseIndentPrev, indentSize);
+        }
+
+        return adjustFinalIndent(file, doc, editor, line, caretOffset);
+    }
+
+    /**
+     * Inserts a separator line with the computed base indent when Enter is
+     * pressed inside empty brackets or right after an arrow/assignment line.
+     *
+     * @param editor the editor
+     * @param offset the caret offset (after tab normalization)
+     * @param indentSize the code style indent size
+     * @param baseIndentPrev the indent of the previous line
+     * @param extraUnindent extra unindent for the second line (0 for brackets,
+     *        indentSize for arrow/assignment lines)
+     * @return Result.Continue
+     */
+    private Result insertSeparatorIndent(Editor editor, int offset, int indentSize, int baseIndentPrev,
+        int extraUnindent) {
+        editor.getDocument().insertString(offset,
+                " ".repeat(baseIndentPrev + indentSize)
+                        + SEPERATOR
+                        + " ".repeat(Math.max(0, baseIndentPrev - extraUnindent)));
+        editor.getCaretModel().moveToOffset(offset + indentSize);
+        return Result.Continue;
+    }
+
+    /**
+     * Applies the final indent adjustment for the caret line: honors the
+     * top-level-node check and the increase/decrease indent rules derived from
+     * the previous and current line, then inserts, deletes or moves the caret
+     * to the proper indent position.
+     *
+     * @param file the PSI file
+     * @param doc the document
+     * @param editor the editor
+     * @param line the zero-based line index of the caret line
+     * @param caretOffset the caret offset (after tab normalization)
+     * @return Result.Continue
+     */
+    private Result adjustFinalIndent(PsiFile file, Document doc, Editor editor, int line, int caretOffset) {
+        int prevLine = getRealTokenPreLine(file, doc, line - 1);
+        if (prevLine < 0) {
             return Result.Continue;
         }
 
@@ -225,17 +256,21 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
             // is in doc end position
             curEle = file.findElementAt(caretOffset - 1);
         }
-        // check top-level node
+        // current line text, kept close to first usage (G.DCL.02)
+        String curr = getLineText(doc, line);
         if (checkTopLevelNode(editor, curEle, curr, line, caretOffset)) {
             return Result.Continue;
         }
 
-        // check increase
+        // previous line text, kept close to first usage (G.DCL.02)
+        String prev = getLineText(doc, prevLine);
+        int indentSize = getCodeStyleIndent(file);
         int increaseIndent = checkCodeIdentIncrease(indentSize, new Pair<>(prev, curr), doc, curEle, line);
-        // check decrease
         increaseIndent = increaseIndent - checkCodeIdentDecrease(indentSize, prev, curr, curEle);
 
-        // insert indent
+        int currLineStartOffset = doc.getLineStartOffset(line);
+        int baseIndentCurr = countLeadingSpaces(curr, doc, file.getProject());
+        int redundantSpaceNum = baseIndentCurr - (caretOffset - currLineStartOffset);
         increaseIndent = increaseIndent - redundantSpaceNum;
         if (increaseIndent >= 0) {
             editor.getDocument().insertString(caretOffset, " ".repeat(increaseIndent));
@@ -247,7 +282,6 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
             // delete indent when current line string between start to offset is empty
             editor.getDocument().deleteString(Math.max(currLineStartOffset, caretOffset + increaseIndent), caretOffset);
         }
-        // move to proper position
         editor.getCaretModel().moveToOffset(Math.max(currLineStartOffset, caretOffset + increaseIndent));
         return Result.Continue;
     }
