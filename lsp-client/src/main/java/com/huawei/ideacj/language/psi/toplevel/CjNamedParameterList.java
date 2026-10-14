@@ -66,6 +66,10 @@ public class CjNamedParameterList extends CJPsiNode {
                         if (element instanceof CjDefaultParameter) {
                             CjDefaultParameter parameter = (CjDefaultParameter) element;
                             String name = parameter.getParameterName();
+                            // A default-value parameter is still a named parameter: keep it
+                            // in namedParameters (insertion-ordered) so doc-comment templates
+                            // and usage signatures list it alongside the regular ones.
+                            cjNamedParameterListInfo.addNamedParameters(name, parameter.getParameterType());
                             cjNamedParameterListInfo.addDefaultParameterWithType(name, parameter.getParameterType());
                             cjNamedParameterListInfo.addDefaultParameterWithValue(name, parameter.getDefaultValue());
                             cjNamedParameterListInfo.addTypeParams(

@@ -12,10 +12,11 @@ import com.huawei.ideacj.language.CjPsiUtils;
 import com.huawei.ideacj.language.psi.CangjieGetID;
 import com.huawei.ideacj.language.psi.CangjieNamedElement;
 import com.huawei.ideacj.language.psi.PsiElementInfoHandler;
+import com.huawei.ideacj.language.psi.othersnode.CjIdentifier;
 import com.huawei.ideacj.language.psi.toplevel.expressionnode.CjExpression;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import com.intellij.psi.PsiElement;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -55,7 +56,17 @@ public class CjDefaultParameter extends CangjieNamedElement implements CangjieGe
     }
 
     private void initParameterInfo() {
-        new CjDefaultParameterHandler().processAllElement(this.getChildren());
+        PsiElement[] elements = this.getChildren();
+        // Manual pass first (same fallback as CjNamedParameter): the identifier
+        // is a direct child and isIdentifier() is reliable regardless of the
+        // exact PSI class of the leaf.
+        for (PsiElement childElement : elements) {
+            if (CjPsiUtils.INSTANCE.isIdentifier(childElement)) {
+                parameterName = childElement.getText().trim();
+                break;
+            }
+        }
+        new CjDefaultParameterHandler().processAllElement(elements);
     }
 
     private class CjDefaultParameterHandler extends PsiElementInfoHandler {
@@ -65,8 +76,12 @@ public class CjDefaultParameter extends CangjieNamedElement implements CangjieGe
 
         @Override
         public final void initHandlers() {
+            // The identifier PSI node is a CjIdentifier, not a plain
+            // LeafPsiElement — handler lookup is exact-class based, so
+            // registering LeafPsiElement.class never matched and left the
+            // parameter name null.
             handlers.put(
-                    LeafPsiElement.class,
+                    CjIdentifier.class,
                     element -> {
                         if (CjPsiUtils.INSTANCE.isIdentifier(element)) {
                             parameterName = element.getText();
