@@ -14,6 +14,7 @@
         <typingActionsExtension implementation="com.huawei.deveco.cjfmt.core.CangjieTypingActionsExtension" order="first"/>
         <codeStyleSettingsProvider  implementation="com.huawei.deveco.cjfmt.settings.CangjieCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider implementation="com.huawei.deveco.cjfmt.settings.CangjieLanguageCodeStyleSettingsProvider"/>
+        <langCodeStyleProvider implementation="com.huawei.deveco.cjfmt.settings.CangjieLanguageCodeStyleProvider"/>
         <postStartupActivity implementation="com.huawei.deveco.cjfmt.core.CjFormatStartupActivity"/>
     </extensions>
     <extensions defaultExtensionNs="com.huawei.deveco.projectmodel.ohos">
