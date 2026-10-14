@@ -23,6 +23,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
 import com.intellij.util.LocalTimeCounter;
 
@@ -56,6 +57,17 @@ public class CangjieLanguageCodeStyleSettingsProvider extends LanguageCodeStyleS
     @NotNull
     public Language getLanguage() {
         return CangJieLanguage.INSTANCE;
+    }
+
+    @Override
+    protected void customizeDefaults(@NotNull CommonCodeStyleSettings commonSettings,
+        @NotNull CommonCodeStyleSettings.IndentOptions indentOptions) {
+        // Default both commenter options to unchecked for Cangjie: keep the
+        // comment indented with the code (not at the first column) and without
+        // an injected space after "//". Applied only when defaults are built,
+        // never overriding values the user has explicitly chosen.
+        commonSettings.LINE_COMMENT_AT_FIRST_COLUMN = false;
+        commonSettings.LINE_COMMENT_ADD_SPACE = false;
     }
 
     @Override

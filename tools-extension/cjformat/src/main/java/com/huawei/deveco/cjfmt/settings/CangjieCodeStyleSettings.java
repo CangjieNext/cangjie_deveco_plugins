@@ -8,10 +8,17 @@
 
 package com.huawei.deveco.cjfmt.settings;
 
+import com.huawei.ideacj.lsp.utils.CangJieLanguage;
+
 import com.intellij.lang.Language;
+import com.intellij.openapi.util.InvalidDataException;
+import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings;
+
+import org.jdom.Element;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,12 +79,101 @@ public class CangjieCodeStyleSettings extends CustomCodeStyleSettings {
     public boolean methodChainOverLength = true;
 
     /**
+     * Persisted mirror of the commenter option LINE_COMMENT_AT_FIRST_COLUMN.
+     * Private on purpose (G.OBJ.01): the value is serialized manually in
+     * {@link #readExternal}/{@link #writeExternal} because the platform
+     * reflection-based serializer only sees public fields.
+     */
+    private boolean lineCommentAtFirstColumn = false;
+
+    /**
+     * Persisted mirror of the commenter option LINE_COMMENT_ADD_SPACE, see
+     * {@link #lineCommentAtFirstColumn}.
+     */
+    private boolean lineCommentAddSpace = false;
+
+    /**
      * Instantiates a new Cangjie code style settings.
      *
      * @param settings the settings
      */
     public CangjieCodeStyleSettings(CodeStyleSettings settings) {
         super("CangjieCodeStyleSettings", settings);
+    }
+
+    public boolean isLineCommentAtFirstColumn() {
+        return lineCommentAtFirstColumn;
+    }
+
+    public void setLineCommentAtFirstColumn(boolean value) {
+        lineCommentAtFirstColumn = value;
+    }
+
+    public boolean isLineCommentAddSpace() {
+        return lineCommentAddSpace;
+    }
+
+    public void setLineCommentAddSpace(boolean value) {
+        lineCommentAddSpace = value;
+    }
+
+    @Override
+    public void readExternal(@NotNull Element element) throws InvalidDataException {
+        super.readExternal(element);
+        // The platform passes the scheme ROOT element here; the platform base
+        // implementation locates this language's own node by myTagName, and so
+        // must the manual reader — the two commenter options live inside the
+        // <CangjieCodeStyleSettings> child node, not among the root options.
+        Element node = element.getChild(getTagName());
+        if (node == null) {
+            return;
+        }
+        // Private fields are invisible to the reflection-based serializer:
+        // read the two commenter options manually. Do NOT mirror them into the
+        // common settings here: the per-language common settings map is rebuilt
+        // afterwards and would wipe the mirrored values — see afterLoaded().
+        for (Element option : node.getChildren("option")) {
+            String name = option.getAttributeValue("name");
+            if ("lineCommentAtFirstColumn".equals(name)) {
+                lineCommentAtFirstColumn = Boolean.parseBoolean(option.getAttributeValue("value"));
+            }
+            if ("lineCommentAddSpace".equals(name)) {
+                lineCommentAddSpace = Boolean.parseBoolean(option.getAttributeValue("value"));
+            }
+        }
+    }
+
+    @Override
+    protected void afterLoaded() {
+        super.afterLoaded();
+        // Called by the platform after the whole CodeStyleSettings.readExternal
+        // finishes — the per-language common settings map has been rebuilt by
+        // then, so mirroring here survives the re-initialization.
+        CommonCodeStyleSettings common = getContainer().getCommonSettings(CangJieLanguage.INSTANCE);
+        common.LINE_COMMENT_AT_FIRST_COLUMN = lineCommentAtFirstColumn;
+        common.LINE_COMMENT_ADD_SPACE = lineCommentAddSpace;
+    }
+
+    @Override
+    public void writeExternal(@NotNull Element element, @NotNull CustomCodeStyleSettings defaultSettings)
+        throws WriteExternalException {
+        super.writeExternal(element, defaultSettings);
+        // Private fields are invisible to the reflection-based serializer:
+        // append the two commenter options manually into this language's node.
+        Element node = element.getChild(getTagName());
+        if (node == null) {
+            node = new Element(getTagName());
+            element.addContent(node);
+        }
+        addBooleanOption(node, "lineCommentAtFirstColumn", lineCommentAtFirstColumn);
+        addBooleanOption(node, "lineCommentAddSpace", lineCommentAddSpace);
+    }
+
+    private static void addBooleanOption(Element element, String name, boolean value) {
+        Element option = new Element("option");
+        option.setAttribute("name", name);
+        option.setAttribute("value", Boolean.toString(value));
+        element.addContent(option);
     }
 
     /**

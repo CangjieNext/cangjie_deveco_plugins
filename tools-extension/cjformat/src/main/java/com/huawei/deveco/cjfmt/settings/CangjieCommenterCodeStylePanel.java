@@ -19,6 +19,7 @@ import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable.CommenterOption;
 import com.intellij.util.ui.JBUI;
 
@@ -95,10 +96,23 @@ public class CangjieCommenterCodeStylePanel extends CodeStyleAbstractPanel {
     @Override
     public void apply(@NotNull CodeStyleSettings rootSettings) {
         myCommenterForm.apply(rootSettings);
+        // Persist through CangjieCodeStyleSettings: the per-language common
+        // settings node is not written for Cangjie, so the custom-settings
+        // fields are the durable storage across IDE restarts.
+        CommonCodeStyleSettings common = rootSettings.getCommonSettings(CangJieLanguage.INSTANCE);
+        CangjieCodeStyleSettings custom = rootSettings.getCustomSettings(CangjieCodeStyleSettings.class);
+        custom.setLineCommentAtFirstColumn(common.LINE_COMMENT_AT_FIRST_COLUMN);
+        custom.setLineCommentAddSpace(common.LINE_COMMENT_ADD_SPACE);
     }
 
     @Override
     protected void resetImpl(@NotNull CodeStyleSettings rootSettings) {
+        // Restore the last persisted choice into the common settings first so
+        // the form shows what the user selected before the restart.
+        CommonCodeStyleSettings common = rootSettings.getCommonSettings(CangJieLanguage.INSTANCE);
+        CangjieCodeStyleSettings custom = rootSettings.getCustomSettings(CangjieCodeStyleSettings.class);
+        common.LINE_COMMENT_AT_FIRST_COLUMN = custom.isLineCommentAtFirstColumn();
+        common.LINE_COMMENT_ADD_SPACE = custom.isLineCommentAddSpace();
         myCommenterForm.reset(rootSettings);
     }
 

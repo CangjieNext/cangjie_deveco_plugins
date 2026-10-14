@@ -11,6 +11,7 @@ package com.huawei.ideacj.formatter;
 import static com.huawei.ideacj.lsp.utils.CommonUtils.getCodeStyleIndent;
 
 import com.huawei.ideacj.extend.cjpsi.adaptor.psi.CJPsiLeafNode;
+import com.huawei.ideacj.language.CjPsiUtils;
 import com.huawei.ideacj.language.CangJieTypes;
 import com.huawei.ideacj.language.psi.compileunitnode.CjTranslationUnit;
 import com.huawei.ideacj.language.psi.operatornode.CJAdditiveOperator;
@@ -23,17 +24,25 @@ import com.huawei.ideacj.language.psi.operatornode.CJShiftingOperator;
 import com.huawei.ideacj.language.psi.operatornode.CJMultiplicativeOperator;
 import com.huawei.ideacj.language.psi.othersnode.CjEnd;
 import com.huawei.ideacj.language.psi.othersnode.CjPostfixExpression;
+import com.huawei.ideacj.language.psi.toplevel.classnode.CjClassInit;
 import com.huawei.ideacj.language.psi.toplevel.classnode.CjClassMemberDeclaration;
+import com.huawei.ideacj.language.psi.toplevel.classnode.CjClassPrimaryInit;
 import com.huawei.ideacj.language.psi.toplevel.classnode.CjForeignMemberDeclaration;
 import com.huawei.ideacj.language.psi.toplevel.classnode.CjPropertyMemberDeclaration;
 import com.huawei.ideacj.language.psi.toplevel.expressionnode.CjExpression;
 import com.huawei.ideacj.language.psi.toplevel.extendnode.CjExtendMemberDeclaration;
 import com.huawei.ideacj.language.psi.toplevel.functionnode.CjFunctionDefinition;
+import com.huawei.ideacj.language.psi.toplevel.functionnode.CjOperatorFunctionDefinition;
 import com.huawei.ideacj.language.psi.toplevel.functionnode.FunctionDefinitionInfo;
 import com.huawei.ideacj.language.psi.toplevel.functionnode.blocknode.CjExpressionOrDeclarations;
 import com.huawei.ideacj.language.psi.toplevel.interfacenode.CjInterfaceMemberDeclaration;
+import com.huawei.ideacj.language.psi.toplevel.macronode.CjMacroAttrDecl;
+import com.huawei.ideacj.language.psi.toplevel.macronode.CjMacroDefinition;
 import com.huawei.ideacj.language.psi.toplevel.macronode.CjMacroExpression;
+import com.huawei.ideacj.language.psi.toplevel.macronode.CjMacroInputDecl;
+import com.huawei.ideacj.language.psi.toplevel.structnode.CjStructInit;
 import com.huawei.ideacj.language.psi.toplevel.structnode.CjStructMemberDeclaration;
+import com.huawei.ideacj.language.psi.toplevel.structnode.CjStructPrimaryInit;
 import com.huawei.ideacj.lsp.utils.CangJieLanguage;
 
 import com.intellij.application.options.CodeStyle;
@@ -57,6 +66,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
@@ -97,6 +108,16 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
     private static final Set<Class<?>> OPERATOR_PSI_NODES = Set.of(CJAdditiveOperator.class,
             CJAssignmentOperator.class, CJComparisonOperator.class, CJConditionOperator.class,
             CJEqualityOperator.class, CJFlowOperator.class, CJShiftingOperator.class, CJMultiplicativeOperator.class);
+
+    /** PSI node types that can carry a generated doc comment template. */
+    private static final List<Class<? extends PsiElement>> DOC_TARGET_TYPES = List.of(
+            CjFunctionDefinition.class,
+            CjOperatorFunctionDefinition.class,
+            CjClassInit.class,
+            CjClassPrimaryInit.class,
+            CjStructInit.class,
+            CjStructPrimaryInit.class,
+            CjMacroDefinition.class);
 
     @Override
     public Result postProcessEnter(@NotNull PsiFile file, @NotNull Editor editor, @NotNull DataContext dataContext) {
@@ -142,11 +163,13 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         int currLineStartOffset = doc.getLineStartOffset(line);
         String prevTextD = getLineText(doc, line - 1);
         if (prevTextD.stripLeading().startsWith("//") && getLineText(doc, line).strip().isEmpty()) {
+            // Enter at the end of a line comment: keep the new line aligned with
+            // the comment's indent but do NOT continue the "//" prefix, matching
+            // common editor behaviour. Mid-comment Enter is handled by the
+            // platform line-comment handler, which carries the prefix itself.
             int indentI = countLeadingSpaces(prevTextD, doc, file.getProject());
             doc.replaceString(currLineStartOffset, offset, " ".repeat(indentI));
-            offset = currLineStartOffset + indentI;
-            doc.insertString(offset, "// ");
-            editor.getCaretModel().moveToOffset(offset + 3);
+            editor.getCaretModel().moveToOffset(currLineStartOffset + indentI);
             return Result.Continue;
         }
 
@@ -308,16 +331,13 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         int caretOffset = currLineStartOffset + indentI;
         editor.getCaretModel().moveToOffset(caretOffset);
 
-        Optional<CjFunctionDefinition> funcDef = findFunctionAfterDocComment(file, doc, commentLine);
-        if (funcDef.isPresent()) {
-            FunctionDefinitionInfo info = funcDef.get().getFunctionDefinitionInfo();
-            if (info != null) {
-                String template = buildDocTemplate(info, indentI);
-                doc.insertString(caretOffset, template);
-                removeExtraCommentClose(doc, caretOffset + template.length());
-                editor.getCaretModel().moveToOffset(caretOffset + 3);
-                return Result.Continue;
-            }
+        Optional<FunctionDefinitionInfo> infoOpt = findDocTargetInfoAfterDocComment(file, doc, commentLine);
+        if (infoOpt.isPresent()) {
+            String template = buildDocTemplate(infoOpt.get(), indentI);
+            doc.insertString(caretOffset, template);
+            removeExtraCommentClose(doc, caretOffset + template.length());
+            editor.getCaretModel().moveToOffset(caretOffset + 3);
+            return Result.Continue;
         }
         // Plain skeleton when no function signature is attached to this comment
         String skeleton = " * \n" + " ".repeat(indentI) + " */";
@@ -328,33 +348,36 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
     }
 
     /**
-     * Finds the function declaration attached to the doc comment at the given
-     * line.
+     * Finds the signature info of the declaration attached to the doc comment at
+     * the given line. Covers regular functions, constructors (class/struct init
+     * and primary constructors), operator functions and macro definitions.
      *
      * @param file the PSI file
      * @param doc the document
-     * @param commentLine the zero-based line index of the "/**" start line
-     * @return the nearest function definition after the comment, or empty when
-     *         no function follows the comment or the PSI index is temporarily
-     *         unavailable
+     * @param commentLine the zero-based line index of the doc-comment start line
+     * @return the signature info of the nearest supported declaration after the
+     *         comment, or empty when no supported declaration follows the comment
+     *         or the PSI index is temporarily unavailable
      */
-    private Optional<CjFunctionDefinition> findFunctionAfterDocComment(PsiFile file, Document doc, int commentLine) {
+    private Optional<FunctionDefinitionInfo> findDocTargetInfoAfterDocComment(
+            PsiFile file, Document doc, int commentLine) {
         try {
-            int commentByteOffset = doc.getLineStartOffset(commentLine)
+            int commentOffset = doc.getLineStartOffset(commentLine)
                     + getLineText(doc, commentLine).indexOf("/**");
-            PsiElement commentEl = file.findElementAt(commentByteOffset);
+            PsiElement commentEl = file.findElementAt(commentOffset);
             if (commentEl == null) {
-                commentEl = file.findElementAt(commentByteOffset - 1);
+                commentEl = file.findElementAt(commentOffset - 1);
             }
             if (commentEl instanceof PsiComment docComment) {
                 int commentEnd = docComment.getTextRange().getEndOffset();
-                CjFunctionDefinition nearest = findNearestFunctionAfter(file, commentEnd);
-                // Accept only when nothing but blank / comment-decoration lines sits
-                // between the doc comment and the function — a class/struct/interface
-                // between us and the nearest function must not leak its signature.
-                if (nearest != null && isOnlyCommentDecorationBetween(doc, commentLine,
-                        nearest.getTextRange().getStartOffset())) {
-                    return Optional.of(nearest);
+                PsiElement target = findNearestDocTargetAfter(file, commentEnd);
+                // Accept only when nothing but blank / comment-decoration / annotation
+                // lines sits between the doc comment and the target — a
+                // class/struct/interface between us and the nearest declaration must
+                // not leak its signature.
+                if (target != null && isOnlyCommentDecorationBetween(doc, commentLine,
+                        target.getTextRange().getStartOffset())) {
+                    return getFunctionDefinitionInfo(target);
                 }
             }
             return Optional.empty();
@@ -366,21 +389,108 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         }
     }
 
-    private static CjFunctionDefinition findNearestFunctionAfter(PsiFile file, int commentEnd) {
-        // The doc comment and the function may be nested/wrapped differently
-        // depending on the PSI structure, so pick the FIRST function whose
+    private static PsiElement findNearestDocTargetAfter(PsiFile file, int commentEnd) {
+        // The doc comment and the declaration may be nested/wrapped differently
+        // depending on the PSI structure, so pick the FIRST declaration whose
         // start offset is after the comment instead of walking siblings.
-        CjFunctionDefinition nearest = null;
-        for (CjFunctionDefinition fd : PsiTreeUtil.findChildrenOfType(file, CjFunctionDefinition.class)) {
-            int start = fd.getTextRange().getStartOffset();
-            if (start < commentEnd) {
-                continue;
-            }
-            if (nearest == null || start < nearest.getTextRange().getStartOffset()) {
-                nearest = fd;
+        PsiElement nearest = null;
+        int nearestStart = Integer.MAX_VALUE;
+        for (Class<? extends PsiElement> type : DOC_TARGET_TYPES) {
+            for (PsiElement element : PsiTreeUtil.findChildrenOfType(file, type)) {
+                int start = element.getTextRange().getStartOffset();
+                if (start >= commentEnd && start < nearestStart) {
+                    nearest = element;
+                    nearestStart = start;
+                }
             }
         }
         return nearest;
+    }
+
+    /**
+     * Extracts the signature info from any supported documentable declaration.
+     *
+     * @param element the PSI declaration node
+     * @return the signature info, or empty when the node carries none
+     */
+    private static Optional<FunctionDefinitionInfo> getFunctionDefinitionInfo(PsiElement element) {
+        if (element instanceof CjFunctionDefinition func) {
+            return Optional.ofNullable(func.getFunctionDefinitionInfo());
+        }
+        if (element instanceof CjOperatorFunctionDefinition operatorFunc) {
+            return Optional.ofNullable(operatorFunc.getFunctionDefinitionInfo());
+        }
+        if (element instanceof CjClassInit classInit) {
+            return Optional.ofNullable(classInit.getFunctionDefinitionInfo());
+        }
+        if (element instanceof CjClassPrimaryInit classPrimaryInit) {
+            return Optional.ofNullable(classPrimaryInit.getFunctionDefinitionInfo());
+        }
+        if (element instanceof CjStructInit structInit) {
+            return Optional.ofNullable(structInit.getFunctionDefinitionInfo());
+        }
+        if (element instanceof CjStructPrimaryInit structPrimaryInit) {
+            return Optional.ofNullable(structPrimaryInit.getFunctionDefinitionInfo());
+        }
+        if (element instanceof CjMacroDefinition macroDef) {
+            return getMacroDefinitionInfo(macroDef);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Builds signature info for a macro definition. Macro parameters use the
+     * dedicated macroAttrDecl / macroInputDecl rules which the shared
+     * CjFunctionInfoHandlers does not cover, so they are extracted here; the
+     * return type reuses the same helper as the usage view.
+     *
+     * @param macroDef the macro definition node
+     * @return the signature info, or empty when unavailable
+     */
+    private static Optional<FunctionDefinitionInfo> getMacroDefinitionInfo(CjMacroDefinition macroDef) {
+        FunctionDefinitionInfo info = macroDef.getFunctionDefinitionInfo();
+        if (info == null) {
+            return Optional.empty();
+        }
+        LinkedHashMap<String, String> args = new LinkedHashMap<>();
+        collectMacroParams(macroDef, CjMacroAttrDecl.class, args);
+        collectMacroParams(macroDef, CjMacroInputDecl.class, args);
+        info.setUnNamedArgs(args);
+        String returnType = CjPsiUtils.getMacroReturnType(macroDef);
+        if (returnType != null && !returnType.isEmpty()) {
+            info.setReturnType(returnType);
+        }
+        return Optional.of(info);
+    }
+
+    /**
+     * Collects macro parameters of the given declaration type into an
+     * insertion-ordered map. Each declaration's text is "name: Type", the name
+     * comes from the first identifier child, the type from the text after the
+     * first colon.
+     *
+     * @param macroDef the macro definition node
+     * @param declType CjMacroAttrDecl or CjMacroInputDecl
+     * @param args the target ordered map
+     */
+    private static void collectMacroParams(CjMacroDefinition macroDef,
+            Class<? extends PsiElement> declType, LinkedHashMap<String, String> args) {
+        for (PsiElement decl : PsiTreeUtil.findChildrenOfType(macroDef, declType)) {
+            String name = null;
+            for (PsiElement child : decl.getChildren()) {
+                if (CjPsiUtils.INSTANCE.isIdentifier(child)) {
+                    name = child.getText().trim();
+                    break;
+                }
+            }
+            if (name == null || name.isEmpty()) {
+                continue;
+            }
+            String flat = decl.getText().replaceAll("\\s+", " ").trim();
+            int colon = flat.indexOf(':');
+            String type = colon >= 0 ? flat.substring(colon + 1).trim() : "";
+            args.put(name, type);
+        }
     }
 
     private static String buildDocTemplate(FunctionDefinitionInfo info, int indentI) {
@@ -746,20 +856,21 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
 
     /**
      * Check the lines strictly between the doc comment line and the function start
-     * line: blank lines and comment-decoration lines (leading asterisk) are
-     * tolerated, any real code line means the function does not directly follow
-     * the comment.
+     * line: blank lines, comment-decoration lines (leading asterisk) and
+     * annotation lines (leading @, e.g. "@Frozen" above the declaration) are
+     * tolerated; any other real code line means the function does not directly
+     * follow the comment.
      *
      * @param doc doc
      * @param commentLine line index of the doc comment
      * @param funcStartOffset start offset of the candidate function
-     * @return true when only blanks or comment decorations sit in between
+     * @return true when only blanks, comment decorations or annotations sit in between
      */
     private static boolean isOnlyCommentDecorationBetween(Document doc, int commentLine, int funcStartOffset) {
         int funcLine = doc.getLineNumber(funcStartOffset);
         for (int l = commentLine + 1; l < funcLine; l++) {
             String t = getLineText(doc, l).strip();
-            if (!t.isEmpty() && !t.startsWith("*")) {
+            if (!t.isEmpty() && !t.startsWith("*") && !t.startsWith("@")) {
                 return false;
             }
         }
