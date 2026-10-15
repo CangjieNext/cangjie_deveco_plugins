@@ -1,0 +1,29 @@
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieCodeStyleSettings.java
+  s_77092f7d721ed5::t_133595b158107f 14-15,20-22,81-93
+  s_77092f7d721ed5::t_62b5619ccc5e6b 94
+lsp-client/src/main/java/com/huawei/ideacj/language/psi/toplevel/CjNamedParameterList.java
+  s_77092f7d721ed5::t_f90bdff3b8d476 69-72
+lsp-client/src/main/java/com/huawei/ideacj/language/psi/toplevel/CjDefaultParameter.java
+  s_77092f7d721ed5::t_36b5f51ec0eac1 15
+  s_77092f7d721ed5::t_0158d1d7c8167d 19,59-69,79-82,84
+lsp-client/src/main/java/com/huawei/ideacj/formatter/CangjieEnterHandlerDelegateAdapter.java
+  s_77092f7d721ed5::t_d53037695610a1 69-70,112-121
+  s_77092f7d721ed5::t_eb04e79d5d0844 14
+  s_77092f7d721ed5::t_a8bb4739db2201 27,29,35,39-40,42-43,45,166-169,172,334-340,351-353,357-360,362-363,365,367,369,373-380,392-394,396-404,410-495,859-862,867,873
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "d3ee3a5e5dcf99c650e9df5dc87ba5f4ea74c505",
+  "prompts": {},
+  "sessions": {
+    "s_77092f7d721ed5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f852e5bedffeb7QBToFqbcKvNI",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
