@@ -30,7 +30,7 @@
         <lang.parserDefinition language="Cangjie"  implementationClass="com.huawei.ideacj.language.CharParserDefinition"/>
         <lang.parserDefinition language="CangjieDeclaration"  implementationClass="com.huawei.ideacj.language.CangjieDeclarationParserDefinition"/>
         <lang.parserDefinition language="CangjieMacrocall"  implementationClass="com.huawei.ideacj.language.CangjieMacrocallParseDefinition"/>
-        <enterHandlerDelegate implementation="com.huawei.ideacj.formatter.CangjieEnterHandlerDelegateAdapter"/>
+        <enterHandlerDelegate implementation="com.huawei.ideacj.formatter.CangjieEnterHandlerDelegateAdapter" order="before com.intellij.codeInsight.editorActions.enter.EnterInBlockCommentHandler"/>
         <backspaceHandlerDelegate implementation="com.huawei.ideacj.formatter.CangjieBackspaceHandlerDelegateAdapter"/>
         <!-- Char completion -->
         <typedHandler implementation="com.huawei.ideacj.edit.QuotePairCompletion" />

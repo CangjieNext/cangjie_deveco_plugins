@@ -49,6 +49,8 @@ import com.intellij.application.options.CodeStyle;
 import com.intellij.codeInsight.editorActions.enter.EnterHandlerDelegateAdapter;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.IndexNotReadyException;
@@ -119,6 +121,53 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
             CjStructPrimaryInit.class,
             CjMacroDefinition.class);
 
+    /**
+     * Runs before the platform EnterInBlockCommentHandler: when Enter is
+     * pressed at the tail of the opening "/**" line of an already closed doc
+     * comment, that handler only inserts a bare newline (no star-line
+     * continuation). Continue here instead — insert the aligned star line and
+     * stop the rest of the Enter processing.
+     *
+     * @return the enter result
+     */
+    @Override
+    public Result preprocessEnter(@NotNull PsiFile file, @NotNull Editor editor,
+        @NotNull Ref<Integer> caretOffsetRef, @NotNull Ref<Integer> caretAdvanceRef,
+        @NotNull DataContext dataContext, @NotNull EditorActionHandler handler) {
+        if (!(file.getLanguage() instanceof CangJieLanguage)) {
+            return super.preprocessEnter(file, editor, caretOffsetRef, caretAdvanceRef, dataContext, handler);
+        }
+        Document doc = editor.getDocument();
+        int caretOffset = caretOffsetRef.get() != null ? caretOffsetRef.get() : editor.getCaretModel().getOffset();
+        PsiComment closed = findDocCommentAt(file, caretOffset).orElse(null);
+        if (closed == null) {
+            return super.preprocessEnter(file, editor, caretOffsetRef, caretAdvanceRef, dataContext, handler);
+        }
+        int startLine = doc.getLineNumber(closed.getTextRange().getStartOffset());
+        int endLine = doc.getLineNumber(closed.getTextRange().getEndOffset());
+        int caretLine = doc.getLineNumber(caretOffset);
+        int lineEnd = doc.getLineEndOffset(caretLine);
+        // A closed-looking comment whose second line is code (e.g. the "/**" was
+        // just typed above a function and the lexer closed it at an existing
+        // "*/" further down) is NOT a doc comment block being edited — leave it
+        // to the template flow.
+        boolean isSecondLineBlockLine = startLine + 1 <= endLine && startLine + 1 < doc.getLineCount()
+                && ("*/".equals(getLineText(doc, startLine + 1).strip())
+                    || "*".equals(getLineText(doc, startLine + 1).strip())
+                    || getLineText(doc, startLine + 1).strip().startsWith("* "));
+        boolean isAtFirstLineTail = isSecondLineBlockLine
+                && caretLine == startLine
+                && caretOffset <= lineEnd
+                && doc.getText(TextRange.create(caretOffset, lineEnd)).strip().isEmpty();
+        if (!isAtFirstLineTail) {
+            return super.preprocessEnter(file, editor, caretOffsetRef, caretAdvanceRef, dataContext, handler);
+        }
+        int indentI = countLeadingSpaces(getLineText(doc, startLine), doc, file.getProject());
+        doc.insertString(caretOffset, "\n" + " ".repeat(indentI) + " * ");
+        editor.getCaretModel().moveToOffset(caretOffset + 1 + indentI + 3);
+        return Result.Stop;
+    }
+
     @Override
     public Result postProcessEnter(@NotNull PsiFile file, @NotNull Editor editor, @NotNull DataContext dataContext) {
         if (!(file.getLanguage() instanceof CangJieLanguage)) {
@@ -128,28 +177,17 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         int offset = editor.getCaretModel().getOffset();
         int line = doc.getLineNumber(offset);
         if (line <= 0) {
-            return null;
+            // null is the EnterHandlerDelegate convention for "not handled";
+            // returning the super result keeps the rule check clean and is
+            // equivalent on the delegate chain.
+            return super.postProcessEnter(file, editor, dataContext);
         }
 
         PsiDocumentManager.getInstance(file.getProject()).commitDocument(doc);
 
-        String prevTextA = getLineText(doc, line - 1);
-        if ("/**".equals(prevTextA.stripLeading())) {
-            return handleDocCommentStart(file, doc, editor, line - 1, offset);
-        }
-
-        PsiElement atCaret = file.findElementAt(offset);
-        if (atCaret == null && offset > 0) {
-            atCaret = file.findElementAt(offset - 1);
-        }
-        if (atCaret instanceof PsiComment pc
-                && pc.getText().startsWith("/**")
-                && !pc.getText().contains("*/")) {
-            int commentLine = doc.getLineNumber(pc.getTextOffset());
-            int indentI = countLeadingSpaces(getLineText(doc, commentLine), doc, file.getProject());
-            doc.insertString(offset, " ".repeat(indentI) + "* ");
-            editor.getCaretModel().moveToOffset(offset + indentI + 2);
-            return Result.Continue;
+        Result docResult = handleDocCommentEnter(file, doc, editor, line, offset);
+        if (docResult != null) {
+            return docResult;
         }
 
         String currLineC = getLineText(doc, line);
@@ -345,6 +383,143 @@ public class CangjieEnterHandlerDelegateAdapter extends EnterHandlerDelegateAdap
         removeExtraCommentClose(doc, caretOffset + skeleton.length());
         editor.getCaretModel().moveToOffset(caretOffset + 3);
         return Result.Continue;
+    }
+
+    /**
+     * Handles Enter related to a "/**" doc comment:
+     *
+     * <ul>
+     * <li>Enter at the tail of the opening "/**" line of an already closed
+     * comment block continues with an aligned star line — the platform leaves
+     * this position unhandled;</li>
+     * <li>Enter right after a freshly typed "/**" (still open) generates the
+     * doc comment template;</li>
+     * <li>Enter inside an open comment continues the star lines, unless the
+     * platform has just split the closing marker (then it already handled
+     * it).</li>
+     * </ul>
+     *
+     * @param file the PSI file
+     * @param doc the document
+     * @param editor the editor
+     * @param line the zero-based line index of the caret line
+     * @param offset the caret offset
+     * @return the enter result, or null when this handler does not apply
+     */
+    private Result handleDocCommentEnter(@NotNull PsiFile file, @NotNull Document doc, @NotNull Editor editor,
+        int line, int offset) {
+        PsiComment docComment = findDocCommentAt(file, offset).orElse(null);
+        boolean isClosed = docComment != null && docComment.getText().contains("*/");
+        String prevText = getLineText(doc, line - 1);
+        if ("/**".equals(prevText.stripLeading())) {
+            if (isClosed && isBlockContinuationPosition(doc, docComment, line, offset)) {
+                // Already closed block being edited at its first-line tail:
+                // continue with an aligned star line (the platform leaves this
+                // position unhandled).
+                int startLine = doc.getLineNumber(docComment.getTextRange().getStartOffset());
+                int indentI = countLeadingSpaces(getLineText(doc, startLine), doc, file.getProject());
+                doc.insertString(offset, " ".repeat(indentI) + " * ");
+                editor.getCaretModel().moveToOffset(offset + indentI + 3);
+                return Result.Continue;
+            }
+            // Freshly typed "/**" (the lexer may close it at an existing "*/"
+            // further down the file — the next line is code, not a decoration):
+            // generate the doc comment template.
+            return handleDocCommentStart(file, doc, editor, line - 1, offset);
+        }
+        if (docComment != null && !isClosed && handleDocContinuation(doc, editor, docComment, offset)) {
+            return Result.Continue;
+        }
+        return null;
+    }
+
+    /**
+     * Checks the post-Enter shape of a closed doc comment block: the caret must
+     * sit on an empty line right below the opening "/**" line, with a star
+     * decoration or closing line below it (a doc comment block being edited —
+     * not a freshly typed marker that the lexer closed at an existing closing
+     * marker further down the file, where the template flow must run instead).
+     *
+     * @param doc the document
+     * @param comment the doc comment node
+     * @param line the zero-based line index of the caret line
+     * @param offset the caret offset
+     * @return true when the caret position is a block continuation position
+     */
+    private static boolean isBlockContinuationPosition(@NotNull Document doc, @NotNull PsiComment comment,
+        int line, int offset) {
+        int startLine = doc.getLineNumber(comment.getTextRange().getStartOffset());
+        int endLine = doc.getLineNumber(comment.getTextRange().getEndOffset());
+        int caretLine = doc.getLineNumber(offset);
+        if (caretLine != startLine + 1 || caretLine >= endLine) {
+            return false;
+        }
+        if (!getLineText(doc, caretLine).strip().isEmpty()) {
+            return false;
+        }
+        String nextLine = startLine + 2 <= endLine ? getLineText(doc, startLine + 2).strip() : "";
+        return isStarDecorationOrClosing(nextLine);
+    }
+
+    private static boolean isStarDecorationOrClosing(@NotNull String strippedLine) {
+        return "*/".equals(strippedLine) || "*".equals(strippedLine) || strippedLine.startsWith("* ");
+    }
+
+    /**
+     * Locates a "/**" doc comment at the caret (the comment text starts with
+     * the opening marker; it may or may not contain the closing marker yet).
+     *
+     * @param file the PSI file
+     * @param offset the caret offset
+     * @return the doc comment node, or empty when the caret is not inside one
+     */
+    @NotNull
+    private static Optional<PsiComment> findDocCommentAt(@NotNull PsiFile file, int offset) {
+        PsiElement atCaret = file.findElementAt(offset);
+        if (atCaret == null && offset > 0) {
+            atCaret = file.findElementAt(offset - 1);
+        }
+        if (atCaret instanceof PsiComment pc && pc.getText().startsWith("/**")) {
+            return Optional.of(pc);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Continues an open "/**" doc comment on Enter: inserts an aligned " * "
+     * line at the caret and moves the caret after it.
+     *
+     * <p>When the caret sits between the star and slash of the closing marker,
+     * the platform Enter splits the marker across lines and the comment text
+     * no longer contains the closing marker even though the platform has
+     * already done the continuation. In that case (caret immediately followed
+     * by '/') no extra " * " is added, otherwise the marker would be
+     * duplicated.</p>
+     *
+     * @param doc the document
+     * @param editor the editor
+     * @param pc the open doc comment PSI node at the caret
+     * @param offset the caret offset on the new line
+     * @return true when the continuation has been handled
+     */
+    private boolean handleDocContinuation(@NotNull Document doc, @NotNull Editor editor, @NotNull PsiComment pc,
+        int offset) {
+        if (pc.getText().contains("*/")) {
+            // Closed comment — the caller routes this to the block
+            // continuation/template flows instead.
+            return false;
+        }
+        CharSequence chars = doc.getCharsSequence();
+        if (offset < chars.length() && chars.charAt(offset) == '/') {
+            // The platform Enter has split the closing marker (caret between
+            // the star and the slash): it already did the continuation.
+            return false;
+        }
+        int commentStartLine = doc.getLineNumber(pc.getTextRange().getStartOffset());
+        int indentI = countLeadingSpaces(getLineText(doc, commentStartLine), doc, pc.getProject());
+        doc.insertString(offset, " ".repeat(indentI) + " * ");
+        editor.getCaretModel().moveToOffset(offset + indentI + 3);
+        return true;
     }
 
     /**
