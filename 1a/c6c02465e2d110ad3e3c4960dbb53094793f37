@@ -1,0 +1,16 @@
+project-mgmt/src/main/java/com/huawei/cangjie/projectmgmt/schema/CjBuildProfileSchemaProviderFactory.java
+  h_8f530f3d668cf8 16,19,34-44,50,58,62-121
+project-mgmt/src/main/java/com/huawei/cangjie/projectmgmt/sync/CangjieProjectSyncImpl.java
+  h_8f530f3d668cf8 325,329-330
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1ac6c02465e2d110ad3e3c4960dbb53094793f37",
+  "prompts": {},
+  "humans": {
+    "h_8f530f3d668cf8": {
+      "author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
