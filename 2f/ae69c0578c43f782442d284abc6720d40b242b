@@ -1,0 +1,14 @@
+lsp-client/src/main/java/com/huawei/ideacj/lsp/listener/CangjieFileListener.java
+  h_8f530f3d668cf8 70-71,168-170,175-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2fae69c0578c43f782442d284abc6720d40b242b",
+  "prompts": {},
+  "humans": {
+    "h_8f530f3d668cf8": {
+      "author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
