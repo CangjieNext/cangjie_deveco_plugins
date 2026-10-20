@@ -1,0 +1,14 @@
+build-support/src/common/cangjie-common-path.ts
+  h_e3f698405e4cb3 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "20a512944fc65c268754a52f0955b4b8826da314",
+  "prompts": {},
+  "humans": {
+    "h_e3f698405e4cb3": {
+      "author": "savage <wangjunwei26@huawei.com>"
+    }
+  }
+}
