@@ -1,0 +1,16 @@
+lsp-client/src/main/java/com/huawei/idea/refactor/extract/dialog/CangjieExtractInterfaceDialog.java
+  h_e3f698405e4cb3 11,199-210,199-208,209-210
+lsp-client/src/main/lsp/com/huawei/capabilities/CangjiePackageUtils.java
+  h_e3f698405e4cb3 27-40,29-31,33,35-37,39,40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "4ca8f5e4f6bd010cd4d65d2e60e54676bb45dc29",
+  "prompts": {},
+  "humans": {
+    "h_e3f698405e4cb3": {
+      "author": "savage <wangjunwei26@huawei.com>"
+    }
+  }
+}
