@@ -1,0 +1,19 @@
+lsp-client/src/main/java/com/huawei/idea/edit/CangjieHoverHandler.java
+  s_59f43a93f4ea59::t_636c5a692c6266 156-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4a323f85f5882350c076fa305e5c41cb68f5bcb4",
+  "prompts": {},
+  "sessions": {
+    "s_59f43a93f4ea59": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05acb-2128-7d62-ba87-0821e3a47c83",
+        "model": "gpt-5.6-terra"
+      },
+      "human_author": "savage <wangjunwei26@huawei.com>"
+    }
+  }
+}
