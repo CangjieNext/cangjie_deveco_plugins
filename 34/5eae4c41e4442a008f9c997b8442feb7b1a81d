@@ -1,0 +1,19 @@
+build-support/src/task/base-cangjie-task.ts
+  s_c385e70a2e26e8::t_a8c37622c6e761 195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "345eae4c41e4442a008f9c997b8442feb7b1a81d",
+  "prompts": {},
+  "sessions": {
+    "s_c385e70a2e26e8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f56f58f02ffeteO4IDKe50wWT8",
+        "model": "unknown"
+      },
+      "human_author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
