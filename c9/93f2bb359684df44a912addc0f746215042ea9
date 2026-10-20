@@ -1,0 +1,24 @@
+build-support/scripts/inject-hvigor-types.js
+  s_0d5bff48553527::t_1b20a72890549a 1-31,45-51,53
+  s_0d5bff48553527::t_3ab087dc356488 32-44
+  s_0d5bff48553527::t_4d17353321fa5c 52
+  s_0d5bff48553527::t_245548cc7f1190 54-56
+build-support/scripts/hvigor-extra-exports.txt
+  s_0d5bff48553527::t_e2110270d10cf0 1-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c993f2bb359684df44a912addc0f746215042ea9",
+  "prompts": {},
+  "sessions": {
+    "s_0d5bff48553527": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ff07f8ba3ffeQX612dQM3ESLQY",
+        "model": "unknown"
+      },
+      "human_author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
