@@ -1,0 +1,14 @@
+lsp-client/src/main/java/com/huawei/ideacj/edit/CangjieEditorEventManager.java
+  h_8f530f3d668cf8 694-722
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f696ac88b8fa8df31187ab62b694eb65ee242448",
+  "prompts": {},
+  "humans": {
+    "h_8f530f3d668cf8": {
+      "author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
