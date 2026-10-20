@@ -1,0 +1,21 @@
+lsp-client/src/main/antlr/cjgrammar/parser/CharParser.g4
+  s_9e7ff1757cbecb::t_ec688785df9893 1113
+lsp-client/src/main/antlr/cjgrammar/declarationParser/DeclarationParser.g4
+  s_9e7ff1757cbecb::t_46da23603a1808 1112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "cc6eb272c4c99c4c639a8730bd42f7d749ecb7dc",
+  "prompts": {},
+  "sessions": {
+    "s_9e7ff1757cbecb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f4ba2c922ffe8TIQPJjdIi54J8",
+        "model": "unknown"
+      },
+      "human_author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
