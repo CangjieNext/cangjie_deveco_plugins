@@ -176,7 +176,7 @@ public class CangjieDocumentationProvider extends DocumentationProviderEx {
         }
         // 添加Show in API Reference操作按钮
         sb.append("<div style=\"width=200px\">");
-        sb.append("<a href=\"psi_element://apiName:").append(apiKey)
+        sb.append("<a href=\"psi_element://apiName:").append(StringUtil.escapeXmlEntities(apiKey))
                 .append("\" style=\"float: right;\">Show in API Reference</a>");
         sb.append("</div>");
     }
