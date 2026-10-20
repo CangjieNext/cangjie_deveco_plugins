@@ -1,0 +1,26 @@
+lsp-client/src/main/java/com/huawei/idea/bracematcher/CangjieBraceMatcher.java
+  h_e3f698405e4cb3 49
+.gitcode/ISSUE_TEMPLATE/bug-report.yml
+  h_e3f698405e4cb3 1-55
+.gitcode/ISSUE_TEMPLATE/config.yml
+  h_e3f698405e4cb3 1
+.gitcode/ISSUE_TEMPLATE/feature-request.yml
+  h_e3f698405e4cb3 1-35
+.gitcode/ISSUE_TEMPLATE/question.yml
+  h_e3f698405e4cb3 1-29
+.gitcode/PULL_REQUEST_TEMPLATE/PULL_REQUEST_TEMPLATE.md
+  h_e3f698405e4cb3 1-30
+.gitcode/PULL_REQUEST_TEMPLATE/PULL_REQUEST_TEMPLATE_chinese.md
+  h_e3f698405e4cb3 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1d610bcc4a0224b011a9b9f3789292e5fabc45e9",
+  "prompts": {},
+  "humans": {
+    "h_e3f698405e4cb3": {
+      "author": "savage <wangjunwei26@huawei.com>"
+    }
+  }
+}
