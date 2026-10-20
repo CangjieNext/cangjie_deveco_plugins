@@ -1,0 +1,144 @@
+build-support/types/hvigor-imports.ts
+  s_eae64414e3dc05::t_5f9a889af24082 1-3
+  s_eae64414e3dc05::t_5349d8e1f3b9ad 8-10
+  s_eae64414e3dc05::t_96d52af99a573e 14
+  s_eae64414e3dc05::t_0410a9898a916b 4-6
+  s_eae64414e3dc05::t_dc9b2df25b4c73 7,11-13
+  s_eae64414e3dc05::t_fe4179113ca32c 15-17
+build-support/types/hvigor-shim.d.ts
+  s_eae64414e3dc05::t_a3e95fc633910f 2-4
+  s_eae64414e3dc05::t_791647701fad35 43,49,58,60
+  s_eae64414e3dc05::t_5bd52b14afbb5e 1
+  s_eae64414e3dc05::t_6d4c36259ed794 46
+  s_eae64414e3dc05::t_1599be68de3cb7 47
+  s_eae64414e3dc05::t_26bf0a41b8cd9c 59
+  s_eae64414e3dc05::t_81ead56dbeb72e 41
+  s_eae64414e3dc05::t_3e3a6517008a30 6-10
+  s_eae64414e3dc05::t_07ae574daea93e 52
+  s_eae64414e3dc05::t_1c5308cf29ea33 53
+  s_eae64414e3dc05::t_e3f45fdd2475e4 56
+  s_eae64414e3dc05::t_8f42774859072e 44
+  s_eae64414e3dc05::t_667100e48a03ce 12-14
+  s_eae64414e3dc05::t_33e0212b9d736c 50
+  s_eae64414e3dc05::t_ede185de3b80c2 5,11,15-20,22-23,25-26,28-29,31-32,34-35,37-38,40,55
+build-support/src/enums/module-type-enum.ts
+  s_eae64414e3dc05::t_2f8ca194084753 1-15
+build-support/src/constants/build-directory-const.ts
+  s_eae64414e3dc05::t_794a1ab3ac30b0 13-14
+  s_eae64414e3dc05::t_513ac76317e482 12
+  s_eae64414e3dc05::t_a56993975a81c8 15-16
+  s_eae64414e3dc05::t_35828b28e4f407 1-10
+  s_eae64414e3dc05::t_6e7f8cf5707e1e 11,17-19
+build-support/scripts/verify-hvigor-exports.js
+  s_3dbfe0bc6584f3::t_9d5f338fc77b64 34-37
+  s_eae64414e3dc05::t_92fae22539b1b9 160-161
+  s_eae64414e3dc05::t_9f334600704c08 159
+  s_eae64414e3dc05::t_d584fb70ed3ed2 18-19
+  s_eae64414e3dc05::t_d97a34bc746610 1-12,14,16-17,32,58,64-69,71,73-77,81-96,122,201
+  s_eae64414e3dc05::t_c1233434e8d981 24-31
+  s_eae64414e3dc05::t_3ec26284c0f064 59
+  s_eae64414e3dc05::t_e8a28a9a628a60 153
+  s_eae64414e3dc05::t_2c17e08ed4b3cf 44-47
+  s_eae64414e3dc05::t_bf99c9adb1eb2f 78,192,221,238
+  s_eae64414e3dc05::t_731f348ff4a007 194-196,205
+  s_eae64414e3dc05::t_8c5b6e40d641de 215-217
+  s_eae64414e3dc05::t_090bf9084ea8a2 137-139,200
+  s_eae64414e3dc05::t_abe17fd2edc7e5 141,202-204,211-212
+  s_eae64414e3dc05::t_008d2ea4e5644a 105
+  s_eae64414e3dc05::t_a7978027634c04 124-126,162
+  s_eae64414e3dc05::t_5b20d18a33b7c1 169-172
+  s_eae64414e3dc05::t_1a8497dfebafa8 140
+  s_eae64414e3dc05::t_ae14317cfa3121 142-149,224,231,239
+  s_eae64414e3dc05::t_ae67e7ba003407 80
+  s_eae64414e3dc05::t_184c91f41ae066 198-199
+  s_eae64414e3dc05::t_79e8bbb557e201 154,188-190,213
+  s_eae64414e3dc05::t_61452c74826e2a 55-57
+  s_eae64414e3dc05::t_87bf08cd0c6230 197
+  s_eae64414e3dc05::t_d8bd80bac0e557 180-187
+  s_3dbfe0bc6584f3::t_7643429466f45f 33,38-39,49-53
+  s_eae64414e3dc05::t_eb3c4c580af87a 156-158,167
+  s_eae64414e3dc05::t_41d599348527d1 128,164-166,173-174
+  s_eae64414e3dc05::t_8c9e18ba37c654 20-23,43,48,60-63,79,97-104,106-121,163
+  s_eae64414e3dc05::t_e7592dbd275446 127
+  s_eae64414e3dc05::t_a17420e591bdc1 177-179,236-237
+  s_eae64414e3dc05::t_57896fc01fbab5 123,155,168,176
+  s_eae64414e3dc05::t_2d0ac2da244132 13
+  s_eae64414e3dc05::t_5663119626072b 15
+  s_eae64414e3dc05::t_4b390caa8b9d34 54
+  s_3dbfe0bc6584f3::t_ebfd7ed72133ff 70
+  s_eae64414e3dc05::t_3f9735cbd44d9d 150-152,175
+  s_eae64414e3dc05::t_99012748b7ef48 207-210
+  s_eae64414e3dc05::t_737aa37884a537 129-136,193,206,214
+  s_eae64414e3dc05::t_33c7a91234ad6d 72
+  s_eae64414e3dc05::t_c3a7e10859bac8 191
+  s_eae64414e3dc05::t_35747bf579ed15 218-220
+  s_eae64414e3dc05::t_1967db0ab7a426 222-223
+  s_eae64414e3dc05::t_165040ea5f978d 225-230
+  s_eae64414e3dc05::t_cd01aa1da9e381 232-235
+  s_eae64414e3dc05::t_804d4c0b7bbd08 240-242
+build-support/src/utils/time-util.ts
+  s_eae64414e3dc05::t_cafe205c71bc8c 26-27
+  s_eae64414e3dc05::t_2361374e8441a3 117
+  s_3dbfe0bc6584f3::t_8ddde991ce2c73 16,103
+  s_eae64414e3dc05::t_00581e1775ddc3 36-38
+  s_eae64414e3dc05::t_3c1b4c1d2890b2 43-60
+  s_eae64414e3dc05::t_a0a4b3833dfc1a 30
+  s_eae64414e3dc05::t_9c0c27838b99c3 64-65
+  s_eae64414e3dc05::t_f8c6f76b2db06f 94-102
+  s_eae64414e3dc05::t_70f4bdb456e4a5 90-91
+  s_eae64414e3dc05::t_b036dee139c051 108,114-115
+  s_eae64414e3dc05::t_9e512f9cc57505 8
+  s_3dbfe0bc6584f3::t_54b84555caa656 109-113
+  s_eae64414e3dc05::t_4cc7866e3d2715 1-7,9-14,25,28-29,31-35,39-42,61,63,66,74,78,83-85,87-89,92-93,104,106-107,116,118-122
+  s_eae64414e3dc05::t_e6b9aa2a30b420 79-82
+  s_eae64414e3dc05::t_05803634175fca 123-128
+  s_eae64414e3dc05::t_ba2f6ee9eed407 62
+  s_eae64414e3dc05::t_3c867273b36985 86
+  s_eae64414e3dc05::t_dbe57c743bcc5d 105
+  s_eae64414e3dc05::t_343bb7738f7d28 67-73
+  s_eae64414e3dc05::t_2ca21eb65ce676 15,17-24
+  s_eae64414e3dc05::t_a94c7f84db00af 75-77
+build-support/src/constants/task-names.ts
+  s_eae64414e3dc05::t_c03684cd54147a 1-106
+  s_eae64414e3dc05::t_de1cc827e96b5c 107-109
+build-support/src/constants/common-const.ts
+  s_eae64414e3dc05::t_fe6964baf6615e 22
+  s_eae64414e3dc05::t_c134abc03a2a60 9-13
+  s_eae64414e3dc05::t_28fc807d98b4c3 14-18,21,23,26-28
+build-support/.npmignore
+  s_eae64414e3dc05::t_4006006c97aeab 13
+  s_eae64414e3dc05::t_257931c261a92f 12
+build-support/src/enums/sdk-component-type.ts
+  s_eae64414e3dc05::t_436364327f0454 1-13
+build-support/.gitignore
+  s_eae64414e3dc05::t_34cf5368cc6b7c 12
+build-support/src/constants/build-const.ts
+  s_eae64414e3dc05::t_9c7608cb283b10 1-12
+build-support/package.json
+  s_eae64414e3dc05::t_bcc4b6c177211f 45
+  s_eae64414e3dc05::t_e0d7b7b50cd68a 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "1b743ec70a861e8f8b643893ada7f04157edcc57",
+  "prompts": {},
+  "sessions": {
+    "s_3dbfe0bc6584f3": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ff2ac802effePpSoTOHZkTRCWQ",
+        "model": "unknown"
+      },
+      "human_author": null
+    },
+    "s_eae64414e3dc05": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fdbb7bcb5ffeDxrzkg93iG2oDL",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
