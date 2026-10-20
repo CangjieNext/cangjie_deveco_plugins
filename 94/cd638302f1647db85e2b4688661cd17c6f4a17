@@ -1,0 +1,33 @@
+build-support/README.md
+  s_3dbfe0bc6584f3::t_b21d314889087a 11,13-14,16,18
+build-support/package.json
+  s_3dbfe0bc6584f3::t_941f8ad94050f2 39-40
+build-support/scripts/inject-hvigor-types.js
+  s_0d5bff48553527::t_7bf7169a23dfab 28-30,37,39-40,47
+  s_3dbfe0bc6584f3::t_40c6c553ddc253 31-36,38
+  s_0d5bff48553527::t_c626f710a12389 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "94cd638302f1647db85e2b4688661cd17c6f4a17",
+  "prompts": {},
+  "sessions": {
+    "s_0d5bff48553527": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ff07f8ba3ffeQX612dQM3ESLQY",
+        "model": "unknown"
+      },
+      "human_author": "tiantianok <chenliufei3@h-partners.com>"
+    },
+    "s_3dbfe0bc6584f3": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_ff2ac802effePpSoTOHZkTRCWQ",
+        "model": "unknown"
+      },
+      "human_author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
