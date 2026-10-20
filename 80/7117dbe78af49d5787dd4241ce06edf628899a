@@ -1,0 +1,32 @@
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/UnzipUtil.java
+  h_8f530f3d668cf8 143,210-211,213-224
+tools-extension/cangjie-test-framework/build.gradle
+  h_8f530f3d668cf8 1-9
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieLocalTestRunConfigurationType.java
+  h_8f530f3d668cf8 48
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieOhosTestRunConfigurationType.java
+  h_8f530f3d668cf8 48
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/utils/TestUtil.java
+  h_8f530f3d668cf8 435
+tools-extension/cjformat/build.gradle
+  h_8f530f3d668cf8 1-4,6-12
+tools-extension/cjlint/build.gradle
+  h_8f530f3d668cf8 1-4,6-12
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CjlintCodeCheckCmd.java
+  h_8f530f3d668cf8 269-271,274-276
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CjlintEngine.java
+  h_8f530f3d668cf8 70,185-187
+tools-extension/quality-common/build.gradle
+  h_8f530f3d668cf8 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "807117dbe78af49d5787dd4241ce06edf628899a",
+  "prompts": {},
+  "humans": {
+    "h_8f530f3d668cf8": {
+      "author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
