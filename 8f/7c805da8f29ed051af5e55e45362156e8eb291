@@ -1,0 +1,35 @@
+lsp-client/build.gradle
+  s_7d4a5052978e16::t_65c110b3fdb0e6 70-73
+build.gradle
+  h_e3f698405e4cb3 102-103
+  s_7d4a5052978e16::t_eb77bc3e95e1a9 36
+  s_7d4a5052978e16::t_755b884fc48a38 6-33,115-116,119-121
+  s_7d4a5052978e16::t_82f5d3e13a4849 54-71,75-79,83-101,107,112-113,117-118,123
+  s_7d4a5052978e16::t_a3d1c8716a8020 114
+gradle/wrapper/gradle-wrapper.properties
+  s_7d4a5052978e16::t_d09a10993403f3 4-5
+  h_e3f698405e4cb3 3
+gradle.properties
+  s_7d4a5052978e16::t_82f5d3e13a4849 11-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8f7c805da8f29ed051af5e55e45362156e8eb291",
+  "prompts": {},
+  "humans": {
+    "h_e3f698405e4cb3": {
+      "author": "savage <wangjunwei26@huawei.com>"
+    }
+  },
+  "sessions": {
+    "s_7d4a5052978e16": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ffb10-2986-7db3-be78-f58f7e70b438",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
