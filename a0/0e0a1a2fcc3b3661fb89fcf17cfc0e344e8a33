@@ -1,0 +1,29 @@
+lsp-client/src/main/java/com/huawei/ideacj/formatter/CangjieCommenter.java
+  s_77092f7d721ed5::t_3d75e0a169648d 11-15,29
+  s_77092f7d721ed5::t_bf094224e82f34 59-99
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieCommenterCodeStylePanel.java
+  s_77092f7d721ed5::t_d34a1a1ffec688 1-27,30-31,42-115
+  s_77092f7d721ed5::t_4a56ce31cfd035 28-29,32-41
+lsp-client/src/main/java/com/huawei/ideacj/formatter/CangjieEnterHandlerDelegateAdapter.java
+  s_77092f7d721ed5::t_79eacc0197c85a 31-32,44-45,51,55,60,128-129,136,139-141,261,283,320,348,359,378,381,391,396,764,792
+  s_77092f7d721ed5::t_b11861ccd1a4f3 202,207-250,259-260,265-267,271-273,327
+  s_77092f7d721ed5::t_322100d34a5f6d 294,299,303-318,322-326,331-332,336-339,341-347,349-358,360-365,368-377,379-380,383,385-390,393-395,398-400,402-403,405,746,748-751,753-756,758-763,766,768,770-772,774-775,777-782,784-785,787-791,793
+  s_77092f7d721ed5::t_70526a27d31bf9 112-127,130-135,137-138,142-169,175-176,178-180,182-184,189-191,194-196,254-255,257,276-277,280-281,285,289-293,295-298,300-302,319,321,328,330,333-335,340,366-367,382,384,392,397,401,404,747,752,757,765,767,769,773,776,783,786,794-795
+  s_77092f7d721ed5::t_399a938595acac 329
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "a00e0a1a2fcc3b3661fb89fcf17cfc0e344e8a33",
+  "prompts": {},
+  "sessions": {
+    "s_77092f7d721ed5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f852e5bedffeb7QBToFqbcKvNI",
+        "model": "unknown"
+      },
+      "human_author": "linna <linna10@h-partners.com>"
+    }
+  }
+}
