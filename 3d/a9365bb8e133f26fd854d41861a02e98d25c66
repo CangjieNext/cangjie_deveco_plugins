@@ -1,0 +1,750 @@
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/editor/CangjieLldbLanguage.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/localtest/debug/LocalTestDebug.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/domain/Progress.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/testbuild/BuildCangjieTestProviderRepo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/CjProfilerException.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/actions/CjReformatFileAction.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/LogLevel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/LogPrinter.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/attach/LaunchAttachState.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieLocalTestRunConfigurationType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieLanguageCodeStyleSettingsProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/ui/CangjieBreakpointFiltersPanel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/properties/CangjieFunctionBreakpointProperties.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/DummyConsoleView.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/InstanceDiffNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/constant/CjConcurrencyConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjMemoryTransService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkconfig/core/CangjieSdkPathConfigBundle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/core/CjFormatStartupActivity.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXTimeTravelProcess.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/NumericDocumentFilter.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/HeapSnapshot.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjConcurrencyProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjHeapSnapshotProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieTestLaunchParameters.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/LibraryModuleTypeEnum.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/attach/AttachConfigurationType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/launch/CjLaunchTraceService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXScope.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/console/CangjieTestConsoleProperties.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/ConsolePrinter.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkconfig/support/SdkConfig.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXSuspendContext.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieTestProgramRunner.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/editor/CangjieLldbLanguageFileType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/CangjieProjectType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/parser/CjMemoryParser.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/LanguageProperties.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/utils/ErrorInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/testbuild/CangjieTestBuildTask.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieOhosTestDeployHapTask.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjHeapUsageService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXExecutionStack.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/constant/CangJieConstant.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+support/src/main/resources/META-INF/plugin.xml
+  s_7d4a5052978e16::t_18d42dbe07bca2 37
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/OhCangjieXExecutionStack.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjThreadState.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CommentMatchResult.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieLocalTestRunner.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/OhFilePathUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieLocalTestLaunchTask.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/CodeQualityBundle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkconfig/annotations/SdkConfigKey.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/trace/TraceUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/build.gradle
+  s_7d4a5052978e16::t_a3d1c8716a8020 10,12
+  h_e3f698405e4cb3 9,18,20-21,23,25-32
+  s_7d4a5052978e16::t_f7992bb903dcd9 13-14
+  s_7d4a5052978e16::t_b69c4d6372a711 1-8,11
+  s_7d4a5052978e16::t_a186219b574f2d 15-17
+  s_7d4a5052978e16::t_1f22e661877c65 19,22,24
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/CangjieAttachRequestArgs.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/response/cjthread/CjThreadSliceInfoListData.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieOhosTestConfigurationProducer.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/PsiHandler.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/HdcUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/CommandConsoleTab.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/deveco/trace/TraceUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/po/cjprof/HeapThreadInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieTestLaunchTaskExecutor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/idea/constants/CangjieIdeConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+settings.gradle
+  h_e3f698405e4cb3 1-29
+gradlew
+  h_e3f698405e4cb3 1-251
+profiler/src/main/java/com/huawei/cjprofiler/model/vo/cjthread/CjThreadInfoVo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/utils/Constant.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/OhCangjieBalloonNotificationsUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/Cjprof.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/settings/CangjieSettingPanel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/request/cjthread/CjThreadMetadataRequest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/StringUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/console/CangjieOhosTestLocationProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/build.gradle
+  s_7d4a5052978e16::t_c31acca6e8b411 20-22
+  s_7d4a5052978e16::t_b69c4d6372a711 1-11,16
+  h_e3f698405e4cb3 13,23-24
+  s_7d4a5052978e16::t_18d42dbe07bca2 14-15,17-19
+  s_7d4a5052978e16::t_162ae7a2236a11 26
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/ui/CangjieFunctionBreakpointPropertiesComponent.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/resourcehandler/CangjieProfilerDispatchImp.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieOhosTestRunner.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/ExecuteCommandHandler.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/concurrency/CjConcurrencyMeasureService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieTestConfigurationProducer.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/localtest/CangjieLaunchRequestArgs.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/parser/TypeKindEnum.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXDebugProcess.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/concurrency/CjConcurrencyTaskService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkconfig/configkeys/SdkKeys.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/PathUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/FeatureEnableUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/testbuild/CangjieTestBuildTaskProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/test/java/com/huawei/deveco/utils/CangjieCompileArgTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/NodeTypeEnum.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/vo/cjthread/CjThreadSliceInfoVo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/ExecuteResult.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/TreeInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieSyntaxHighlighterFactory.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjThreadService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/JsHeapSnapshotConstructorDiffNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+support/src/main/java/main.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/console/CangjieLocalTestLocationProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/type/CangjieFunctionBreakpointType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CjlintEngine.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/LogProperties.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/FileUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/type/CangjieSourceBreakpointType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/PtyUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXValue.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CodeLinterJson5Config.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/RootLocalInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/CangjieSdkManagerPropertiesUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CjlintCodeCheckCmd.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/UnzipUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/MessageFormatUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/test/java/com/huawei/cjprofiler/uitl/PageToolsForCjprofTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/CheckUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/test/java/com/huawei/cjprofiler/model/vo/cjprof/CjMemoryBaseMapperTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/component/CangjieComponentProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/dialog/CjNativeAppTestDebuggerEditor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/OpenHarmonyTestBrowseListener.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runprofilestate/LocalTestRunProfileState.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/Constants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/CangjieTestListener.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/utils/CangjieIcons.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/localtest/debug/CangjieLocalTestDebug.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/ModuleUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/StackFrame.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/core/ReformatCodeService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/Abi.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkconfig/core/ConfigFactory.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/action/databp/CangjieSetNoTypeDataBreakpointAction.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/ui/AddCangjieFunctionBreakpointDialog.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/resourcehandler/CangjieMappingRegistyManager.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjRecordManager.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/ui/CangjieFunctionBreakpointPropertiesPanel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/dao/mapper/CjVmProfilerMapper.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/dialog/CangjieTestRunParameters.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieCodeStylePanel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/po/cjprof/StackFrame.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/test/java/com/huawei/deveco/utils/LogLevelTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/localtest/LocalTestParam.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/test/java/com/huawei/deveco/utils/ExecuteResultTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/annotations/RequestMapping.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieOhosTestRunConfigurationType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/sync/CangjieTestConfigurationPersistentSetting.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/action/databp/CangjieSetReadDataBreakpointAction.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/enums/CjLaunchPhaseEnum.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/handler/CangjieFunctionBreakpointHandler.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/core/CangjieTypingActionsExtension.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/settings/DebugConfigPanel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/parseprof/SubRecordType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+build.gradle
+  h_e3f698405e4cb3 1,3-6,13-14,16-19,21-22,25-26,28-43,45-51,53-59,61-64,66-76,78-89,91-106,108-115,136-139,146-152,154-156,165-167,172-173,184-188
+  s_7d4a5052978e16::t_eb77bc3e95e1a9 8,168-171
+  s_7d4a5052978e16::t_f225be1c61d43d 23-24
+  s_7d4a5052978e16::t_7c6bb397038282 174-183
+  s_7d4a5052978e16::t_67ce5eca854554 131
+  s_7d4a5052978e16::t_9e017382309a5c 153
+  s_7d4a5052978e16::t_937cbfefbc524e 9-12
+  s_7d4a5052978e16::t_d8aa641e156814 117-130,132-134
+  s_7d4a5052978e16::t_f95e90d0b1cc53 141-145
+  s_7d4a5052978e16::t_620f6e782d1934 157-163
+  s_7d4a5052978e16::t_a3d1c8716a8020 164
+  s_7d4a5052978e16::t_c31acca6e8b411 20
+  s_7d4a5052978e16::t_5a707ec2913f29 2,7,15,27,44,52,60,65,77,90,107,116,135,140
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/response/CjStackList.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/dao/CjVmProfilerDao.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/PrimitiveArrayDump.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/request/HeapNodeFilterRequest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/file/CjImportService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/panda/OhosPandaDebugHandler.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/idea/constants/CangjieComponentPath.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/protocol/extend/ExecuteDebuggerCommandResponse.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/utils/PageToolsForCjprof.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/UserModelLldbServerStarter.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/dao/AbstractDao.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/constants/CmdConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/LldbServerManager.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/vo/concurrency/MeasureDetailVo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/annotations/Controller.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/resouces/CjformatBundle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/BaseNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/ObjectInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/StackTrace.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/JcefRequest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/OhCangjieXSuspendContext.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/response/cjthread/CjThreadInfoData.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/type/CangjieBreakpointBaseType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/StructArrayDump.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/idea/api/CangjieComponent.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/deveco/lsp/DumbCangjieFileType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/utils/ClassPathUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/global/CJPluginInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/result/CangjieTestOutPutHandle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/utils/LocalTestUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/OhConnectDebuggerTask.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/DeviceOs.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/dao/CjThreadDao.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/linemarker/CangjieTestRunLineMakerProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/idea/api/CangjieIdeaSdkInfoHandler.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+gradlew.bat
+  h_e3f698405e4cb3 1-94
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/EventKey.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/CangjieAttachParamsUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/ExecutorInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/response/cjthread/CjLaneSliceData.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/type/CangjieInstructionBreakpointType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/common/CjCommonTraceService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/OhCangjieXValue.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/parser/CjBuildTreeService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/NotificationUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieTestRunConfiguration.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/type/CangjieDataBreakpointType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/utils/TestUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjHiPerfService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/parser/CjMemoryDataService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/NodeInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/ConstructorDiffNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/FileUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/Frame.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/EdgeInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/CangjieSdkUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/vo/cjprof/CjMemoryBaseMapper.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/CommandCompletion.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/TimeTravelUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CjLintManager.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/localtest/CangjieLocalTestTask.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/utils/CodeCheckConstantUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/OhCangjieXDebugProcess.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/ObjectArrayDump.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/OhConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjHeapTimelineProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/settings/TimeTravelPanel.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/localtest/debug/DebugSessionConfig.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/OpenHarmonySessionInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/LocalObject.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/utils/UseCangjieExtImpl.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/ShellCommand.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/constant/LaunchTraceConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/runner/CangjieOhosTestLaunchTask.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/test/java/com/huawei/deveco/utils/CodeCheckUtilsTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/LineBreakTypeStyle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/test/java/com/huawei/deveco/utils/LogPrinterTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/EnvPathBuilder.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/console/editor/CangjieLldbLanguageCodeStyleProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/SymbolFileSearcher.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/LogUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+lsp-client/build.gradle
+  s_7d4a5052978e16::t_2aabef4d2bce39 5-6
+  s_7d4a5052978e16::t_a3d1c8716a8020 27-31,35-36,41,49,68
+  s_7d4a5052978e16::t_49331d4f3bcbb1 46
+  s_7d4a5052978e16::t_3f32b1f5776986 53
+  s_7d4a5052978e16::t_0f03e68d0459ef 32-34
+  s_7d4a5052978e16::t_d5ae1a2e51ee6d 1-3,38-39,43,45,54-55,62,64,67,69
+  h_e3f698405e4cb3 4,37,42,44,56-61,65-66,70
+  s_7d4a5052978e16::t_5506f4e4ccc922 47-48
+  s_7d4a5052978e16::t_acf36b8380bf2c 50-52
+  s_7d4a5052978e16::t_eb77bc3e95e1a9 63
+  s_7d4a5052978e16::t_b69c4d6372a711 7-26,40
+  s_7d4a5052978e16::t_51df38db2b34fd 71-74
+profiler/src/main/java/com/huawei/cjprofiler/utils/ClassUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/sync/CangjieSdkSync.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/request/cjthread/CjThreadListRequest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/deveco/lsp/LspUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/utils/CjCommonImpl.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/utils/ProjectUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/properties/CangjieSourceBreakpointProperties.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/CangjieLocalTestConfigurationProducer.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/request/cjthread/CjThreadSliceInfoRequest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+gradle.properties
+  s_7d4a5052978e16::t_f225be1c61d43d 4-5
+  s_7d4a5052978e16::t_eb77bc3e95e1a9 6-10,12-16
+  h_e3f698405e4cb3 1-3
+  s_7d4a5052978e16::t_2aabef4d2bce39 11
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/panda/PandaDebugHandlerBase.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkconfig/core/SdkConfigInvocationHandler.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/StartThread.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjHiPerfProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/request/CjThreadSliceRequest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/result/CangjieTestOutputXmlBean.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/utils/ArgumentsUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/utils/FormatConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/trace/CangjieDebugTracer.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/database/manager/CjMapperManager.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/DualCangjieXDebugProcess.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieCodeStyleSettings.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/DefectInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/BaseTreeInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/util/OsTypeUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/CangjieDualOpenHarmonyDebugger.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/sync/CangjieConfigurationSyncProject.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/utils/TestFrameworkBundle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/core/SyncFormat.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/test/java/com/huawei/cjprofiler/model/vo/cjprof/CjMemoryTransServiceTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/vo/CjLaneSliceVo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/CangjieCompileArg.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/deveco/lsp/DumbXDebuggerEditorsProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/utils/NotificationUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/OhCangjieDebugClientListener.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/test/java/com/huawei/deveco/utils/LanguagePropertiesTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/ConstructorNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/terminal/CangjiePluginLocalTerminalCustomizer.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/enums/RootTypeEnum.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/CangjieOpenHarmonyDebugger.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/action/databp/CangjieSetReadWriteDataBreakpointAction.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/utils/FormatUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/action/databp/CangjieSetWriteDataBreakpointAction.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/breakpoint/properties/CangjieBreakpointFiltersProperties.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjMemoryService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/attach/LaunchType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/LocalSymbolFilesInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/ThreadInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/register/CangjieStartupActivity.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/utils/ConfigUtil.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/src/main/java/com/huawei/deveco/cjlint/CjlintRuleListConfig.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/po/cjthread/CjThreadSliceInfoPo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjLaunchProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/core/LineRange.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/protocol/extend/ExecuteDebuggerCommandArgs.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/test/java/com/huawei/cjprofiler/service/CjMemoryDataServiceTest.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/cjprof/jni/model/InstanceNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjThreadProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/resourcehandler/controller/RequestDispatcher.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/attach/AttachConfiguration.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjHeapUsageProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/configuration/TraceCangjieTestType.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/OhCangjieXStackFrame.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/CangjieXStackFrame.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/response/concurrency/ConcurrencyMeasureInfo.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/dao/mapper/CjThreadMapper.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/service/CjRecordService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/start/CangjieDapConnectionUtils.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/actions/CjReformatCodeAction.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/utils/FormatConstant.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+project-mgmt/src/main/java/com/huawei/cangjie/projectmgmt/resources/CangjieProjectMgmtBundle.java
+  h_e3f698405e4cb3 56
+lsp-client/gradle/wrapper/gradle-wrapper.properties
+  h_e3f698405e4cb3 1-7
+project-mgmt/build.gradle
+  s_7d4a5052978e16::t_3f32b1f5776986 41
+  s_7d4a5052978e16::t_937cbfefbc524e 42-43
+  s_7d4a5052978e16::t_0f03e68d0459ef 26-28
+  s_7d4a5052978e16::t_a3d1c8716a8020 21-25,29-30,32,34,37,47
+  h_e3f698405e4cb3 1-4,31,35-36,44-46,48-52
+  s_7d4a5052978e16::t_acf36b8380bf2c 38-40
+  s_7d4a5052978e16::t_b69c4d6372a711 5-20,33
+support/build.gradle
+  s_7d4a5052978e16::t_ab78d5ecb36b4c 7-11,13,15
+  s_7d4a5052978e16::t_0f03e68d0459ef 2-5
+  h_e3f698405e4cb3 1,14
+  s_7d4a5052978e16::t_18d42dbe07bca2 12
+  s_7d4a5052978e16::t_7ec013571d0170 6,16-20
+dap-client/src/main/java/com/huawei/cangjie/debugger/protocol/CangjieIDebugProtocolServer.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/CjStack.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/TraceNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/common/RestResponse.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/build.gradle
+  s_7d4a5052978e16::t_a3d1c8716a8020 21,23,25-26
+  s_7d4a5052978e16::t_b69c4d6372a711 1-19,22
+  h_e3f698405e4cb3 20,24,27
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/dialog/CangjieTestRunConfigurationEditor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjlint/build.gradle
+  s_7d4a5052978e16::t_18d42dbe07bca2 8-10,12,15-16
+  s_7d4a5052978e16::t_b69c4d6372a711 1-5,11
+  s_7d4a5052978e16::t_c7650b364d337a 13
+  s_7d4a5052978e16::t_e46b49c7feeb47 14
+tools-extension/cjformat/src/main/java/com/huawei/deveco/cjfmt/settings/CangjieCodeStyleSettingsProvider.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cjformat/build.gradle
+  s_7d4a5052978e16::t_b69c4d6372a711 1-5,11
+  h_e3f698405e4cb3 15-16
+  s_7d4a5052978e16::t_18d42dbe07bca2 8-10,12-14
+  s_7d4a5052978e16::t_4c0bf6796cf783 18
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/impl/OhCangjieXScope.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/dialog/CangjieTestModuleSelector.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/ability/arkmemory/entity/cj/dump/MemTypeEnum.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/constants/CangjieConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/quality-common/src/main/java/com/huawei/deveco/constants/CommonConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/idea/bundle/CangjieIdeaMessageBundle.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/build.gradle
+  s_7d4a5052978e16::t_18d42dbe07bca2 15-18,20,22-23
+  h_e3f698405e4cb3 14,24-25
+  s_7d4a5052978e16::t_eabbad4a5e0149 21
+  s_7d4a5052978e16::t_b69c4d6372a711 1-12,19
+  s_7d4a5052978e16::t_f4ed0d2dd08546 27
+profiler/src/main/java/com/huawei/cjprofiler/processor/CjTraceProcessor.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+tools-extension/cangjie-test-framework/src/main/java/com/huawei/cangjie/testframework/result/CangjieTestResultParser.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/protocol/CangjieDapToServerService.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+dap-client/src/main/java/com/huawei/cangjie/debugger/impl/treemodel/CangjieVariableValueNode.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+profiler/src/main/java/com/huawei/cjprofiler/model/dto/response/cjthread/CjThreadStateMetadata.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/build.gradle
+  s_7d4a5052978e16::t_b69c4d6372a711 1-11,13
+  s_7d4a5052978e16::t_a3d1c8716a8020 12
+dap-client/src/main/java/com/huawei/cangjie/debugger/ohos/ComponentPath.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/sdkmanager/constants/SdkConstants.java
+  s_7d4a5052978e16::t_86138c9456bc26 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/build/env/CangjieBuildEnvImpl.java
+  s_7d4a5052978e16::t_8111f27a644f53 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/build/filter/CangjieBuildFilterFactory.java
+  s_7d4a5052978e16::t_117f9952240359 1
+sdk-mgmt/src/main/java/com/huawei/cangjie/build/filter/CangjieErrorOutputFilter.java
+  s_7d4a5052978e16::t_5c917b808b96ed 1
+project-mgmt/src/main/java/com/huawei/cangjie/projectmgmt/utils/FileUtils.java
+  h_e3f698405e4cb3 959
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3da9365bb8e133f26fd854d41861a02e98d25c66",
+  "prompts": {},
+  "humans": {
+    "h_e3f698405e4cb3": {
+      "author": "savage <wangjunwei26@huawei.com>"
+    }
+  },
+  "sessions": {
+    "s_7d4a5052978e16": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019ffb10-2986-7db3-be78-f58f7e70b438",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "savage <wangjunwei26@huawei.com>"
+    }
+  }
+}
