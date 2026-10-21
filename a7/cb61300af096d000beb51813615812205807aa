@@ -1,0 +1,23 @@
+lsp-client/src/main/java/com/huawei/ideacj/formatter/CangjieEnterHandlerDelegateAdapter.java
+  s_77092f7d721ed5::t_04a42156962575 188
+  s_77092f7d721ed5::t_10b1647ad86e2a 52
+  s_77092f7d721ed5::t_d3b5f70ec807a8 53
+  s_77092f7d721ed5::t_910fed9d2564a2 186-187
+  s_77092f7d721ed5::t_4fc48242831e6d 189
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.13",
+  "base_commit_sha": "a7cb61300af096d000beb51813615812205807aa",
+  "prompts": {},
+  "sessions": {
+    "s_77092f7d721ed5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f852e5bedffeb7QBToFqbcKvNI",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
