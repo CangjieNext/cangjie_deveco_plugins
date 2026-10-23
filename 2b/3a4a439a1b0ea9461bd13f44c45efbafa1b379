@@ -1,0 +1,19 @@
+build-support/src/utils/process-util.ts
+  s_b1be7a11b46801::t_ddbf57a194baf2 129-142,151-165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2b3a4a439a1b0ea9461bd13f44c45efbafa1b379",
+  "prompts": {},
+  "sessions": {
+    "s_b1be7a11b46801": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e997dc52affeLuc512A1FztCp3",
+        "model": "unknown"
+      },
+      "human_author": "tiantianok <chenliufei3@h-partners.com>"
+    }
+  }
+}
