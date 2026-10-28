@@ -42,10 +42,15 @@ public class PostSyncLspStartUp implements StartupActivity {
             return;
         }
         settings.setBreadcrumbsShownFor(CangJieLanguage.INSTANCE.getID(), true);
+        boolean isNeedFire = false;
         for (Editor editor : LspConfigUtils.getAllOpenEditors(project)) {
             if (editor != null && BreadcrumbsForceShownSettings.setForcedShown(true, editor)) {
-                UISettings.getInstance().fireUISettingsChanged();
+                isNeedFire = true;
             }
+        }
+        // 只执行一次
+        if (isNeedFire) {
+            UISettings.getInstance().fireUISettingsChanged();
         }
 
         FindSettings findSettings = FindSettings.getInstance();

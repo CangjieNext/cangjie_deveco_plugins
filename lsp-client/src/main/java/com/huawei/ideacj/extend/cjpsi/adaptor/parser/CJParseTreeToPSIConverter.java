@@ -60,6 +60,8 @@ public class CJParseTreeToPSIConverter implements ParseTreeListener {
      */
     protected Map<Integer, SyntaxError> tokenToErrorMap = new HashMap<>();
 
+    private int counter = 0;
+
     /**
      * Instantiates a new Antlr parse tree to psi converter.
      *
@@ -145,13 +147,14 @@ public class CJParseTreeToPSIConverter implements ParseTreeListener {
 
     @Override
     public void enterEveryRule(ParserRuleContext ctx) {
-        ProgressIndicatorProvider.checkCanceled();
+        if ((counter++ & 0xFF) == 0) { // 256次一次
+            ProgressIndicatorProvider.checkCanceled();
+        }
         markers.push(getBuilder().mark());
     }
 
     @Override
     public void exitEveryRule(ParserRuleContext ctx) {
-        ProgressIndicatorProvider.checkCanceled();
         var marker = markers.pop();
         marker.done(getRuleElementTypes().get(ctx.getRuleIndex()));
     }

@@ -16,8 +16,7 @@
     "libcangjie-std-unittest.mock.internal.so",
     "libcangjie-std-unittest.mock.so",
     "libcangjie-std-unittest.prop_test.so",
-    "libcangjie-std-unittest.so",
-    "libcangjie-std-reflect.so"
+    "libcangjie-std-unittest.so"
   ],
   "binPkgDependLibsMapper": {
     "stdx.crypto.keys": [
