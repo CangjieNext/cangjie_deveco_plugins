@@ -44,7 +44,9 @@ import com.huawei.deveco.projectmodel.ohos.util.PsiJsonFileUtil;
 import com.huawei.deveco.sdkmanager.core.util.StringUtil;
 
 import com.intellij.json.psi.JsonObject;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
@@ -1085,18 +1087,27 @@ public class FileUtils {
      * @param project the project
      */
     public static void resetProfileFlag(Project project) {
-        ProjectOptimizationSettingsService.State
-            state = ProjectOptimizationSettingsService.getInstance(project).getState();
-        if (state != null) {
-            if (!ApplicationManager.getApplication().isDisposed()) {
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    if (!project.isDisposed()) {
-                        state.setGenerateOptimizationProfile(false);
-                        project.save();
-                    }
-                });
-            }
+        Application application = ApplicationManager.getApplication();
+        if (application.isDisposed() || project.isDisposed()) {
+            return;
         }
+        application.invokeLater(() -> {
+            if (application.isDisposed() || project.isDisposed()) {
+                return;
+            }
+            ProjectOptimizationSettingsService.State state =
+                    ProjectOptimizationSettingsService.getInstance(project).getState();
+            if (state == null || !state.isGenerateOptimizationProfile()) {
+                return;
+            }
+            state.setGenerateOptimizationProfile(false);
+            application.executeOnPooledThread(() -> {
+                if (application.isDisposed() || project.isDisposed()) {
+                    return;
+                }
+                project.save();
+            });
+        }, ModalityState.nonModal());
     }
 
     private static final class StreamConsumer extends Thread {
